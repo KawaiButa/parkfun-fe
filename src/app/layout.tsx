@@ -1,7 +1,6 @@
 import { Menu } from "@mui/icons-material";
 import { AppBar, Container, IconButton, ThemeProvider, Toolbar, Typography } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
-import classNames from "classnames";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
@@ -13,7 +12,8 @@ import "./globals.css";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins"
 });
 export const metadata: Metadata = {
   title: constants.PROJECT_NAME,
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={classNames(poppins.className)}>
+      <body className={poppins.variable}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={defaultTheme}>
             <AppBar position="static">
