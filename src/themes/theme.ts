@@ -13,6 +13,7 @@ const defaultTheme = createTheme({
     secondary: {
       main: "#171616",
       contrastText: "#fff",
+      
     },
     error: {
       main: "#A04747",

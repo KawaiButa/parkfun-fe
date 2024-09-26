@@ -6,13 +6,27 @@ export default function Home() {
   return (
     <>
       <Container
-        sx={{ margin: 0, width: "100%", maxWidth: "100% !important", marginTop: "30px", backgroundImage: "linear-gradient(to right, black, transparent)"}}
+        sx={{
+          margin: 0,
+          width: "100%",
+          maxWidth: "100% !important",
+          gap: "20px",
+          backgroundImage: "linear-gradient(to right, black, transparent)",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "flex-end",
+          alignContent: "center",
+          flexWrap: "wrap",
+          padding: {
+            "xs": "10px",
+          },
+          flexDirection: {
+            xs: "column-reverse",
+            md: "row",
+          },
+        }}
       >
-        <BookingForm sx={{ display: "flex", flexDirection: "row-reverse", marginRight: 0}} />
-        <Container
-          maxWidth="md"
-          sx={{ marginLeft: 0, marginRight: "auto", marginTop: "10vw", height: "100vh" }}
-        >
+        <Container maxWidth="md" sx={{ marginLeft: 0, marginRight: "auto", height: "fit-content" }}>
           <Typography
             variant="h2"
             color="primary"
@@ -33,6 +47,7 @@ export default function Home() {
                 xs: "15px",
                 md: "20px",
               },
+              color: "var(--secondary-text-color)",
             }}
           >
             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aspernatur illum dolor sit, reiciendis magnam
@@ -40,6 +55,7 @@ export default function Home() {
             autem quia accusantium?
           </Typography>
         </Container>
+        <BookingForm sx={{ display: "flex", flexDirection: "row-reverse", marginRight: 0, height: "fit-content" }} />
       </Container>
     </>
   );
