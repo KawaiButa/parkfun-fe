@@ -1,5 +1,5 @@
 import axios from "axios";
-
+//TODO: Refactor later
 const AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
 });
@@ -40,7 +40,6 @@ AxiosInstance.interceptors.response.use(
         AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
         return AxiosInstance(originalRequest); 
       } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         window.location.href = '/login';
