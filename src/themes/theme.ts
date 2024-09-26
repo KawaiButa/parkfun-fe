@@ -3,10 +3,11 @@
 import { createTheme } from "@mui/material";
 
 const defaultTheme = createTheme({
+  cssVariables: true,
   palette: {
     primary: {
-      main: "#e6d60f",
-      light: "#ebe766",
+      main: "#EBCB00",
+      light: "#EBD226",
       dark: "#e4b400",
       contrastText: "#000",
     },
@@ -27,6 +28,14 @@ const defaultTheme = createTheme({
       main: "#409760",
       contrastText: "#fff",
     },
+    text: {
+      primary: "#fff",
+      secondary: "#fff",
+      disabled: "#fff",
+    },
   },
+  typography: {
+    fontFamily: "var(--font-poppins)"
+  }
 });
 export default defaultTheme;

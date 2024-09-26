@@ -1,7 +1,7 @@
 import axios from "axios";
 //TODO: Refactor later
 const AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_HOSTNAME,
 });
 AxiosInstance.interceptors.request.use(
   (config) => {
@@ -17,7 +17,7 @@ AxiosInstance.interceptors.request.use(
 );
 AxiosInstance.interceptors.response.use(
   (res) => {
-    if (res.config.url?.includes("/auth/") && res.data.accessToken) {
+    if (res.config.url?.includes("auth/") && res.data.accessToken) {
       localStorage.setItem("accessToken", res.data.accessToken);
     }
     return res;
