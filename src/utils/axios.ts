@@ -1,3 +1,4 @@
+"use client"
 import axios from "axios";
 //TODO: Refactor later
 const AxiosInstance = axios.create({
