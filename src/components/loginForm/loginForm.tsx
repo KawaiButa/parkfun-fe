@@ -1,16 +1,20 @@
 "use client";
-import {  KeyboardDoubleArrowRight } from "@mui/icons-material";
-import { Button, Container, ContainerOwnProps, Divider, Typography } from "@mui/material";
+import { useState } from "react";
+
+import { KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { Alert, Button, Container, ContainerOwnProps, Divider, Typography } from "@mui/material";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import { LoginFormData } from "@/interfaces/loginFormData";
 import { handleLoginWithGoogleSuccess, loginWithEmailAndPassword } from "@/utils/authentication";
 
-import FormTextInput from "../formTextInput/formTextInput";
-
+import {FormTextInput} from "../formTextInput/formTextInput";
 
 const LoginForm = (props: ContainerOwnProps) => {
+  const router = useRouter();
+  const [error, setError] = useState("error");
   const { handleSubmit, control } = useForm<LoginFormData>({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -20,10 +24,11 @@ const LoginForm = (props: ContainerOwnProps) => {
     },
   });
   const onSubmit = async (data: LoginFormData) => {
-    const result = await loginWithEmailAndPassword(data);
-    if (result) {
-      alert(`You have successfully logged in ${JSON.stringify(result)}`);
-    }
+    await loginWithEmailAndPassword(data)
+      .then(() => router.push("/"))
+      .catch((err) => {
+        setError(err.message);
+      });
   };
 
   return (
@@ -96,10 +101,12 @@ const LoginForm = (props: ContainerOwnProps) => {
             }}
           >
             {"Don't have a account? Make it here "}
-            <KeyboardDoubleArrowRight sx={{
-              fontSize: "18px",
-              transform: "translateY(3px)"
-            }}/>
+            <KeyboardDoubleArrowRight
+              sx={{
+                fontSize: "18px",
+                transform: "translateY(3px)",
+              }}
+            />
           </Typography>
           <Divider
             sx={{
@@ -132,6 +139,9 @@ const LoginForm = (props: ContainerOwnProps) => {
             />
           </Container>
         </Container>
+        <Alert variant="filled" severity="error">
+          {error}
+        </Alert>
       </Container>
     </GoogleOAuthProvider>
   );

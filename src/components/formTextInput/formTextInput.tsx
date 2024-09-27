@@ -3,11 +3,12 @@
 import { BaseTextFieldProps, TextField } from "@mui/material";
 import { Control, Controller, RegisterOptions } from "react-hook-form";
 
-interface FormTextInputProps extends BaseTextFieldProps {
+export interface FormTextInputProps extends BaseTextFieldProps{
   name: string;
   control: Control<any, unknown>,
-  label: string;
+  label?: string;
   rule?: Omit<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'>
+  slotProps?: any,
 }
 
 const FormTextInput = ( props: FormTextInputProps) => {
@@ -28,7 +29,7 @@ const FormTextInput = ( props: FormTextInputProps) => {
           value={value}
           fullWidth
           label={label}
-          variant="outlined"
+            variant="outlined"
           {...textFieldProps}
         />
       )}
@@ -37,4 +38,4 @@ const FormTextInput = ( props: FormTextInputProps) => {
 
 };
 
-export default FormTextInput;
+export {FormTextInput};
