@@ -3,6 +3,7 @@ import { Button, Container, ContainerOwnProps, FormControl, Input, Typography, T
 import { constants } from "@/constants";
 
 import BookingTimePicker from "./bookingTimePicker/bookingTimePicker";
+import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 const StyledTypography = ({ children, ...props }: TypographyProps) => (
   <Typography variant="h6" color="secondary" {...props}>
     {children}
@@ -46,10 +47,8 @@ function BookingForm(props: ContainerOwnProps) {
           minWidth: "200px",
         }}
       />
-      <FormControl
+      <ContainerFlexColumn
         sx={{
-          display: "flex",
-          flexDirection: "column",
           gap: "10px",
         }}
       >
@@ -135,7 +134,7 @@ function BookingForm(props: ContainerOwnProps) {
         >
           Book
         </Button>
-      </FormControl>
+      </ContainerFlexColumn>
     </Container>
   );
 }

@@ -9,10 +9,11 @@ export interface FormTextInputProps extends BaseTextFieldProps{
   label?: string;
   rule?: Omit<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'>
   slotProps?: any,
+  outlineColor?: string,
 }
 
 const FormTextInput = ( props: FormTextInputProps) => {
-  const {name, control, label, rule, ...textFieldProps} = props;
+  const {name, control, label, rule, outlineColor, ...textFieldProps} = props;
   return (
     <Controller
       name={name}
@@ -31,6 +32,11 @@ const FormTextInput = ( props: FormTextInputProps) => {
           label={label}
             variant="outlined"
           {...textFieldProps}
+          sx={{
+            "& fieldset.MuiOutlinedInput-notchedOutline:hover": {
+              borderColor: `var(--${outlineColor}-color) !important`,
+            }
+          }}
         />
       )}
     />

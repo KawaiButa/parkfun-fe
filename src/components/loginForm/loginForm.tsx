@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 
-import { KeyboardDoubleArrowRight } from "@mui/icons-material";
 import { Alert, Button, Container, ContainerOwnProps, Divider, Typography } from "@mui/material";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
@@ -10,11 +9,12 @@ import { useForm } from "react-hook-form";
 import { LoginFormData } from "@/interfaces/loginFormData";
 import { handleLoginWithGoogleSuccess, loginWithEmailAndPassword } from "@/utils/authentication";
 
-import {FormTextInput} from "../formTextInput/formTextInput";
+import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
+import { FormTextInput } from "../formTextInput/formTextInput";
 
 const LoginForm = (props: ContainerOwnProps) => {
   const router = useRouter();
-  const [error, setError] = useState("error");
+  const [error, setError] = useState(undefined);
   const { handleSubmit, control } = useForm<LoginFormData>({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -33,7 +33,7 @@ const LoginForm = (props: ContainerOwnProps) => {
 
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}>
-      <Container
+      <ContainerFlexColumn
         {...props}
         component={"form"}
         maxWidth="sm"
@@ -42,14 +42,9 @@ const LoginForm = (props: ContainerOwnProps) => {
           backgroundColor: "var(--secondary-color)",
           padding: "30px",
           borderRadius: "10px",
-          display: "flex",
-          flexDirection: "column",
           gap: "20px",
         }}
       >
-        <Typography variant="h4" color="primary" align="center" fontWeight={"500"}>
-          Login
-        </Typography>
         <FormTextInput
           label="Email"
           name="email"
@@ -61,6 +56,7 @@ const LoginForm = (props: ContainerOwnProps) => {
               message: "Invalid email address",
             },
           }}
+          outlineColor={"primary"}
           type="email"
         />
         <FormTextInput
@@ -74,6 +70,7 @@ const LoginForm = (props: ContainerOwnProps) => {
               message: "Password must be at least 8 characters long",
             },
           }}
+          outlineColor={"primary"}
           type="password"
         />
         <Button
@@ -87,27 +84,7 @@ const LoginForm = (props: ContainerOwnProps) => {
         >
           Login
         </Button>
-        <Container sx={{ display: "flex", flexDirection: "column", gap: "10px", padding: "0 !important" }}>
-          <Typography
-            textAlign={"right"}
-            component={"a"}
-            href="/register"
-            color="var(--secondary-text-color)"
-            sx={{
-              fontSize: {
-                xs: "13px",
-                md: "16px",
-              },
-            }}
-          >
-            {"Don't have a account? Make it here "}
-            <KeyboardDoubleArrowRight
-              sx={{
-                fontSize: "18px",
-                transform: "translateY(3px)",
-              }}
-            />
-          </Typography>
+        <ContainerFlexColumn sx={{ gap: "10px" }} disableGutters>
           <Divider
             sx={{
               "&::before, &::after": {
@@ -138,11 +115,13 @@ const LoginForm = (props: ContainerOwnProps) => {
               }}
             />
           </Container>
-        </Container>
-        <Alert variant="filled" severity="error">
-          {error}
-        </Alert>
-      </Container>
+        </ContainerFlexColumn>
+        {error && (
+          <Alert variant="filled" severity="error">
+            {error}
+          </Alert>
+        )}
+      </ContainerFlexColumn>
     </GoogleOAuthProvider>
   );
 };

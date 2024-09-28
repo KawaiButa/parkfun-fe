@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 
 import { alpha, Button, Container, Menu, MenuItem, MenuProps, styled } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -56,7 +56,8 @@ const ProfileButton = () => {
       setProfile(JSON.parse(profileData));
     }
   }, []);
-  function handleLogout(): void {
+  function handleLogout(event: MouseEvent): void {
+    event.preventDefault();
     localStorage.removeItem("accessToken");
     localStorage.removeItem("profile");
     setProfile(undefined);
@@ -64,7 +65,8 @@ const ProfileButton = () => {
     handleClose();
   }
 
-  function handleProfile(): void {
+  function handleProfile(event: MouseEvent): void {
+    event.preventDefault();
     router.push("/profile");
     handleClose();
   
@@ -88,7 +90,7 @@ const ProfileButton = () => {
           sx={{
             fontWeight: "500",
           }}
-          href="/login"
+          href="auth/login"
         >
           Login
         </Button>
@@ -98,7 +100,7 @@ const ProfileButton = () => {
           sx={{
             fontWeight: "500",
           }}
-          href="/register"
+          href="auth/signup"
         >
           Sign-up
         </Button>

@@ -1,12 +1,14 @@
 import { Container, Typography } from "@mui/material";
 
+import ContainerFlexColumn from "@/components/containerFlexColumn/containerFlexColumn";
+
 const layout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
   return (
-    <Container
+    <ContainerFlexColumn
       sx={{
         width: {
           xs: "90%",
@@ -15,11 +17,10 @@ const layout = ({
         marginTop: "30px",
         backgroundColor: "var(--secondary-text-color)",
         borderRadius: "10px",
-        display: "flex",
-        flexDirection: "column",
         alignSelf: "center",
         alignContent: "center",
       }}
+      disableGutters
     >
       <Container sx={{ justifyContent: "space-between", display: "flex" }}>
         <Typography variant="h5" fontWeight={"500"}>
@@ -27,7 +28,7 @@ const layout = ({
         </Typography>
       </Container>
       {children}
-    </Container>
+    </ContainerFlexColumn>
   );
 };
 

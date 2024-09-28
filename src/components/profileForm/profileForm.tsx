@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { ProfileFormData } from "@/interfaces/profileFormData";
 import AxiosInstance from "@/utils/axios";
 
+import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import { FormTextInput, FormTextInputProps } from "../formTextInput/formTextInput";
 
 
@@ -61,14 +62,12 @@ const ProfileForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Container
+      <ContainerFlexColumn
         sx={{
-          flexDirection: "column",
           gap: "10px",
-          display: "flex",
           marginTop: "10px",
-          padding: "0 !important",
         }}
+        disableGutters
       >
         {fieldList.map(({ key, rule }) => (
           <Container
@@ -112,7 +111,6 @@ const ProfileForm = () => {
               type="text"
               defaultValue={profile["key"]}
               rule={rule}
-              // disabled={disabled}
             />
           </Container>
         ))}
@@ -130,7 +128,7 @@ const ProfileForm = () => {
             Reset
           </Button>
         </Container>
-      </Container>
+      </ContainerFlexColumn>
       {error && (
         <Alert
           variant="filled"
