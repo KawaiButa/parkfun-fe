@@ -37,5 +37,5 @@ a {
 }
 label.MuiFormLabel-root{
   color: var(--secondary-color) !important;
-  font-weight: bold;
+  /* font-weight: bold; */
 }

@@ -3,6 +3,8 @@ import { Button, Container, ContainerOwnProps, FormControl, Input, Typography, T
 import { constants } from "@/constants";
 
 import BookingTimePicker from "./bookingTimePicker/bookingTimePicker";
+import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
+import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 const StyledTypography = ({ children, ...props }: TypographyProps) => (
   <Typography variant="h6" color="secondary" {...props}>
     {children}
@@ -46,10 +48,8 @@ function BookingForm(props: ContainerOwnProps) {
           minWidth: "200px",
         }}
       />
-      <FormControl
+      <ContainerFlexColumn
         sx={{
-          display: "flex",
-          flexDirection: "column",
           gap: "10px",
         }}
       >
@@ -126,16 +126,14 @@ function BookingForm(props: ContainerOwnProps) {
         >
           3. Continue to checkout and start parking!!!!
         </StyledTypography>
-        <Button
-          color="primary"
-          variant="contained"
+        <PrimaryContainedButton
           sx={{
             fontWeight: "bold",
           }}
         >
           Book
-        </Button>
-      </FormControl>
+        </PrimaryContainedButton>
+      </ContainerFlexColumn>
     </Container>
   );
 }
