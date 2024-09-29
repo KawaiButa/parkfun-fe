@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Alert, Button, Container, ContainerOwnProps, Divider, Typography } from "@mui/material";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
@@ -9,12 +10,13 @@ import { useForm } from "react-hook-form";
 import { LoginFormData } from "@/interfaces/loginFormData";
 import { handleLoginWithGoogleSuccess, loginWithEmailAndPassword } from "@/utils/authentication";
 
+import { loginValidationSchema } from "./validationSchema";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import { FormTextInput } from "../formTextInput/formTextInput";
 
 const LoginForm = (props: ContainerOwnProps) => {
   const router = useRouter();
-  const [error, setError] = useState(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
   const { handleSubmit, control } = useForm<LoginFormData>({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -22,20 +24,21 @@ const LoginForm = (props: ContainerOwnProps) => {
       email: "",
       password: "",
     },
+    resolver: yupResolver(loginValidationSchema),
   });
   const onSubmit = async (data: LoginFormData) => {
-    await loginWithEmailAndPassword(data)
-      .then(() => router.push("/"))
-      .catch((err) => {
-        setError(err.message);
-      });
+    try {
+      const res = await loginWithEmailAndPassword(data);
+      if (res) router.replace("/");
+    } catch (err) {
+      if (err instanceof Error) setError(err.message);
+    }
   };
-
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}>
       <ContainerFlexColumn
         {...props}
-        component={"form"}
+        component="form"
         maxWidth="sm"
         sx={{
           ...props.sx,
@@ -45,34 +48,8 @@ const LoginForm = (props: ContainerOwnProps) => {
           gap: "20px",
         }}
       >
-        <FormTextInput
-          label="Email"
-          name="email"
-          control={control}
-          rule={{
-            required: "Please enter your email",
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Invalid email address",
-            },
-          }}
-          outlineColor={"primary"}
-          type="email"
-        />
-        <FormTextInput
-          label="Password"
-          name="password"
-          control={control}
-          rule={{
-            required: "Please enter your password",
-            minLength: {
-              value: 8,
-              message: "Password must be at least 8 characters long",
-            },
-          }}
-          outlineColor={"primary"}
-          type="password"
-        />
+        <FormTextInput label="Email" name="email" control={control} outlineColor="primary" type="email" />
+        <FormTextInput label="Password" name="password" control={control} outlineColor="primary" type="password" />
         <Button
           variant="contained"
           type="submit"
@@ -93,7 +70,6 @@ const LoginForm = (props: ContainerOwnProps) => {
             }}
           >
             <Typography variant="h5" color="primary">
-              {" "}
               or
             </Typography>
           </Divider>
@@ -104,7 +80,7 @@ const LoginForm = (props: ContainerOwnProps) => {
             }}
           >
             <GoogleLogin
-              width={"50%"}
+              width="50%"
               auto_select={false}
               shape="rectangular"
               onSuccess={handleLoginWithGoogleSuccess}

@@ -1,11 +1,13 @@
 "use client";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Container, ContainerOwnProps, styled } from "@mui/material";
 import { useForm } from "react-hook-form";
 
-import { FormFieldWithReactHookValidation } from "@/interfaces/formField";
+import { FormField } from "@/interfaces/formField";
 import { RegisterFormData } from "@/interfaces/registerFormData";
 import { registerNewUser } from "@/utils/authentication";
 
+import { registerValidationSchema } from "./validationSchema";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import { FormTextInput, FormTextInputProps } from "../formTextInput/formTextInput";
 const StyledFormTextField = styled((props: FormTextInputProps) => (
@@ -13,57 +15,30 @@ const StyledFormTextField = styled((props: FormTextInputProps) => (
     sx={{
       height: "40px",
     }}
-    outlineColor={"primary"}
+    outlineColor="primary"
     {...props}
   />
 ))();
-const fieldDataWithValidation: Array<FormFieldWithReactHookValidation | Array<FormFieldWithReactHookValidation>> = [
+const fieldDataWithValidation: Array<FormField | Array<FormField>> = [
   {
     key: "name",
     label: "Your name",
-    rule: {
-      required: "Please enter your name",
-    },
     type: "text",
   },
   {
     label: "Email",
     key: "email",
-    rule: {
-      required: "Please enter your email",
-      pattern: {
-        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-        message: "Invalid email address",
-      },
-    },
     type: "email",
   },
   [
     {
       label: "Password",
       key: "password",
-      rule: {
-        required: "Please enter your password",
-        minLength: {
-          value: 8,
-          message: "Password must be at least 8 characters long",
-        },
-      },
       type: "password",
     },
     {
       label: "Confirm password",
       key: "confirmPassword",
-      rule: {
-        required: "Please enter your password",
-        minLength: {
-          value: 8,
-          message: "Password must be at least 8 characters long",
-        },
-        validate: {
-          match: (value, formField) => value === formField.password || "Confirm password is not matched",
-        },
-      },
       type: "password",
     },
   ],
@@ -84,6 +59,7 @@ const RegisterForm = (props: ContainerOwnProps) => {
       name: "",
       phoneNumber: "",
     },
+    resolver: yupResolver(registerValidationSchema),
   });
   const onSubmit = async (data: RegisterFormData) => {
     const result = await registerNewUser(data);
@@ -92,7 +68,7 @@ const RegisterForm = (props: ContainerOwnProps) => {
     }
   };
 
-  const buildForm = (fieldLists: Array<FormFieldWithReactHookValidation | Array<FormFieldWithReactHookValidation>>) => {
+  const buildForm = (fieldLists: Array<FormField | Array<FormField>>) => {
     return fieldLists.map((field) => {
       if (Array.isArray(field)) {
         const key = field.reduce((acc, { key }) => (acc += key + "_"), "formTextField_");
@@ -102,14 +78,14 @@ const RegisterForm = (props: ContainerOwnProps) => {
           </Container>
         );
       }
-      const { key, label, rule } = field;
-      return <StyledFormTextField key={key} name={key} label={label} rule={rule} control={control} />;
+      const { key, label, type } = field;
+      return <StyledFormTextField key={key} name={key} label={label} control={control} type={type}/>;
     });
   };
   return (
     <ContainerFlexColumn
       {...props}
-      component={"form"}
+      component="form"
       maxWidth="sm"
       sx={{
         ...props.sx,

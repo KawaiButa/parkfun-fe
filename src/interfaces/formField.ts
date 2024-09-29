@@ -6,6 +6,3 @@ export interface FormField {
   type?: string;
 }
 
-export interface FormFieldWithReactHookValidation extends FormField {
-  rule?: Omit<RegisterOptions, "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled">;
-}

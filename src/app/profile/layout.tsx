@@ -23,7 +23,7 @@ const layout = ({
       disableGutters
     >
       <Container sx={{ justifyContent: "space-between", display: "flex" }}>
-        <Typography variant="h5" fontWeight={"500"}>
+        <Typography variant="h5" fontWeight="500">
           Profile
         </Typography>
       </Container>

@@ -25,7 +25,7 @@ const FormTextInput = ( props: FormTextInputProps) => {
       }) => (
         <TextField
           helperText={error?.message}
-          error={!!error}
+          error={Boolean(error)}
           onChange={onChange}
           value={value}
           fullWidth

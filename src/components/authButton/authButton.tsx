@@ -34,7 +34,7 @@ const AuthButton = (props: ContainerProps) => {
 
   return (
     <Container {...props}>
-      <Typography variant="h4" color="primary" align="center" fontWeight={"600"}>
+      <Typography variant="h4" color="primary" align="center" fontWeight="600">
         {pathName}
       </Typography>
       <Container
@@ -87,7 +87,7 @@ const AuthButton = (props: ContainerProps) => {
             border: "none",
             cursor: "pointer",
           }}
-          component={"button"}
+          component="button"
           onClick={(e) => handleChangePage(e, "/auth/login")}
         >
           Login
@@ -99,7 +99,7 @@ const AuthButton = (props: ContainerProps) => {
             border: "none",
             cursor: "pointer",
           }}
-          component={"button"}
+          component="button"
           onClick={(e) => handleChangePage(e, "/auth/signup")}
         >
           Sign up

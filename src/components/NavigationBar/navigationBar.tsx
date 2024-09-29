@@ -1,5 +1,6 @@
 import Menu from "@mui/icons-material/Menu";
-import { AppBar, Toolbar, IconButton, Typography} from "@mui/material";
+import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
+import Link from "next/link";
 
 import ProfileButton from "./ProfileButton/profileButton";
 
@@ -20,11 +21,9 @@ const NavigationBar = () => {
           }}
         >
           <Menu />
-        </IconButton>{" "}
+        </IconButton>
         <Typography
-          href="/"
           variant="h3"
-          component="a"
           color="secondary"
           sx={{
             flexGrow: 1,
@@ -35,9 +34,11 @@ const NavigationBar = () => {
             },
           }}
         >
-          PARKFUN
+          <Link href="/">
+            PARKFUN
+          </Link>
         </Typography>
-        <ProfileButton />
+          <ProfileButton />
       </Toolbar>
     </AppBar>
   );
