@@ -13,13 +13,16 @@
     "@emotion/cache": "^11.13.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.1",
     "@mui/material": "^6.1.1",
     "@mui/material-nextjs": "^6.1.1",
+    "@mui/x-date-pickers": "^7.18.0",
     "axios": "^1.7.7",
-    "classnames": "^2.5.1",
+    "dayjs": "^1.11.13",
     "next": "14.2.13",
-    "react": "^18",
-    "react-dom": "^18"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-hook-form": "^7.53.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
@@ -27,6 +30,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.13",
     "eslint-config-prettier": "^9.1.0",
