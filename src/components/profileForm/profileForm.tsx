@@ -6,13 +6,12 @@ import { Alert, AlertColor, Button, Container, Typography } from "@mui/material"
 import { AxiosResponse } from "axios";
 import { useForm } from "react-hook-form";
 
+import { useProfile } from "@/context/profileContext";
 import { ProfileFormData } from "@/interfaces/profileFormData";
 import AxiosInstance from "@/utils/axios";
 
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import { FormTextInput, FormTextInputProps } from "../formTextInput/formTextInput";
-
-
 
 const StyledFormTextInput = styled((props: FormTextInputProps) => <FormTextInput {...props} />)(() => ({
   "& label": {
@@ -38,7 +37,7 @@ const fieldList = [
   { key: "phoneNumber" },
 ];
 const ProfileForm = () => {
-  const profile = JSON.parse(window.localStorage.getItem("profile") ?? "");
+  const { profile } = useProfile();
   const [error, setError] = useState<{ type: AlertColor; message: string } | undefined>(undefined);
   const { handleSubmit, control } = useForm({
     defaultValues: { ...new ProfileFormData(), ...profile },
@@ -109,7 +108,6 @@ const ProfileForm = () => {
               placeholder={key}
               size="small"
               type="text"
-              defaultValue={profile["key"]}
               rule={rule}
             />
           </Container>

@@ -16,7 +16,8 @@ export const registerValidationSchema: yup.ObjectSchema<RegisterFormData> = yup.
     ),
   phoneNumber: yup
     .string()
-    .optional()
+    .nullable()
+    .notRequired()
     .matches(/^\+?\d{1,15}$/, "The phone number is invalid")
     .min(10, "The phone number is invalid"),
 });

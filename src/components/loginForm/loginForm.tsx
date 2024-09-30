@@ -45,6 +45,7 @@ const LoginForm = (props: ContainerOwnProps) => {
       <ContainerFlexColumn
         {...props}
         component="form"
+        onSubmit={handleSubmit(onSubmit)}
         maxWidth="sm"
         sx={{
           ...props.sx,
@@ -58,7 +59,6 @@ const LoginForm = (props: ContainerOwnProps) => {
         <FormTextInput label="Password" name="password" control={control} outlineColor="primary" type="password" />
         <PrimaryContainedButton
           type="submit"
-          onClick={handleSubmit(onSubmit)}
           sx={{
             fontSize: "20px",
             fontWeight: "600",

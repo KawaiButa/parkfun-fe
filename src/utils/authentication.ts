@@ -6,7 +6,7 @@ import { RegisterFormData } from "@/interfaces/registerFormData";
 import AxiosInstance from "./axios";
 
 async function loginWithEmailAndPassword({ email, password }: LoginFormData) {
-  const res = await AxiosInstance.post("auth/login", { email, password });
+  const res = await AxiosInstance.post("/auth/login", { email, password });
   if (res.status == 200) {
     localStorage.setItem("profile", JSON.stringify(res.data.user));
     return res.data.user;
@@ -15,7 +15,7 @@ async function loginWithEmailAndPassword({ email, password }: LoginFormData) {
 }
 
 async function handleLoginWithGoogleSuccess({ credential, clientId }: CredentialResponse) {
-  const res = await AxiosInstance.post("auth/google", {
+  const res = await AxiosInstance.post("/auth/google", {
     credential,
     clientId,
   });
@@ -26,7 +26,7 @@ async function handleLoginWithGoogleSuccess({ credential, clientId }: Credential
 
 async function registerNewUser(data: RegisterFormData) {
   data.phoneNumber = Boolean(data.phoneNumber) ? data.phoneNumber : null;
-  const res = await AxiosInstance.post("auth/register", data);
+  const res = await AxiosInstance.post("/auth/register", data);
   if (res.status == 201) {
     localStorage.setItem("profile", JSON.stringify(res.data.user));
     return res.data.user;

@@ -3,5 +3,5 @@ export interface RegisterFormData {
   password: string;
   confirmPassword: string;
   name: string;
-  phoneNumber: string | null;
+  phoneNumber?: string | null;
 }
