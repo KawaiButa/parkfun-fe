@@ -1,7 +1,9 @@
+"use client"
 import axios from "axios";
-//TODO: Refactor later
 const AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  timeout: 1000,
+  headers: { 'Content-Type': 'application/json' }
 });
 AxiosInstance.interceptors.request.use(
   (config) => {
@@ -14,6 +16,7 @@ AxiosInstance.interceptors.request.use(
   (err) => {
     return Promise.reject(err);
   }
+
 );
 AxiosInstance.interceptors.response.use(
   (res) => {

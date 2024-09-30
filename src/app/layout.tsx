@@ -1,10 +1,12 @@
 import { Menu } from "@mui/icons-material";
-import { AppBar, Button, Container, IconButton, ThemeProvider, Toolbar, Typography } from "@mui/material";
+import { AppBar, Container, IconButton, ThemeProvider, Toolbar, Typography } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 import classNames from "classnames";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
+import SecondaryContainedButton from "@/components/secondaryContainedButton/secondaryContainedButton";
+import { constants } from "@/constants";
 import defaultTheme from "@/themes/theme";
 
 import "./globals.css";
@@ -14,7 +16,7 @@ const poppins = Poppins({
   weight: ["400", "500", "700"],
 });
 export const metadata: Metadata = {
-  title: "PARKFUN",
+  title: constants.PROJECT_NAME,
   description: "Park anytime",
 };
 
@@ -57,36 +59,33 @@ export default function RootLayout({
                     },
                   }}
                 >
-                  PARKFUN
+                  {constants.PROJECT_NAME}
                 </Typography>
-                <Container sx={{
-                  width: "fit-content",
-                  display: {
-                    md: "flex",
-                    xs: "none",
-                    
-                  },
-                  gap: "10px",
-                  paddingRight: "0"
-                }}>
-                  <Button
-                    color="secondary"
-                    variant="contained"
+                <Container
+                  sx={{
+                    width: "fit-content",
+                    display: {
+                      md: "flex",
+                      xs: "none",
+                    },
+                    gap: "10px",
+                    paddingRight: "0",
+                  }}
+                >
+                  <SecondaryContainedButton
                     sx={{
                       fontWeight: "bold",
                     }}
                   >
                     Login
-                  </Button>
-                  <Button
-                    color="secondary"
-                    variant="contained"
+                  </SecondaryContainedButton>
+                  <SecondaryContainedButton
                     sx={{
                       fontWeight: "bold",
                     }}
                   >
                     Sign-up
-                  </Button>
+                  </SecondaryContainedButton>
                 </Container>
               </Toolbar>
             </AppBar>

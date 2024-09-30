@@ -1,7 +1,13 @@
-import { Button, Container, ContainerOwnProps, FormControl, Input, Typography } from "@mui/material";
+import { Button, Container, ContainerOwnProps, FormControl, Input, Typography, TypographyProps } from "@mui/material";
+
+import { constants } from "@/constants";
 
 import BookingTimePicker from "./bookingTimePicker/bookingTimePicker";
-
+const StyledTypography = ({ children, ...props }: TypographyProps) => (
+  <Typography variant="h6" color="secondary" {...props}>
+    {children}
+  </Typography>
+);
 function BookingForm(props: ContainerOwnProps) {
   return (
     <Container
@@ -51,8 +57,8 @@ function BookingForm(props: ContainerOwnProps) {
           sx={{
             display: "flex",
             flexDirection: "column-reverse",
-            padding: "0 !important",
           }}
+          disableGutters
         >
           <Typography
             variant="h2"
@@ -65,20 +71,20 @@ function BookingForm(props: ContainerOwnProps) {
               },
             }}
           >
-            PARKFUN
+            {constants.PROJECT_NAME}
           </Typography>
-          <Typography variant="h6" color="secondary" sx={{
-            fontSize: {
+          <StyledTypography
+            sx={{
+              fontSize: {
                 xs: "15px",
                 md: "20px",
               },
-          }}>
+            }}
+          >
             Simplify your parking experience
-          </Typography>
+          </StyledTypography>
         </Container>
-        <Typography
-          variant="h6"
-          color="secondary"
+        <StyledTypography
           sx={{
             display: {
               xs: "none",
@@ -87,7 +93,7 @@ function BookingForm(props: ContainerOwnProps) {
           }}
         >
           1. Choose your location
-        </Typography>
+        </StyledTypography>
         <Container
           sx={{
             width: "100%",
@@ -99,9 +105,7 @@ function BookingForm(props: ContainerOwnProps) {
         >
           <Input placeholder="Search here" disableUnderline={true} />
         </Container>
-        <Typography
-          variant="h6"
-          color="secondary"
+        <StyledTypography
           sx={{
             display: {
               xs: "none",
@@ -110,11 +114,9 @@ function BookingForm(props: ContainerOwnProps) {
           }}
         >
           2. Select the time and duration
-        </Typography>
+        </StyledTypography>
         <BookingTimePicker />
-        <Typography
-          variant="h6"
-          color="secondary"
+        <StyledTypography
           sx={{
             display: {
               xs: "none",
@@ -123,7 +125,7 @@ function BookingForm(props: ContainerOwnProps) {
           }}
         >
           3. Continue to checkout and start parking!!!!
-        </Typography>
+        </StyledTypography>
         <Button
           color="primary"
           variant="contained"
