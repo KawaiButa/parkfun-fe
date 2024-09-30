@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
 import NavigationBar from "@/components/NavigationBar/navigationBar";
-import SecondaryContainedButton from "@/components/secondaryContainedButton/secondaryContainedButton";
 import { constants } from "@/constants";
+import { ProfileContextProvider } from "@/context/profileContext";
 import defaultTheme from "@/themes/theme";
 
 import "./globals.css";
@@ -13,7 +13,7 @@ import "./globals.css";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-poppins"
+  variable: "--font-poppins",
 });
 export const metadata: Metadata = {
   title: constants.PROJECT_NAME,
@@ -28,12 +28,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={poppins.variable}>
-          <AppRouterCacheProvider>
-            <ThemeProvider theme={defaultTheme}>
-              <NavigationBar/>
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={defaultTheme}>
+            <ProfileContextProvider>
+              <NavigationBar />
               {children}
-            </ThemeProvider>
-          </AppRouterCacheProvider>
+            </ProfileContextProvider>
+          </ThemeProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

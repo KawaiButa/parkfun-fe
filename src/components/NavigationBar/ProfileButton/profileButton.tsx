@@ -1,11 +1,13 @@
 "use client";
 import { MouseEvent, useState } from "react";
 
-import { alpha, Button, Container, Menu, MenuItem, MenuProps, styled } from "@mui/material";
+import { alpha, Container, Menu, MenuItem, MenuProps, styled } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import SecondaryContainedButton from "@/components/secondaryContainedButton/secondaryContainedButton";
 import { useProfile } from "@/context/profileContext";
+
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
     elevation={0}
@@ -77,9 +79,7 @@ const ProfileButton = () => {
     >
       {profile ? (
         <>
-          <Button
-            color="secondary"
-            variant="contained"
+          <SecondaryContainedButton
             sx={{
               borderRadius: "30px",
               padding: "10px 30px",
@@ -87,7 +87,7 @@ const ProfileButton = () => {
             onClick={handleClick}
           >
             {profile?.name}
-          </Button>
+          </SecondaryContainedButton>
           <StyledMenu
             anchorEl={anchorEl}
             open={open}
@@ -107,24 +107,20 @@ const ProfileButton = () => {
         </>
       ) : (
         <>
-          <Button
-            color="secondary"
-            variant="contained"
+          <SecondaryContainedButton
             sx={{
               fontWeight: "500",
             }}
           >
             <Link href="/auth/login">Login</Link>
-          </Button>
-          <Button
-            color="secondary"
-            variant="contained"
+          </SecondaryContainedButton>
+          <SecondaryContainedButton
             sx={{
               fontWeight: "500",
             }}
           >
             <Link href="/auth/signup">Sign up</Link>
-          </Button>
+          </SecondaryContainedButton>
         </>
       )}
     </Container>

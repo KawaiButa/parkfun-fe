@@ -2,19 +2,22 @@
 import { useState } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Alert, Button, Container, ContainerOwnProps, Divider, Typography } from "@mui/material";
+import { Alert, Container, ContainerOwnProps, Divider, Typography } from "@mui/material";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import { useRouter } from "next/navigation";
+import {  useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
+import { useProfile } from "@/context/profileContext";
 import { LoginFormData } from "@/interfaces/loginFormData";
 import { handleLoginWithGoogleSuccess, loginWithEmailAndPassword } from "@/utils/authentication";
 
 import { loginValidationSchema } from "./validationSchema";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import { FormTextInput } from "../formTextInput/formTextInput";
+import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 
 const LoginForm = (props: ContainerOwnProps) => {
+  const { setProfile } = useProfile();
   const router = useRouter();
   const [error, setError] = useState<string | undefined>(undefined);
   const { handleSubmit, control } = useForm<LoginFormData>({
@@ -29,7 +32,10 @@ const LoginForm = (props: ContainerOwnProps) => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       const res = await loginWithEmailAndPassword(data);
-      if (res) router.replace("/");
+      if (res) {
+        setProfile(res);
+        router.replace("/");
+      }
     } catch (err) {
       if (err instanceof Error) setError(err.message);
     }
@@ -50,8 +56,7 @@ const LoginForm = (props: ContainerOwnProps) => {
       >
         <FormTextInput label="Email" name="email" control={control} outlineColor="primary" type="email" />
         <FormTextInput label="Password" name="password" control={control} outlineColor="primary" type="password" />
-        <Button
-          variant="contained"
+        <PrimaryContainedButton
           type="submit"
           onClick={handleSubmit(onSubmit)}
           sx={{
@@ -60,7 +65,7 @@ const LoginForm = (props: ContainerOwnProps) => {
           }}
         >
           Login
-        </Button>
+        </PrimaryContainedButton>
         <ContainerFlexColumn sx={{ gap: "10px" }} disableGutters>
           <Divider
             sx={{

@@ -1,6 +1,6 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Container, ContainerOwnProps, styled } from "@mui/material";
+import { Container, ContainerOwnProps, styled } from "@mui/material";
 import { useForm } from "react-hook-form";
 
 import { FormField } from "@/interfaces/formField";
@@ -10,6 +10,7 @@ import { registerNewUser } from "@/utils/authentication";
 import { registerValidationSchema } from "./validationSchema";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import { FormTextInput, FormTextInputProps } from "../formTextInput/formTextInput";
+import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 const StyledFormTextField = styled((props: FormTextInputProps) => (
   <FormTextInput
     sx={{
@@ -79,7 +80,7 @@ const RegisterForm = (props: ContainerOwnProps) => {
         );
       }
       const { key, label, type } = field;
-      return <StyledFormTextField key={key} name={key} label={label} control={control} type={type}/>;
+      return <StyledFormTextField key={key} name={key} label={label} control={control} type={type} />;
     });
   };
   return (
@@ -96,8 +97,7 @@ const RegisterForm = (props: ContainerOwnProps) => {
       }}
     >
       {buildForm(fieldDataWithValidation)}
-      <Button
-        variant="contained"
+      <PrimaryContainedButton
         type="submit"
         onClick={handleSubmit(onSubmit)}
         sx={{
@@ -106,7 +106,7 @@ const RegisterForm = (props: ContainerOwnProps) => {
         }}
       >
         Start booking
-      </Button>
+      </PrimaryContainedButton>
     </ContainerFlexColumn>
   );
 };

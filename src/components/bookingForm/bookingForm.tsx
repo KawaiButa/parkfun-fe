@@ -1,9 +1,10 @@
-import { Button, Container, ContainerOwnProps, FormControl, Input, Typography, TypographyProps } from "@mui/material";
+import { Container, ContainerOwnProps, Input, Typography, TypographyProps } from "@mui/material";
 
 import { constants } from "@/constants";
 
 import BookingTimePicker from "./bookingTimePicker/bookingTimePicker";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
+import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 const StyledTypography = ({ children, ...props }: TypographyProps) => (
   <Typography variant="h6" color="secondary" {...props}>
     {children}
@@ -125,15 +126,13 @@ function BookingForm(props: ContainerOwnProps) {
         >
           3. Continue to checkout and start parking!!!!
         </StyledTypography>
-        <Button
-          color="primary"
-          variant="contained"
+        <PrimaryContainedButton
           sx={{
             fontWeight: "bold",
           }}
         >
           Book
-        </Button>
+        </PrimaryContainedButton>
       </ContainerFlexColumn>
     </Container>
   );
