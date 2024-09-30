@@ -1,4 +1,4 @@
 export class ProfileFormData {
-  address?: string = undefined;
-  phoneNumber?: string = undefined;
+  address: string | null = null;
+  phoneNumber: string | null = null;
 }

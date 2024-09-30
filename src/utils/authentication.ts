@@ -25,7 +25,7 @@ async function handleLoginWithGoogleSuccess({ credential, clientId }: Credential
 }
 
 async function registerNewUser(data: RegisterFormData) {
-  data.phoneNumber = !!data.phoneNumber ? data.phoneNumber : undefined;
+  data.phoneNumber = Boolean(data.phoneNumber) ? data.phoneNumber : null;
   const res = await AxiosInstance.post("auth/register", data);
   if (res.status == 201) {
     localStorage.setItem("profile", JSON.stringify(res.data.user));
