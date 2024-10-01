@@ -13,7 +13,10 @@ const SessionProvider = ({ children }: { children: ReactNode }) => {
   const authentication = useMemo(() => {
     return {
       signIn: () => {
-        setSession(session);
+        const profileData = window.localStorage.getItem("profile");
+        const token = window.localStorage.getItem("accessToken");
+        const data = token && profileData ? JSON.parse(profileData!) : null;
+        if (data) setSession({ user: { email: data.email, name: data.name, image: data.avatarUrl } });
       },
       signOut: () => {
         setSession(null);

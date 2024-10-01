@@ -87,6 +87,9 @@ const Layout = ({
                     router.push("/admin/login");
                   },
                 },
+                signOutButton: {
+                  color: "secondary",
+                },
               },
             },
           }}

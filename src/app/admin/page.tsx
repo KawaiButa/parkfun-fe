@@ -145,7 +145,6 @@ const AdminDashboard = () => {
 };
 
 const IncomeBarChart = (props: BoxProps) => {
-  const { sx, ...remain } = props;
   return (
     <Box {...props}>
       <BarChart
@@ -167,7 +166,6 @@ const IncomeBarChart = (props: BoxProps) => {
             width: "2.75rem !important",
             borderRadius: "10px",
           },
-          ...sx,
         }}
         leftAxis={null}
         slotProps={{
@@ -175,7 +173,6 @@ const IncomeBarChart = (props: BoxProps) => {
             hidden: true,
           },
         }}
-        {...remain}
       />
     </Box>
   );
@@ -200,7 +197,7 @@ const UserLineChart = (props: IncomeChartProps) => {
       <LineChart
         series={[
           { data: newUserData, label: "New user", color: "#e6d60f" },
-          { data: activeLot, label: "Active lot", color: "#495E57"},
+          { data: activeLot, label: "Active lot", color: "#495E57" },
         ]}
         xAxis={[{ scaleType: "point", data: Array.from(Array(11), (_, i) => i + 1) }]}
         slotProps={{
