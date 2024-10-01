@@ -4,14 +4,15 @@ import { LoginFormData } from "@/interfaces/loginFormData";
 import { RegisterFormData } from "@/interfaces/registerFormData";
 
 import AxiosInstance from "./axios";
+import { Profile } from "@/interfaces/profile";
 
-async function loginWithEmailAndPassword({ email, password }: LoginFormData) {
+async function loginWithEmailAndPassword({ email, password }: LoginFormData): Promise<Profile | null> {
   const res = await AxiosInstance.post("/auth/login", { email, password });
   if (res.status == 200) {
     localStorage.setItem("profile", JSON.stringify(res.data.user));
     return res.data.user;
   }
-   return null;
+  return null;
 }
 
 async function handleLoginWithGoogleSuccess({ credential, clientId }: CredentialResponse) {
