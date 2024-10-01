@@ -13,7 +13,7 @@ export function usePartner() {
     try {
       const res = await AxiosInstance.get("/partner");
       if (res.status === 200) {
-        return res.data as Partner[]
+        return res.data as Partner[];
       }
     } catch (err) {
       if (err instanceof AxiosError) {
@@ -37,5 +37,19 @@ export function usePartner() {
       throw err;
     }
   };
-  return { partnerList, setPartnerList, createPartner, fetchPartners };
+  const deletePartner = async (id: number) => {
+    try {
+      const res = await AxiosInstance.delete(`/partner/${id}`);
+      if (res.status === 200) {
+        return res.data as Partner;
+      }
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message = err.response?.data.message;
+        throw new AxiosError(message);
+      }
+      throw err;
+    }
+  };
+  return { partnerList, setPartnerList, createPartner, fetchPartners, deletePartner };
 }

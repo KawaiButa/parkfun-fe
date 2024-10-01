@@ -15,12 +15,14 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { AxiosError } from "axios";
 import _ from "lodash";
 import { useRouter } from "next/navigation";
 
 import SearchBox from "@/components/searchBox/searchBox";
 import SelectInput from "@/components/selectInput/selectInput";
 import { usePartner } from "@/hooks/usePartner";
+import { Partner } from "@/interfaces";
 
 interface Column {
   id: string;
@@ -54,17 +56,29 @@ const columns: readonly Column[] = [
     align: "right",
   },
 ];
+const searchFieldList = [
+  { label: "Name", key: "user.name" },
+  { label: "Phone Number", key: "user.phoneNumber" },
+  { label: "Email", key: "user.email" },
+];
 
 const User = () => {
-  const { partnerList, setPartnerList, fetchPartners } = usePartner();
+  const { partnerList, setPartnerList, fetchPartners, deletePartner } = usePartner();
+  const [filter, setFilter] = useState({});
+  const [searchParam, setSearchParam] = useState("");
   const router = useRouter();
   const [page, setPage] = useState(0);
+  const [searchField, setSearchField] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const handleSearch = async (event: ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    const data = await fetchPartners();
-    const filteredData = data?.filter(({ user: { name } }) => name.includes(event.target.value));
-    setPartnerList(filteredData);
+
+  useEffect(() => {
+    fetchPartners().then((data) => setPartnerList(filterAndSearch(data ?? [])));
+  }, [searchParam, filter]);
+  const filterAndSearch = (data: Partner[]) => {
+    const filteredData = _.filter(data, filter) as Partner[];
+    const { key } = searchFieldList[searchField];
+    const searchedData = filteredData?.filter((partner) => _.get(partner, key).includes(searchParam));
+    return searchedData;
   };
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -75,8 +89,17 @@ const User = () => {
     setPage(0);
   };
   useEffect(() => {
-    fetchPartners().then((data) => setPartnerList(data));
-  }, []);
+    fetchPartners().then((data) => setPartnerList(filterAndSearch(data ?? [])));
+  }, [searchParam, filter]);
+  const handleDeletePartner = async (id: number) => {
+    try{
+      await deletePartner(id);
+      alert(`Successfully deleted partner ${id}`)
+      fetchPartners().then((data) => setPartnerList(filterAndSearch(data?? [])));
+    } catch(err) {
+      alert(`Failed to delete partner with error ${(err as AxiosError).message}`);
+    }
+  }
   return (
     <>
       <Box
@@ -151,17 +174,40 @@ const User = () => {
             }}
           />
           <SelectInput
-            options={["All", "Admin", "Partner"]}
-            label="Role"
+            options={["All", "Individual", "Company"]}
+            label="Type"
             color="secondary"
             sx={{
               borderRadius: "40px",
               padding: "0 20px",
             }}
+            onChange={({ target: { value } }) => {
+              if (typeof value === "string") value = (value as string).toLowerCase();
+              if (value === "All" && Object.hasOwn(filter, "type")) {
+                delete (filter as object & {type?: object})["type"];
+                const {...remain} = filter;
+                setFilter(remain);
+              } else setFilter({ ...filter, type: { name: value } });
+            }}
           />
         </Box>
-        <Box maxWidth={"sm"}>
-          <SearchBox onChange={handleSearch} />
+        <Box sx={{ display: "flex", gap: "10px" }}>
+          <SelectInput
+            options={searchFieldList.map(({ label }) => label)}
+            label="Field"
+            color="secondary"
+            sx={{
+              borderRadius: "40px",
+              padding: "0 20px",
+              minWidth: "80px",
+              "& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input": {
+                minWidth: "100px",
+              },
+            }}
+            onChange={(event) => setSearchField(searchFieldList.findIndex(({ label }) => label === event.target.value))}
+            autoWidth
+          />
+          <SearchBox value={searchParam} onChange={(e) => setSearchParam(e.target.value)} />
         </Box>
       </Container>
       <Box sx={{ width: "100%", overflow: "auto" }}>
@@ -216,7 +262,7 @@ const User = () => {
                         <IconButton onClick={() => router.push(`/user/edit/${row.id}`)}>
                           <Edit />
                         </IconButton>
-                        <IconButton onClick={() => router.push(`/user/delete/${row.id}`)}>
+                        <IconButton onClick={() => handleDeletePartner(row.id)}>
                           <Delete />
                         </IconButton>
                       </TableCell>

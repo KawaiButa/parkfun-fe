@@ -18,10 +18,8 @@ const SelectInput = (props: SelectInputProps) => {
 
   return (
     <FormControl size="small">
-      <InputLabel id="demo-multiple-name-label">{label}</InputLabel>
+      <InputLabel>{label}</InputLabel>
       <Select
-        labelId="demo-multiple-name-label"
-        id="demo-multiple-name"
         autoWidth
         value={selectedValue}
         onChange={handleOnChange}
