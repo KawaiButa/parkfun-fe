@@ -1,6 +1,5 @@
 "use client";
 import axios from "axios";
-
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_HOSTNAME;
 const REFRESH_URL = process.env.NEXT_PUBLIC_BACKEND_URL + "/refresh";
 const optionsHeader = { "Content-Type": "application/json" };
@@ -8,7 +7,6 @@ const AxiosInstance = axios.create({
   baseURL: BASE_URL,
   ...optionsHeader,
 });
-
 AxiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("accessToken");
@@ -22,15 +20,14 @@ AxiosInstance.interceptors.request.use(
 
 AxiosInstance.interceptors.response.use(
   (response) => {
-    if (response.config.url?.includes("auth/login") && response.data.accessToken) {
+    if (response.config.url?.includes("/login") && response.data.accessToken) {
       localStorage.setItem("accessToken", response.data.accessToken);
     }
     return response;
   },
   async (error) => {
     const originalRequest = error.config;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (!error.response?.config.url.includes("/login") && error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const refreshToken = localStorage.getItem("refreshToken");
