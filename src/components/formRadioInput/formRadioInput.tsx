@@ -17,8 +17,8 @@ export interface FormTextInputProps<T, K>
   label?: string;
   rule?: Omit<RegisterOptions, "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled">;
   options: Array<T>;
-  transformLabel?: (value: T) => string;
-  transformValue?: (value: T) => K;
+  transformLabel?: (value: T, options?: T[]) => string;
+  transformValue?: (value: T, options?: T[]) => K;
   radioProps?: RadioProps;
 }
 
@@ -34,8 +34,8 @@ const FormRadioInput = <T, K>(props: FormTextInputProps<T, K>) => {
           <FormControl>
             <RadioGroup row name={name} value={fieldValue}>
               {options.map((option) => {
-                const value = transformValue ? transformValue(option) : option;
-                const label = transformLabel ? transformLabel(option) : (option as string);
+                const value = transformValue ? transformValue(option, options) : option;
+                const label = transformLabel ? transformLabel(option, options) : (option as string);
                 return (
                   <FormControlLabel
                     key={label}

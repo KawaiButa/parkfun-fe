@@ -6,7 +6,7 @@ export const partnerTheme = createTheme({
       main: '#C07F00',
       light: '#FFE38B',
       dark: '#CCAE48',
-      contrastText: '#4C3D3D',
+      contrastText: '#FFF7D4',
     },
     secondary: {
       main: '#C07F00',

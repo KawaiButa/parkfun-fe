@@ -21,7 +21,7 @@ const AdminLogin = () => {
       .then(() => {
         if (authentication) {
           authentication.signIn();
-          router.replace("/admin")
+          router.replace("/partner")
         }
       })
       .catch((err) => {
