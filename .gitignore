@@ -15,7 +15,7 @@
 
 # production
 /build
-
+.env
 # misc
 .DS_Store
 *.pem
@@ -36,4 +36,3 @@ yarn-error.log*
 next-env.d.ts
 yarn.lock
 .eslintcache
-.env
