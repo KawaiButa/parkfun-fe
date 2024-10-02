@@ -34,6 +34,7 @@ const AdminDashboard = () => {
         <Typography
           variant="h6"
           fontWeight={600}
+          color="primary.contrastText"
           sx={{
             marginBottom: "10px",
           }}
@@ -81,6 +82,7 @@ const AdminDashboard = () => {
             <Typography
               variant="h6"
               fontWeight={600}
+              color="primary.contrastText"
               sx={{
                 marginBottom: "10px",
               }}
@@ -102,6 +104,7 @@ const AdminDashboard = () => {
           <Typography
             variant="h6"
             fontWeight={600}
+            color="primary.contrastText"
             sx={{
               marginBottom: "10px",
             }}
@@ -229,10 +232,10 @@ const DataContainer = (props: DataContainerProps<string>) => {
         padding: "20px",
         gap: "10px",
         margin: "0",
-        backgroundColor: "white",
+        backgroundColor: "background.default",
       }}
     >
-      <Typography>{label}</Typography>
+      <Typography >{label}</Typography>
       <Box
         sx={{
           display: "flex",
@@ -249,6 +252,7 @@ const DataContainer = (props: DataContainerProps<string>) => {
             padding: "0 10px",
             display: "flex",
             alignItems: "center",
+            color: "primary.contrastText"
           }}
         >
           {helperIcon}

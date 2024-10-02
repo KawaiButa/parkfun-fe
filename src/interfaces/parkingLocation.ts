@@ -1,5 +1,6 @@
 import { Partner } from "./partner";
-
+import { PaymentMethod } from "./paymentMethod";
+import { PricingOption } from "./pricingOption";
 export interface ParkingLocation {
   id: number;
   name: string;
@@ -8,7 +9,8 @@ export interface ParkingLocation {
   lng?: number;
   access: string;
   partner?: Partner;
-  pricingOption: string;
-  pricingValue: number;
+  paymentMethod?: PaymentMethod,
+  pricingOption: PricingOption;
   partnerId?: number;
+  imageUrls: Array<string>;
 }
