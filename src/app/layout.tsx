@@ -6,7 +6,7 @@ import { Poppins } from "next/font/google";
 
 import { constants } from "@/constants";
 import { ProfileContextProvider } from "@/context/profileContext";
-import { defaultTheme } from "@/themes/theme";
+import { userTheme } from "@/themes/user";
 
 import "./globals.css";
 const poppins = Poppins({
@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={poppins.variable}>
         <AppRouterCacheProvider>
-          <ThemeProvider theme={defaultTheme}>
+          <ThemeProvider theme={userTheme}>
             <ProfileContextProvider>
               {children}
             </ProfileContextProvider>
