@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
 import NavigationBar from "@/components/NavigationBar/navigationBar";
+import { constants } from "@/constants";
 import defaultTheme from "@/themes/theme";
 
 import "./globals.css";
@@ -14,7 +15,7 @@ const poppins = Poppins({
   variable: "--font-poppins"
 });
 export const metadata: Metadata = {
-  title: "PARKFUN",
+  title: constants.PROJECT_NAME,
   description: "Park anytime",
 };
 

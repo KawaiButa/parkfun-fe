@@ -1,6 +1,7 @@
 import { Container, Typography } from "@mui/material";
 
 import BookingForm from "@/components/bookingForm/bookingForm";
+import { constants } from "@/constants";
 
 export default function Home() {
   return (
@@ -11,14 +12,14 @@ export default function Home() {
           width: "100%",
           maxWidth: "100% !important",
           gap: "20px",
-          backgroundImage: "linear-gradient(to right, black, transparent)",
+          backgroundImage: "linear-gradient(to right, var(--secondary-color), transparent)",
           height: "100vh",
           display: "flex",
           justifyContent: "flex-end",
           alignContent: "center",
           flexWrap: "wrap",
           padding: {
-            "xs": "10px",
+            xs: "10px",
           },
           flexDirection: {
             xs: "column-reverse",
@@ -38,7 +39,7 @@ export default function Home() {
               },
             }}
           >
-            PARKFUN
+            {constants.PROJECT_NAME}
           </Typography>
           <Typography
             variant="h6"
