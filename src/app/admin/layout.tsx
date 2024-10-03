@@ -2,6 +2,7 @@
 import { useContext } from "react";
 
 import { BarChart, Dashboard, Description, Layers } from "@mui/icons-material";
+import { NotificationsProvider } from "@toolpad/core";
 import { AuthenticationContext, Navigation } from "@toolpad/core/AppProvider";
 import { AppProvider } from "@toolpad/core/nextjs";
 
@@ -74,7 +75,9 @@ const Layout = ({
       session={session}
     >
       <SessionProvider>
-        {children}
+        <NotificationsProvider>
+          {children}
+        </NotificationsProvider>
       </SessionProvider>
     </AppProvider>
   );

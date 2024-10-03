@@ -1,6 +1,5 @@
-"use client"
+"use client";
 import { CredentialResponse } from "@react-oauth/google";
-import { AxiosError } from "axios";
 
 import { User } from "@/interfaces";
 import { LoginFormData } from "@/interfaces/loginFormData";
@@ -9,17 +8,11 @@ import { RegisterFormData } from "@/interfaces/registerFormData";
 import AxiosInstance from "./axios";
 
 async function loginWithEmailAndPassword({ email, password }: LoginFormData): Promise<User | null> {
-  const res = await AxiosInstance.post("/auth/login", { email, password });
-  try {
-    if (res.status == 200) {
-      localStorage.setItem("profile", JSON.stringify(res.data.user));
-      return res.data.user;
-    }
-  } catch (err) {
-    if (err instanceof AxiosError) {
-      throw new AxiosError(err.response?.data.message);
-    }
-    throw err;
+  const res = await AxiosInstance.post("http://localhost:3002/api/login", { email, password });
+  if (res.status == 200) {
+    console.log(res.data)
+    localStorage.setItem("profile", JSON.stringify(res.data.user));
+    return res.data.user;
   }
   return null;
 }

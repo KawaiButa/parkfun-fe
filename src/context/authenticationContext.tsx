@@ -20,6 +20,8 @@ const SessionProvider = ({ children }: { children: ReactNode }) => {
       },
       signOut: () => {
         setSession(null);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("profile");
       },
     };
   }, []);
