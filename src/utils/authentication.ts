@@ -2,13 +2,14 @@
 import { CredentialResponse } from "@react-oauth/google";
 import { AxiosError } from "axios";
 
+import { User } from "@/interfaces";
 import { LoginFormData } from "@/interfaces/loginFormData";
-import { Profile } from "@/interfaces/profile";
 import { RegisterFormData } from "@/interfaces/registerFormData";
 
 import AxiosInstance from "./axios";
+import { Profile } from "@/interfaces/profile";
 
-async function loginWithEmailAndPassword({ email, password }: LoginFormData): Promise<Profile | null> {
+async function loginWithEmailAndPassword({ email, password }: LoginFormData): Promise<User | null> {
   const res = await AxiosInstance.post("/auth/login", { email, password });
   try {
     if (res.status == 200) {

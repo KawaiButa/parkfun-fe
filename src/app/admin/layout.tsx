@@ -1,13 +1,15 @@
 "use client";
-import { useContext } from "react";
+import { MouseEvent, useContext } from "react";
 
 import { BarChart, Dashboard, Description, Layers } from "@mui/icons-material";
 import { AuthenticationContext, Navigation } from "@toolpad/core/AppProvider";
+import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { AppProvider } from "@toolpad/core/nextjs";
+import { useRouter } from "next/navigation";
 
 import { constants } from "@/constants";
 import { SessionProvider, useSession } from "@/context/authenticationContext";
-import { adminTheme } from "@/themes/adminTheme";
+import { adminTheme } from "@/themes/admin";
 
 const NAVIGATION: Navigation = [
   {
@@ -62,6 +64,7 @@ const Layout = ({
 }>) => {
   const authentication = useContext(AuthenticationContext);
   const session = useSession();
+  const router = useRouter();
   return (
     <AppProvider
       navigation={NAVIGATION}
@@ -74,7 +77,22 @@ const Layout = ({
       session={session}
     >
       <SessionProvider>
-        {children}
+        <DashboardLayout
+          slotProps={{
+            toolbarAccount: {
+              slotProps: {
+                signInButton: {
+                  onClick: (event: MouseEvent) => {
+                    event.preventDefault();
+                    router.push("/admin/login");
+                  },
+                },
+              },
+            },
+          }}
+        >
+          {children}
+        </DashboardLayout>
       </SessionProvider>
     </AppProvider>
   );
