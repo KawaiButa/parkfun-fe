@@ -7,18 +7,18 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 const BookingTimePicker = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Container sx={{
+      <Container className="timePicker" sx={{
         padding: 0,
         display: "flex",
         gap: "20px",
         alignContent: "center"
       }}>
         <TimePicker label="From" ampm={false} reduceAnimations={true} sx={{
-          fontWeight: "bold",
+          fontWeight: "600",
         }}/>
         <ArrowRightAlt color="secondary"/>
         <TimePicker label="Until" ampm={false} reduceAnimations={true} sx={{
-          fontWeight: "bold",
+          fontWeight: "600",
         }}/>
       </Container>
     </LocalizationProvider>

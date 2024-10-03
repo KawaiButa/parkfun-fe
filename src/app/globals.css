@@ -3,6 +3,9 @@
   --secondary-color: #171616;
   --secondary-text-color: #ffffff;
   --form-background-color: #ffffffa6;
+  --unknown-field-color: #9b9b99;
+  --dropdown-menu-shadow: #000 0px 0px 0px 0px, #0000000f 0px 0px 0px 1px, #000000f0 0px 10px 15px -3px, #0000008f 0px 4px 6px -2px
+
 }
 html,
 body {
@@ -35,7 +38,22 @@ a {
     color-scheme: dark;
   }
 }
-label.MuiFormLabel-root{
+.timePicker label.MuiFormLabel-root{
   color: var(--secondary-color) !important;
   font-weight: bold;
+}
+
+form .MuiTextField-root fieldset{
+  border-color: inherit ;
+}
+
+body.qJTHM{
+  padding: 0px;
+  background-color: var(--secondary-color)
+}
+.arrow {
+  border: solid var(--secondary-text-color);
+  border-width: 0 1.5px 1.5px 0;
+  display: inline-block;
+  padding: 3px;
 }
