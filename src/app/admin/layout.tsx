@@ -1,11 +1,9 @@
 "use client";
-import { MouseEvent, Suspense, useContext } from "react";
+import { Suspense, useContext } from "react";
 
 import { BarChart, Dashboard, Description, Layers } from "@mui/icons-material";
 import { AuthenticationContext, Navigation } from "@toolpad/core/AppProvider";
-import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { AppProvider } from "@toolpad/core/nextjs";
-import { useRouter } from "next/navigation";
 
 import { constants } from "@/constants";
 import { SessionProvider, useSession } from "@/context/authenticationContext";
@@ -17,7 +15,7 @@ const NAVIGATION: Navigation = [
     title: "Main menu",
   },
   {
-    segment: "admin",
+    segment: "admin/dashboard",
     title: "Dashboard",
     icon: <Dashboard />,
   },
@@ -64,7 +62,6 @@ const Layout = ({
 }>) => {
   const authentication = useContext(AuthenticationContext);
   const session = useSession();
-  const router = useRouter();
   return (
     <Suspense>
       <AppProvider
@@ -78,22 +75,7 @@ const Layout = ({
         session={session}
       >
         <SessionProvider>
-          <DashboardLayout
-            slotProps={{
-              toolbarAccount: {
-                slotProps: {
-                  signInButton: {
-                    onClick: (event: MouseEvent) => {
-                      event.preventDefault();
-                      router.push("/admin/login");
-                    },
-                  },
-                },
-              },
-            }}
-          >
-            {children}
-          </DashboardLayout>
+         {children}
         </SessionProvider>
       </AppProvider>
     </Suspense>
