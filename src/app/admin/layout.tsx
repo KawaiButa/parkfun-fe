@@ -1,5 +1,5 @@
 "use client";
-import { MouseEvent, useContext } from "react";
+import { MouseEvent, Suspense, useContext } from "react";
 
 import { BarChart, Dashboard, Description, Layers } from "@mui/icons-material";
 import { AuthenticationContext, Navigation } from "@toolpad/core/AppProvider";
@@ -66,35 +66,37 @@ const Layout = ({
   const session = useSession();
   const router = useRouter();
   return (
-    <AppProvider
-      navigation={NAVIGATION}
-      theme={adminTheme}
-      authentication={authentication}
-      branding={{
-        title: constants.PROJECT_NAME,
-        logo: "",
-      }}
-      session={session}
-    >
-      <SessionProvider>
-        <DashboardLayout
-          slotProps={{
-            toolbarAccount: {
-              slotProps: {
-                signInButton: {
-                  onClick: (event: MouseEvent) => {
-                    event.preventDefault();
-                    router.push("/admin/login");
+    <Suspense>
+      <AppProvider
+        navigation={NAVIGATION}
+        theme={adminTheme}
+        authentication={authentication}
+        branding={{
+          title: constants.PROJECT_NAME,
+          logo: "",
+        }}
+        session={session}
+      >
+        <SessionProvider>
+          <DashboardLayout
+            slotProps={{
+              toolbarAccount: {
+                slotProps: {
+                  signInButton: {
+                    onClick: (event: MouseEvent) => {
+                      event.preventDefault();
+                      router.push("/admin/login");
+                    },
                   },
                 },
               },
-            },
-          }}
-        >
-          {children}
-        </DashboardLayout>
-      </SessionProvider>
-    </AppProvider>
+            }}
+          >
+            {children}
+          </DashboardLayout>
+        </SessionProvider>
+      </AppProvider>
+    </Suspense>
   );
 };
 export default Layout;

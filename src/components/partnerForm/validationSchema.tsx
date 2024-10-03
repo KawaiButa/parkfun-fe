@@ -1,4 +1,5 @@
 "use client";
+import { v4 as uuidv4 } from 'uuid';
 import * as yup from "yup";
 
 import { PartnerType } from "@/interfaces/partner";
@@ -8,10 +9,9 @@ export const partnerValidationSchema: yup.ObjectSchema<PartnerFormData> = yup.ob
   name: yup.string().required("The name is required"),
   email: yup.string().required("The email address is required").email("The email is invalid"),
   phoneNumber: yup.string().required("The phone number is required"),
-  role: yup.string().required().default("partner"),
   location: yup.string().required("The location is required"),
   description: yup.string().optional(),
   type: yup.mixed<PartnerType>().required(),
   avatarUrl: yup.string().notRequired().url().nullable().transform(validateEmptyString),
-  password: yup.string().required().default(window.crypto.randomUUID().split("-").join("")),
+  password: yup.string().required().default(uuidv4()),
 });

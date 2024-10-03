@@ -4,7 +4,7 @@ import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { AppProvider } from "@toolpad/core/nextjs";
 
 import { constants } from "@/constants";
-import { adminTheme } from "@/themes/adminTheme";
+import { adminTheme } from "@/themes/admin";
 
 const NAVIGATION: Navigation = [
   {

@@ -13,7 +13,7 @@ import { PartnerFormData } from "@/interfaces/partnerFormData";
 import { partnerValidationSchema } from "./validationSchema";
 import { defaultUserAvatar } from "../../../public/images";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
-import { FormRadioInput } from "../FormRadioInput/formRadioInput";
+import { FormRadioInput } from "../formRadioInput/formRadioInput";
 import { FormTextInputProps, FormTextInput } from "../formTextInput/formTextInput";
 import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 
@@ -37,7 +37,6 @@ const PartnerForm = () => {
     reValidateMode: "onSubmit",
     resolver: yupResolver(partnerValidationSchema),
     defaultValues: {
-      role: "partner",
       name: "",
       email: "",
       phoneNumber: "",

@@ -7,7 +7,6 @@ import { LoginFormData } from "@/interfaces/loginFormData";
 import { RegisterFormData } from "@/interfaces/registerFormData";
 
 import AxiosInstance from "./axios";
-import { Profile } from "@/interfaces/profile";
 
 async function loginWithEmailAndPassword({ email, password }: LoginFormData): Promise<User | null> {
   const res = await AxiosInstance.post("/auth/login", { email, password });

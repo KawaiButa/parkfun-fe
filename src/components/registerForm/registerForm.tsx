@@ -93,7 +93,7 @@ const RegisterForm = (props: ContainerOwnProps) => {
         backgroundColor: "var(--secondary-color)",
         padding: "30px",
         borderRadius: "10px",
-        gap: "10px",
+        gap: "30px",
       }}
     >
       {buildForm(fieldDataWithValidation)}
