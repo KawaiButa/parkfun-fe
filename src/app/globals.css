@@ -42,18 +42,3 @@ a {
   color: var(--secondary-color) !important;
   font-weight: bold;
 }
-
-form .MuiTextField-root fieldset{
-  border-color: inherit ;
-}
-
-body.qJTHM{
-  padding: 0px;
-  background-color: var(--secondary-color)
-}
-.arrow {
-  border: solid var(--secondary-text-color);
-  border-width: 0 1.5px 1.5px 0;
-  display: inline-block;
-  padding: 3px;
-}
