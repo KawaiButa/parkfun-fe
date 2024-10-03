@@ -12,8 +12,8 @@ import { ParkingLocationFormData } from "@/interfaces/parkingLocationForm";
 import { parkingLocationSchema } from "./validationScheme";
 import { FormRadioInput } from "../formRadioInput/formRadioInput";
 import { FormTextInput } from "../formTextInput/formTextInput";
-import { ImageUpload } from "../imageUpload/ImageUpload";
-const StyledImageUpload = styled(({ sx, ...props }: BoxProps) => (
+import { ImageUpload, ImageUploadProps } from "../imageUpload/ImageUpload";
+const StyledImageUpload = styled(({ sx, ...props }: ImageUploadProps) => (
   <ImageUpload
     sx={{
       flexGrow: 1,
@@ -51,7 +51,7 @@ const ParkingLocationForm = (props: BoxProps) => {
       paymentMethodId: 0,
       pricingOptionId: 0,
       partnerId: 0,
-      imageUrls: [],
+      imageList: [],
     },
     resolver: yupResolver(parkingLocationSchema),
   });
@@ -140,9 +140,11 @@ const ParkingLocationForm = (props: BoxProps) => {
               transformValue={(value, options) => options?.findIndex((e) => e === value)}
             />
           </Box>
-          <Typography sx={{
-            width: "50%",
-          }}>
+          <Typography
+            sx={{
+              width: "50%",
+            }}
+          >
             {data == 0
               ? "We will earn a portion of your income. How ever this will lower than the fixed price. Consider this option if you are individual or a small company"
               : "Fixed option will only charge you with a small fee for each booking request to your facility."}
@@ -171,43 +173,20 @@ const ParkingLocationForm = (props: BoxProps) => {
           }}
         >
           <Controller
-            name="imageUrls"
+            name="imageList"
             control={control}
             render={({ field: { value } }) => {
               return (
                 <>
-                  <StyledImageUpload
-                    onChange={(e) =>
-                      setValue("imageUrls", [
-                        ...(value as string[]),
-                        URL.createObjectURL((e.currentTarget as HTMLInputElement).files![0]),
-                      ])
-                    }
-                  />
-                  <StyledImageUpload
-                    onChange={(e) =>
-                      setValue("imageUrls", [
-                        ...(value as string[]),
-                        URL.createObjectURL((e.currentTarget as HTMLInputElement).files![0]),
-                      ])
-                    }
-                  />
-                  <StyledImageUpload
-                    onChange={(e) =>
-                      setValue("imageUrls", [
-                        ...(value as string[]),
-                        URL.createObjectURL((e.currentTarget as HTMLInputElement).files![0]),
-                      ])
-                    }
-                  />
-                  <StyledImageUpload
-                    onChange={(e) =>
-                      setValue("imageUrls", [
-                        ...(value as string[]),
-                        URL.createObjectURL((e.currentTarget as HTMLInputElement).files![0]),
-                      ])
-                    }
-                  />
+                  {Array.from(Array(4)).map((_, index) => (
+                    <StyledImageUpload
+                      src={value.length > index ? URL.createObjectURL(value[index]) :  undefined}
+                      key={Math.random()}
+                      onChange={(e) =>
+                        setValue("imageList", [...(value as File[]), (e.currentTarget as HTMLInputElement).files![0]])
+                      }
+                    />
+                  ))}
                 </>
               );
             }}

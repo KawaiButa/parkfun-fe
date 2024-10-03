@@ -12,5 +12,5 @@ export const parkingLocationSchema: yup.ObjectSchema<ParkingLocationFormData> = 
   partnerId: yup.number().required(),
   paymentMethodId: yup.number().required(),
   pricingOptionId: yup.number().required(),
-  imageUrls: yup.array(yup.string().required()).length(4, "Please provide at leasst 4 images").required(),
+  imageList: yup.array().length(4, "Please provide at leasst 4 images").required(),
 });

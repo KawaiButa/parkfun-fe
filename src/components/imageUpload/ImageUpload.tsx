@@ -1,33 +1,19 @@
-import { useState, useEffect, ChangeEvent, useRef } from "react";
+import { ChangeEvent, useRef } from "react";
 
 import { Box, BoxProps } from "@mui/material";
-interface ImageUpload extends BoxProps {
+export interface ImageUploadProps extends BoxProps {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void,
+  src?: string;
 }
-export const ImageUpload = (props: BoxProps) => {
-  const {onChange, ...remain} = props;
-  const [selectedFile, setSelectedFile] = useState<File>();
-  const [preview, setPreview] = useState<string>();
+export const ImageUpload = (props: ImageUploadProps) => {
+  const {src, onChange, ...remain} = props;
   const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    if (!selectedFile) {
-      setPreview(undefined);
-      return;
-    }
-    const objectUrl = URL.createObjectURL(selectedFile);
-    setPreview(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [selectedFile]);
-
   const onSelectFile = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) {
-      setSelectedFile(undefined);
       return;
     }
-    const file = e.target.files[0];
     if(onChange)
       onChange(e);
-    setSelectedFile(file);
   };
 
   function handleClick(): void {
@@ -37,9 +23,9 @@ export const ImageUpload = (props: BoxProps) => {
   return (
     <Box {...remain} onClick={() => handleClick()}>
       <input type="file" onChange={onSelectFile} hidden ref={inputRef} />
-      {selectedFile && (
+      {src && (
         <img
-          src={preview}
+          src={src}
           style={{
             width: "100%",
             height: "100%",
