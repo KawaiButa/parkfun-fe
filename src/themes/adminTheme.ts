@@ -1,17 +1,17 @@
 "use client";
-
 import { createTheme } from "@mui/material";
 
-export const defaultTheme = createTheme({
+export const adminTheme = createTheme({
   palette: {
     primary: {
-      main: "#EBCB00",
-      light: "#EBD226",
+      main: "#e6d60f",
+      light: "#ebe766",
       dark: "#e4b400",
       contrastText: "#000",
     },
     secondary: {
       main: "#171616",
+      light: "#F5F7F8",
       contrastText: "#fff",
     },
     error: {
@@ -26,13 +26,5 @@ export const defaultTheme = createTheme({
       main: "#409760",
       contrastText: "#fff",
     },
-    text: {
-      primary: "#fff",
-      secondary: "#fff",
-      disabled: "#fff",
-    },
   },
-  typography: {
-    fontFamily: "var(--font-poppins)"
-  }
 });
