@@ -12,5 +12,6 @@ export interface ParkingLocation {
   paymentMethod?: PaymentMethod,
   pricingOption: PricingOption;
   partnerId?: number;
-  imageUrls: Array<string>;
+  images?: Array<{id: number, url: string}>;
+  description?: string;
 }
