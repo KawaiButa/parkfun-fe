@@ -1,7 +1,7 @@
 "use client";
 import { useContext } from "react";
 
-import { Build, Dashboard } from "@mui/icons-material";
+import { Build, CarCrash, Dashboard } from "@mui/icons-material";
 import { DialogsProvider, NotificationsProvider } from "@toolpad/core";
 import { AuthenticationContext, Navigation } from "@toolpad/core/AppProvider";
 import { AppProvider } from "@toolpad/core/nextjs";
@@ -23,6 +23,11 @@ const NAVIGATION: Navigation = [
     segment: "partner/parkinglocation",
     title: "Parking location",
     icon: <Build />,
+  },
+  {
+    segment: "partner/parkingslot",
+    title: "Parking slot",
+    icon: <CarCrash />,
   },
 ];
 
