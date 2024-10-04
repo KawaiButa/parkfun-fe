@@ -1,4 +1,4 @@
-import { decode, JwtPayload } from "jsonwebtoken";
+import {decodeJwt, JWTPayload} from 'jose';
 import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
@@ -6,12 +6,14 @@ export const config = {
 };
 
 export function middleware(request: NextRequest) {
-  if(request.nextUrl.pathname === "/")
+  if(request.nextUrl.pathname === "/"){
+    console.log("Redirection")
     return NextResponse.redirect(new URL("/home", request.url));
+  }
   if (request.nextUrl.pathname.includes("login")) return NextResponse.next();
   const accessToken = request.cookies.get("accessToken");
   if (!accessToken) return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
-  const data = decode(accessToken.value) as JwtPayload;
+  const data = decodeJwt(accessToken.value) as JWTPayload;
   if (request.nextUrl.pathname.startsWith("/logout")) {
     const logOutRoute = data.role == "user" ? "/home" : `/${data.role}/login`;
     const response = NextResponse.redirect(new URL(logOutRoute, request.url));

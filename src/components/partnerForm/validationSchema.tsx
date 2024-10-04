@@ -8,7 +8,6 @@ export const partnerValidationSchema: yup.ObjectSchema<PartnerFormData> = yup.ob
   name: yup.string().required("The name is required"),
   email: yup.string().required("The email address is required").email("The email is invalid"),
   phoneNumber: yup.string().required("The phone number is required"),
-  role: yup.string().required().default("partner"),
   location: yup.string().required("The location is required"),
   description: yup.string().optional(),
   type: yup.mixed<PartnerType>().required(),
