@@ -1,5 +1,5 @@
 "use client";
-import { useContext } from "react";
+import { Suspense, useContext } from "react";
 
 import { BarChart, Dashboard, Description, Layers } from "@mui/icons-material";
 import { NotificationsProvider } from "@toolpad/core";
@@ -64,22 +64,22 @@ const Layout = ({
   const authentication = useContext(AuthenticationContext);
   const session = useSession();
   return (
-    <AppProvider
-      navigation={NAVIGATION}
-      theme={adminTheme}
-      authentication={authentication}
-      branding={{
-        title: constants.PROJECT_NAME,
-        logo: "",
-      }}
-      session={session}
-    >
-      <SessionProvider>
-        <NotificationsProvider>
-          {children}
-        </NotificationsProvider>
-      </SessionProvider>
-    </AppProvider>
+    <Suspense>
+      <AppProvider
+        navigation={NAVIGATION}
+        theme={adminTheme}
+        authentication={authentication}
+        branding={{
+          title: constants.PROJECT_NAME,
+          logo: "",
+        }}
+        session={session}
+      >
+        <SessionProvider>
+          <NotificationsProvider>{children}</NotificationsProvider>
+        </SessionProvider>
+      </AppProvider>
+    </Suspense>
   );
 };
 export default Layout;

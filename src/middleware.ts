@@ -2,15 +2,16 @@ import {decodeJwt, JWTPayload} from 'jose';
 import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
-  matcher: ["/admin/:path*", "/partner/:path*", "/logout", "/"],
+  matcher: ["/admin((?!/login).*)", "/partner((?!/login).*)", "/logout", "/"],
 };
 
+const emptyPage = ['/', "/admin", "/partner"]
 export function middleware(request: NextRequest) {
-  if(request.nextUrl.pathname === "/"){
-    console.log("Redirection")
-    return NextResponse.redirect(new URL("/home", request.url));
+  const pathName = request.nextUrl.pathname
+  if(emptyPage.includes(pathName)){
+    return NextResponse.redirect(new URL(redirectEmptyRoute(pathName), request.url));
   }
-  if (request.nextUrl.pathname.includes("login")) return NextResponse.next();
+  // if (request.nextUrl.pathname.includes("login")) return NextResponse.next();
   const accessToken = request.cookies.get("accessToken");
   if (!accessToken) return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
   const data = decodeJwt(accessToken.value) as JWTPayload;
@@ -21,7 +22,7 @@ export function middleware(request: NextRequest) {
     return response;
   }
   if (!data || !data.id) return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
-  const isMatchRole = request.nextUrl.href.includes(data.role);
+  const isMatchRole = request.nextUrl.href.includes(data.role as string);
   if (isMatchRole) return NextResponse.next();
   const redirectRoute = data.role == "user" ? "/home" : `/${data.role}`;
   return NextResponse.redirect(new URL(redirectRoute, request.url));
@@ -31,3 +32,8 @@ const redirectToLogin = (url: string) => {
   if (url.includes("/partner")) return "/partner/login";
   return "/auth/login";
 };
+const redirectEmptyRoute = (pathName: string) => {
+  if (pathName === "/admin") return "/admin/dashboard";
+  if (pathName === "/partner") return "/partner/dashboard";
+  return "/home";
+}
