@@ -1,13 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Alert, Container, ContainerOwnProps, Divider, Typography } from "@mui/material";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { AuthenticationContext } from "@toolpad/core";
 import {  useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-import { useProfile } from "@/context/profileContext";
 import { LoginFormData } from "@/interfaces/loginFormData";
 import { handleLoginWithGoogleSuccess, loginWithEmailAndPassword } from "@/utils/authentication";
 
@@ -17,8 +17,8 @@ import { FormTextInput } from "../formTextInput/formTextInput";
 import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 
 const LoginForm = (props: ContainerOwnProps) => {
-  const { setProfile } = useProfile();
   const router = useRouter();
+  const authentication = useContext(AuthenticationContext);
   const [error, setError] = useState<string | undefined>(undefined);
   const { handleSubmit, control } = useForm<LoginFormData>({
     mode: "onChange",
@@ -33,7 +33,7 @@ const LoginForm = (props: ContainerOwnProps) => {
     try {
       const res = await loginWithEmailAndPassword(data);
       if (res) {
-        setProfile(res);
+        authentication?.signIn();
         router.replace("/");
       }
     } catch (err) {

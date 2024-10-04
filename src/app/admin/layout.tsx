@@ -1,7 +1,8 @@
 "use client";
-import { Suspense, useContext } from "react";
+import { useContext } from "react";
 
 import { BarChart, Dashboard, Description, Layers } from "@mui/icons-material";
+import { NotificationsProvider } from "@toolpad/core";
 import { AuthenticationContext, Navigation } from "@toolpad/core/AppProvider";
 import { AppProvider } from "@toolpad/core/nextjs";
 
@@ -63,22 +64,22 @@ const Layout = ({
   const authentication = useContext(AuthenticationContext);
   const session = useSession();
   return (
-    <Suspense>
-      <AppProvider
-        navigation={NAVIGATION}
-        theme={adminTheme}
-        authentication={authentication}
-        branding={{
-          title: constants.PROJECT_NAME,
-          logo: "",
-        }}
-        session={session}
-      >
-        <SessionProvider>
-         {children}
-        </SessionProvider>
-      </AppProvider>
-    </Suspense>
+    <AppProvider
+      navigation={NAVIGATION}
+      theme={adminTheme}
+      authentication={authentication}
+      branding={{
+        title: constants.PROJECT_NAME,
+        logo: "",
+      }}
+      session={session}
+    >
+      <SessionProvider>
+        <NotificationsProvider>
+          {children}
+        </NotificationsProvider>
+      </SessionProvider>
+    </AppProvider>
   );
 };
 export default Layout;

@@ -2,14 +2,12 @@
 
 import { AxiosError } from "axios";
 
-import { useProfile } from "@/context/profileContext";
 import { ParkingLocationFormData } from "@/interfaces/parkingLocationForm";
 import AxiosInstance from "@/utils/axios";
 
 import { useUploadImage } from "./useUploadImage";
 
 export const useParkingLocation = () => {
-  const { profile } = useProfile();
   const { uploadImage, getPublicUrl } = useUploadImage("parkingLocation");
   const createParkingLocation = async (formData: ParkingLocationFormData) => {
     try {
@@ -22,7 +20,6 @@ export const useParkingLocation = () => {
       );
       const res = await AxiosInstance.post("/parking-location", {
         ...remainData,
-        partnerId: profile!.partner?.id,
         images: imageUrls,
       });
       if (res.status === 201) return res.data;

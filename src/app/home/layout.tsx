@@ -9,7 +9,7 @@ const AuthLayout = ({
   return (
     <>
       <NavigationBar />
-      {children}{" "}
+      {children}
     </>
   );
 };

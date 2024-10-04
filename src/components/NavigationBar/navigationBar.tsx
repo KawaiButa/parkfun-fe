@@ -1,17 +1,19 @@
 "use client";
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useContext, useState } from "react";
 
 import Menu from "@mui/icons-material/Menu";
 import { AppBar, Toolbar, IconButton, Typography, Box } from "@mui/material";
+import { AuthenticationContext } from "@toolpad/core";
 import Link from "next/link";
 
-import { useProfile } from "@/context/profileContext";
+import { useSession } from "@/context/authenticationContext";
 
 import SecondaryContainedButton from "../secondaryContainedButton/secondaryContainedButton";
 import ProfilePopOver from "./profilePopOver/profilePopOver";
 
 const NavigationBar = () => {
-  const { profile, setProfile } = useProfile();
+  const authentication = useContext(AuthenticationContext);
+  const session = useSession();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: MouseEvent) => {
@@ -22,9 +24,7 @@ const NavigationBar = () => {
   };
   function handleLogout(event: MouseEvent): void {
     event.preventDefault();
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("profile");
-    setProfile(null);
+    authentication?.signOut();
     handleClose();
   }
   return (
@@ -58,7 +58,7 @@ const NavigationBar = () => {
         >
           <Link href="/">PARKFUN</Link>
         </Typography>
-        {profile ? (
+        {session ? (
           <>
             <SecondaryContainedButton
               sx={{
@@ -67,7 +67,7 @@ const NavigationBar = () => {
               }}
               onClick={handleClick}
             >
-              {profile?.name}
+              {session?.user?.name}
             </SecondaryContainedButton>
             <ProfilePopOver
               linkList={[

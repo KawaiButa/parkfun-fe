@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 import ContainerFlexColumn from "@/components/containerFlexColumn/containerFlexColumn";
 import NavigationBar from "@/components/NavigationBar/navigationBar";
-import { useProfile } from "@/context/profileContext";
+import { useSession } from "@/context/authenticationContext";
 const AuthLayout = ({
   children,
 }: Readonly<{
@@ -15,10 +15,10 @@ const AuthLayout = ({
   const [value, setValue] = useState("login");
   const label = value === "login" ? "Login" : "Sign up";
   const router = useRouter();
-  const { profile } = useProfile();
+  const session = useSession();
   return (
     <>
-      {!profile && <NavigationBar />}
+      {!session && <NavigationBar />}
       <ContainerFlexColumn
         maxWidth="sm"
         sx={{
