@@ -16,7 +16,7 @@ const NAVIGATION: Navigation = [
     title: "Main menu",
   },
   {
-    segment: "admin",
+    segment: "admin/dashboard",
     title: "Dashboard",
     icon: <Dashboard />,
   },

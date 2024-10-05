@@ -7,8 +7,11 @@ import { Partner } from "@/interfaces/partner";
 import { PartnerFormData } from "@/interfaces/partnerFormData";
 import AxiosInstance from "@/utils/axios";
 
+import { useUploadImage } from "./useUploadImage";
+
 export function usePartner() {
   const [partnerList, setPartnerList] = useState<Partner[] | null>();
+  const { uploadImage, getPublicUrl } = useUploadImage("avatar");
   const fetchPartners = async () => {
     try {
       const res = await AxiosInstance.get("/partner");
@@ -25,7 +28,10 @@ export function usePartner() {
   };
   const createPartner = async (partnerFormData: PartnerFormData) => {
     try {
-      const res = await AxiosInstance.post("/partner", partnerFormData);
+      const { image, ...partnerFormPayload } = partnerFormData;
+      const data: Omit<PartnerFormData, "image"> & { image?: string } = { ...partnerFormPayload };
+      if (image) data.image = getPublicUrl(await uploadImage(image));
+      const res = await AxiosInstance.post("/partner", data);
       if (res.status === 200) {
         return res.data as Partner;
       }

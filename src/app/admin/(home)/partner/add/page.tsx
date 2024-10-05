@@ -23,8 +23,8 @@ const AddPartner = () => {
           }}
         >
           Add partner
-        </Typography>{" "}
-        <Button variant="contained" color="secondary" onClick={() => router.replace("/admin/partner")}>
+        </Typography>
+        <Button variant="contained" color="secondary" onClick={() => router.back()}>
           Back
         </Button>
       </Box>

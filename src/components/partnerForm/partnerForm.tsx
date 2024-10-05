@@ -1,10 +1,11 @@
 "use client";
-import { useState, useRef, ChangeEvent } from "react";
+
+import { useEffect } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Button, Typography, FormControl, Autocomplete, Container, styled } from "@mui/material";
-import { AxiosError } from "axios";
-import { useForm } from "react-hook-form";
+import { useNotifications } from "@toolpad/core";
+import { Controller, useForm } from "react-hook-form";
 
 import { usePartner } from "@/hooks/usePartner";
 import { PartnerType } from "@/interfaces/partner";
@@ -15,6 +16,7 @@ import { defaultUserAvatar } from "../../../public/images";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import { FormRadioInput } from "../formRadioInput/formRadioInput";
 import { FormTextInputProps, FormTextInput } from "../formTextInput/formTextInput";
+import { ImageUpload } from "../imageUpload/ImageUpload";
 import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 
 const StyledFormTextInput = styled(({ sx, ...props }: FormTextInputProps) => (
@@ -32,7 +34,13 @@ const StyledFormTextInput = styled(({ sx, ...props }: FormTextInputProps) => (
 
 const PartnerForm = () => {
   const { createPartner } = usePartner();
-  const { control, handleSubmit, reset } = useForm<PartnerFormData>({
+  const notifications = useNotifications();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<PartnerFormData>({
     mode: "all",
     reValidateMode: "onSubmit",
     resolver: yupResolver(partnerValidationSchema),
@@ -42,29 +50,31 @@ const PartnerForm = () => {
       phoneNumber: "",
       location: "",
       description: "",
-      avatarUrl: "",
     },
   });
-  const [imageSrc, setImageSrc] = useState(defaultUserAvatar.src);
-  const imageRef = useRef<HTMLInputElement>(null);
-  function handleOnClick(): void {
-    if (imageRef.current) imageRef.current!.click();
-  }
-  function handleOnChange(event: ChangeEvent): void {
-    event.preventDefault();
-    const files = (event.target as HTMLInputElement).files;
-    if (files) setImageSrc(URL.createObjectURL(files[0]));
-  }
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      notifications.show(Object.values(errors)[0].message, {
+        severity: "error",
+        autoHideDuration: 2000,
+      });
+    }
+  }, [errors]);
   const onSubmit = async (partnerFormData: PartnerFormData) => {
     try {
-      //TODO: Upload image to supabase and get url
       await createPartner(partnerFormData);
-      alert("Successfully create partner account");
-      //TODO: SEND PASSWORD TO PARTNER'S EMAIL
+      notifications.show("Successfully create partner account", {
+        severity: "success",
+        autoHideDuration: 2000,
+      });
     } catch (err) {
-      alert((err as AxiosError).message);
+      notifications.show(err.message, {
+        severity: "error",
+        autoHideDuration: 2000,
+      });
     }
   };
+
   return (
     <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
       <Box
@@ -90,44 +100,53 @@ const PartnerForm = () => {
             }}
           >
             <Box>
-              <Box
-                sx={{
-                  width: {
-                    xs: "200px",
-                    md: "200px",
-                  },
-                  height: {
-                    xs: "200px",
-                    md: "200px",
-                  },
-                  margin: "auto",
-                  marginBotton: {
-                    xs: "10px",
-                    md: "0px",
-                  },
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <img
-                  src={imageSrc}
-                  style={{
-                    borderRadius: "100%",
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    cursor: "pointer",
-                  }}
-                  alt="User avatar"
-                />
-                <input ref={imageRef} hidden type="file" onChange={handleOnChange} />
-              </Box>
+              <Controller
+                name="image"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <ImageUpload
+                    src={value ? URL.createObjectURL(value) : defaultUserAvatar.src}
+                    sx={{
+                      width: {
+                        xs: "200px",
+                        md: "200px",
+                      },
+                      height: {
+                        xs: "200px",
+                        md: "200px",
+                      },
+                      margin: "auto",
+                      marginBotton: {
+                        xs: "10px",
+                        md: "0px",
+                      },
+                      borderRadius: "50%",
+                      position: "relative",
+                      overflow: "hidden",
+                      cursor: "pointer",
+                      "&:hover": {
+                        opacity: 0.5,
+                      },
+                    }}
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        onChange(e.target.files[0]);
+                      }
+                    }}
+                  />
+                )}
+              />
+
               <ContainerFlexColumn
                 sx={{
                   margin: "10px 0",
                 }}
               >
-                <PrimaryContainedButton onClick={handleOnClick}>Change image</PrimaryContainedButton>
+                <PrimaryContainedButton
+                  onClick={(e) => (e.currentTarget.parentElement?.previousElementSibling as HTMLDivElement).click()}
+                >
+                  Change image
+                </PrimaryContainedButton>
               </ContainerFlexColumn>
             </Box>
             <ContainerFlexColumn

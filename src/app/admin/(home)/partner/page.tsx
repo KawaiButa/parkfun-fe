@@ -139,7 +139,7 @@ const User = () => {
             }}
             onChange={({ target: { value } }) => {
               if (typeof value === "string") value = (value as string).toLowerCase();
-              if (value === "All" && Object.hasOwn(filter, "type")) {
+              if (value === "all" && Object.hasOwn(filter, "type")) {
                 delete (filter as object & { type?: object })["type"];
                 const { ...remain } = filter;
                 setFilter(remain);
