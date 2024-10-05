@@ -7,7 +7,7 @@ import { AuthenticationContext, Navigation } from "@toolpad/core/AppProvider";
 import { AppProvider } from "@toolpad/core/nextjs";
 
 import { constants } from "@/constants";
-import { SessionProvider, useSession } from "@/context/authenticationContext";
+import { useSession } from "@/context/authenticationContext";
 import { adminTheme } from "@/themes/admin";
 
 const NAVIGATION: Navigation = [
@@ -74,11 +74,9 @@ const Layout = ({
       }}
       session={session}
     >
-      <SessionProvider>
         <NotificationsProvider>
           {children}
         </NotificationsProvider>
-      </SessionProvider>
     </AppProvider>
   );
 };

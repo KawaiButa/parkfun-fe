@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
 import { constants } from "@/constants";
+import { SessionProvider } from "@/context/authenticationContext";
 import { ProfileContextProvider } from "@/context/profileContext";
 import { userTheme } from "@/themes/user";
 
@@ -28,9 +29,9 @@ export default function RootLayout({
       <body className={poppins.variable}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={userTheme}>
-            <ProfileContextProvider>
-              {children}
-            </ProfileContextProvider>
+            <SessionProvider>
+              <ProfileContextProvider>{children}</ProfileContextProvider>
+            </SessionProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

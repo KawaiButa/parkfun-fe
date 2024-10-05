@@ -2,17 +2,16 @@ import {decodeJwt, JWTPayload} from 'jose';
 import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
-  matcher: ["/admin/:path*", "/partner/:path*", "/logout", "/"],
+  matcher: ["/admin((?!/login).*)", "/partner((?!/login).*)", "/logout", "/"],
 };
 
 export function middleware(request: NextRequest) {
   if(request.nextUrl.pathname === "/"){
-    console.log("Redirection")
     return NextResponse.redirect(new URL("/home", request.url));
   }
-  if (request.nextUrl.pathname.includes("login")) return NextResponse.next();
   const accessToken = request.cookies.get("accessToken");
   if (!accessToken) return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
+  console.log(request.nextUrl.pathname)
   const data = decodeJwt(accessToken.value) as JWTPayload;
   if (request.nextUrl.pathname.startsWith("/logout")) {
     const logOutRoute = data.role == "user" ? "/home" : `/${data.role}/login`;

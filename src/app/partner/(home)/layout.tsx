@@ -29,7 +29,6 @@ const Layout = ({
               onClick: (e) => {
                 e.preventDefault();
                 authentication?.signOut()
-                router.push("/logout");
               },
             },
           },
