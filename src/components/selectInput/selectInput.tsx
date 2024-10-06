@@ -27,7 +27,12 @@ const SelectInput = <T, K>(props: SelectInputProps<T, K>) => {
   }
 
   return (
-    <FormControl size="small">
+    <FormControl
+      size="small"
+      sx={{
+        width: "100%",
+      }}
+    >
       <InputLabel>{label}</InputLabel>
       <Select
         autoWidth

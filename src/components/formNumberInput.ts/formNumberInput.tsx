@@ -16,7 +16,7 @@ export const FormNumberInput = forwardRef(function CustomNumberInput(
     <Controller
       name={props.name}
       control={props.control}
-      render={() => (
+      render={({field: {onChange}}) => (
         <BaseNumberInput
           slots={{
             root: StyledInputRoot,
@@ -35,6 +35,9 @@ export const FormNumberInput = forwardRef(function CustomNumberInput(
           }}
           {...props}
           ref={ref}
+          onChange={(_, value) => {
+            onChange(value)
+          }}
         />
       )}
     />

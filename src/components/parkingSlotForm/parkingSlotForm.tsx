@@ -12,6 +12,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useParkingLocation } from "@/hooks/useParkingLocation";
 import { useParkingSlot } from "@/hooks/useParkingSlot";
 import { ParkingSlotFormData } from "@/interfaces/parkingSlotFormData";
+import { timeToSeconds } from "@/utils/utils";
 
 import { parkingSlotSchema } from "./validationScheme";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
@@ -56,12 +57,13 @@ const ParkingSlotForm = () => {
   } = useForm({
     resolver: yupResolver(parkingSlotSchema),
     defaultValues: {
-      type: 0,
+      parkingSlotTypeId: 0,
       space: 1,
+      name: "",
       length: 0,
       width: 0,
       height: 0,
-      services: [],
+      parkingServiceIds: [],
       price: 0,
       images: [],
     },
@@ -69,23 +71,29 @@ const ParkingSlotForm = () => {
   useEffect(() => {
     fetchParkingLocation();
   }, []);
+
   const onSubmit = async (formData: ParkingSlotFormData) => {
     try {
       const res = await createParkingSlot(formData);
-      if (res) {
-        reset();
+      if (res.status) {
         notification.show("Successfully create parking slot", {
           severity: "success",
-          autoHideDuration: 1000,
+          autoHideDuration: 3000,
         });
+        reset();
       }
     } catch (err) {
-      if (err instanceof AxiosError)
-        notification.show(err.response?.data.err, {
+      if (err instanceof AxiosError) {
+        notification.show(err.response?.data.message, {
           severity: "error",
           autoHideDuration: 3000,
         });
-      throw err;
+      } else {
+        notification.show((err as Error).message, {
+          severity: "error",
+          autoHideDuration: 3000,
+        });
+      }
     }
   };
   useEffect(() => {
@@ -129,40 +137,44 @@ const ParkingSlotForm = () => {
               justifyContent: "flex-start",
             }}
           >
-            <Typography>1. Select your parking location</Typography>
-            {parkingLocationList && (
-              <Controller
-                name="parkingLocationId"
-                control={control}
-                render={({ field: { onChange } }) => (
-                  <SelectInput
-                    options={parkingLocationList}
-                    transformToLabel={(parkLoc) => parkLoc.name}
-                    transformToValue={(parkLoc) => parkLoc.id}
-                    sx={{
-                      maxWidth: "200px",
-                    }}
-                    menuProps={{
-                      sx: {
-                        maxWidth: "200px",
-                      },
-                    }}
-                    onChange={(e) => {
-                      const selected = parkingLocationList!.find((a) => a.id == e.target.value);
-                      if (selected) {
-                        onChange(selected.id);
-                      }
-                    }}
+            <Box sx={{ display: "flex", justifyContent: "space-between"}}>
+              <Box sx={{width: "50%"}}>
+                <Typography>1. Select your parking location</Typography>
+                {parkingLocationList && (
+                  <Controller
+                    name="parkingLocationId"
+                    control={control}
+                    render={({ field: { onChange } }) => (
+                      <SelectInput
+                        options={parkingLocationList}
+                        transformToLabel={(parkLoc) => parkLoc.name}
+                        transformToValue={(parkLoc) => parkLoc.id}
+                        onChange={(e) => {
+                          const selected = parkingLocationList!.find((a) => a.id == e.target.value);
+                          if (selected) {
+                            onChange(selected.id);
+                          }
+                        }}
+                        fullWidth={true}
+                      />
+                    )}
                   />
                 )}
-              />
-            )}
-
+              </Box>
+              <Box>
+                <Typography>1.1 What is the slot called</Typography>
+                <FormTextInput
+                  control={control}
+                  name="name"
+                  size="small"
+                />
+              </Box>
+            </Box>
             <Typography>2. What is the type of the space</Typography>
             <FormRadioInput
               control={control}
               options={slotTypeData}
-              name="type"
+              name="parkingSlotTypeId"
               transformValue={(b) => slotTypeData.findIndex((a) => a == b)}
             />
             <Typography>3. How many spaces of this parking slot that your parking location have?</Typography>
@@ -200,17 +212,17 @@ const ParkingSlotForm = () => {
               gap: "10px",
             }}
           >
-            <Typography>4. Which service do this type of parking slot provide?</Typography>
+            <Typography>5. Which service do this type of parking slot provide?</Typography>
             <FormCheckboxInput
               control={control}
               options={serviceData}
-              name="services"
+              name="parkingServiceIds"
               sx={{
                 padding: "0 20px",
               }}
               transformValue={(value) => serviceData.findIndex((a) => a == value)}
             />
-            <Typography>5. How much do you like to charge user for this slot by hours?</Typography>
+            <Typography>6. How much do you like to charge user for this slot by hours?</Typography>
 
             <FormTextInput
               control={control}
@@ -221,7 +233,7 @@ const ParkingSlotForm = () => {
                 padding: "0 10px",
               }}
             />
-            <Typography>6. Avalability</Typography>
+            <Typography>7. Avalability</Typography>
             <Box
               sx={{
                 display: "flex",
@@ -239,9 +251,16 @@ const ParkingSlotForm = () => {
               </Typography>
               <Controller
                 control={control}
-                name="startTime"
+                name="startAt"
                 render={({ field: { onChange } }) => (
-                  <TimeField size="small" fullWidth ampm={false} onChange={(e) => onChange(e?.second())} />
+                  <TimeField
+                    size="small"
+                    fullWidth
+                    ampm={false}
+                    onChange={(e) => {
+                      if (e) onChange(timeToSeconds(e));
+                    }}
+                  />
                 )}
               />
             </Box>
@@ -262,9 +281,16 @@ const ParkingSlotForm = () => {
               </Typography>
               <Controller
                 control={control}
-                name="endTime"
+                name="endAt"
                 render={({ field: { onChange } }) => (
-                  <TimeField size="small" fullWidth ampm={false} onChange={(e) => onChange(e?.second())} />
+                  <TimeField
+                    size="small"
+                    fullWidth
+                    ampm={false}
+                    onChange={(e) => {
+                      if (e) onChange(timeToSeconds(e));
+                    }}
+                  />
                 )}
               />
             </Box>

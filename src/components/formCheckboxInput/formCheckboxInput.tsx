@@ -10,7 +10,7 @@ export interface FormCheckBoxInputProps<T, K> extends Pick<FormTextInputProps, "
   checkboxProps?: CheckboxProps;
 }
 const FormCheckboxInput = <T, K>(props: FormCheckBoxInputProps<T, K>) => {
-  const { transformLabel, transformValue, options,...remain } = props;
+  const { transformLabel, transformValue, options, ...remain } = props;
   return (
     <Controller
       render={({ field: { onChange, value: fieldValue } }) => {
@@ -18,7 +18,7 @@ const FormCheckboxInput = <T, K>(props: FormCheckBoxInputProps<T, K>) => {
           <FormGroup>
             {options.map((option) => {
               const label = transformLabel ? transformLabel(option) : (option as string);
-              const value = transformValue ? transformValue(options) : options;
+              const value = transformValue ? transformValue(option) : option;
               return (
                 <FormGroup key={label}>
                   <FormControlLabel
@@ -27,13 +27,13 @@ const FormCheckboxInput = <T, K>(props: FormCheckBoxInputProps<T, K>) => {
                       <Checkbox
                         key={label}
                         value={value}
-                        checked={fieldValue && fieldValue.includes(option)}
+                        checked={fieldValue && fieldValue.includes(value)}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            if (fieldValue) onChange([...fieldValue, option]);
-                            else onChange([option]);
+                            if (fieldValue) onChange([...fieldValue, value]);
+                            else onChange([value]);
                           } else {
-                            onChange((fieldValue as T[]).filter((item) => item !== option));
+                            onChange((fieldValue as T[]).filter((item) => item !== value));
                           }
                         }}
                       />
