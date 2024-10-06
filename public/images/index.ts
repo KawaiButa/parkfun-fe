@@ -1,3 +1,3 @@
 import {default as backgroundImg} from "./background.jpg"
-
-export {backgroundImg}
+import {default as defaultUserAvatar} from "./defaultUserAvatar.jpg"
+export {backgroundImg, defaultUserAvatar}

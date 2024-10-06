@@ -1,9 +1,7 @@
 "use client";
-
 import { createTheme } from "@mui/material";
 
-const defaultTheme = createTheme({
-  cssVariables: true,
+export const adminTheme = createTheme({
   palette: {
     primary: {
       main: "#EBCB00",
@@ -13,8 +11,8 @@ const defaultTheme = createTheme({
     },
     secondary: {
       main: "#171616",
+      light: "#F5F7F8",
       contrastText: "#fff",
-      
     },
     error: {
       main: "#A04747",
@@ -38,4 +36,3 @@ const defaultTheme = createTheme({
     fontFamily: "var(--font-poppins)"
   }
 });
-export default defaultTheme;

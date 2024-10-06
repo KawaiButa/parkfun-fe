@@ -3,18 +3,18 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
-import NavigationBar from "@/components/NavigationBar/navigationBar";
-import defaultTheme from "@/themes/theme";
+import { constants } from "@/constants";
+import { ProfileContextProvider } from "@/context/profileContext";
+import { userTheme } from "@/themes/user";
 
 import "./globals.css";
-
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-poppins"
+  variable: "--font-poppins",
 });
 export const metadata: Metadata = {
-  title: "PARKFUN",
+  title: constants.PROJECT_NAME,
   description: "Park anytime",
 };
 
@@ -26,12 +26,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={poppins.variable}>
-          <AppRouterCacheProvider>
-            <ThemeProvider theme={defaultTheme}>
-              <NavigationBar/>
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={userTheme}>
+            <ProfileContextProvider>
               {children}
-            </ThemeProvider>
-          </AppRouterCacheProvider>
+            </ProfileContextProvider>
+          </ThemeProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

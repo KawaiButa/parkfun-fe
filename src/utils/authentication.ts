@@ -1,21 +1,32 @@
+"use client"
 import { CredentialResponse } from "@react-oauth/google";
+import { AxiosError } from "axios";
 
+import { User } from "@/interfaces";
 import { LoginFormData } from "@/interfaces/loginFormData";
 import { RegisterFormData } from "@/interfaces/registerFormData";
 
 import AxiosInstance from "./axios";
+import { Profile } from "@/interfaces/profile";
 
-async function loginWithEmailAndPassword({ email, password }: LoginFormData) {
-  const res = await AxiosInstance.post("auth/login", { email, password });
-  if (res.status == 200) {
-    localStorage.setItem("profile", JSON.stringify(res.data.user));
-    return res.data.user;
+async function loginWithEmailAndPassword({ email, password }: LoginFormData): Promise<User | null> {
+  const res = await AxiosInstance.post("/auth/login", { email, password });
+  try {
+    if (res.status == 200) {
+      localStorage.setItem("profile", JSON.stringify(res.data.user));
+      return res.data.user;
+    }
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      throw new AxiosError(err.response?.data.message);
+    }
+    throw err;
   }
-   return null;
+  return null;
 }
 
 async function handleLoginWithGoogleSuccess({ credential, clientId }: CredentialResponse) {
-  const res = await AxiosInstance.post("auth/google", {
+  const res = await AxiosInstance.post("/auth/google", {
     credential,
     clientId,
   });
@@ -25,8 +36,8 @@ async function handleLoginWithGoogleSuccess({ credential, clientId }: Credential
 }
 
 async function registerNewUser(data: RegisterFormData) {
-  data.phoneNumber = !!data.phoneNumber ? data.phoneNumber : undefined;
-  const res = await AxiosInstance.post("auth/register", data);
+  data.phoneNumber = Boolean(data.phoneNumber) ? data.phoneNumber : null;
+  const res = await AxiosInstance.post("/auth/register", data);
   if (res.status == 201) {
     localStorage.setItem("profile", JSON.stringify(res.data.user));
     return res.data.user;

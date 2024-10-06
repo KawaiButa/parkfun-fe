@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { ReactNode } from "react";
+
 import { BaseTextFieldProps, TextField } from "@mui/material";
 import { Control, Controller, RegisterOptions } from "react-hook-form";
 
@@ -9,10 +11,13 @@ export interface FormTextInputProps extends BaseTextFieldProps{
   label?: string;
   rule?: Omit<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'>
   slotProps?: any,
+  outlineColor?: string,
+  startAdornment?: ReactNode,
+  endAdornment?: ReactNode,
 }
 
 const FormTextInput = ( props: FormTextInputProps) => {
-  const {name, control, label, rule, ...textFieldProps} = props;
+  const {name, control, label, rule, startAdornment, endAdornment, sx, outlineColor, ...textFieldProps} = props;
   return (
     <Controller
       name={name}
@@ -24,13 +29,23 @@ const FormTextInput = ( props: FormTextInputProps) => {
       }) => (
         <TextField
           helperText={error?.message}
-          error={!!error}
+          error={Boolean(error)}
           onChange={onChange}
+          InputProps={{
+            startAdornment: startAdornment,
+            endAdornment: endAdornment
+          }}
           value={value}
           fullWidth
           label={label}
             variant="outlined"
           {...textFieldProps}
+          sx={{
+            "& fieldset.MuiOutlinedInput-notchedOutline:hover": {
+              borderColor: `var(--${outlineColor}-color) !important`,
+            },
+            ...sx
+          }}
         />
       )}
     />

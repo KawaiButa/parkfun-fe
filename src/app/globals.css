@@ -1,9 +1,11 @@
 :root {
   --primary-color: #e6d60f;
   --secondary-color: #171616;
-  --secondary-text-color: #ffffff;
+  --secondary-text-color: #ffff;
   --form-background-color: #ffffffa6;
   --unknown-field-color: #9b9b99;
+  --dropdown-menu-shadow: #000 0px 0px 0px 0px, #0000000f 0px 0px 0px 1px, #000000f0 0px 10px 15px -3px, #0000008f 0px 4px 6px -2px
+
 }
 html,
 body {
