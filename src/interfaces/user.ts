@@ -9,4 +9,5 @@ export interface User {
   role: Role;
   partner?: Partner;
   image: Image;
+  phoneNumber?: string;
 }

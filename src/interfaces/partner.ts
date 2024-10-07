@@ -1,6 +1,5 @@
+import { PartnerType } from "./partnerType";
 import { User } from "./user";
-
-export enum PartnerType {INDIVIDUAL="individual", COMPANY="company"}
 
 export interface Partner {
   id: number;

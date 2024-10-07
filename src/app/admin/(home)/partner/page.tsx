@@ -9,14 +9,12 @@ import {
 } from "@mui/material";
 import { PageContainer, PageContainerToolbar, useDialogs, useNotifications } from "@toolpad/core";
 import { AxiosError } from "axios";
-import _ from "lodash";
 import { useRouter } from "next/navigation";
 
 import DataTable from "@/components/dataTable/dataTable";
 import SearchBox from "@/components/searchBox/searchBox";
 import SelectInput from "@/components/selectInput/selectInput";
 import { usePartner } from "@/hooks/usePartner";
-import { Partner } from "@/interfaces";
 import { TableColumn } from "@/interfaces/tableColumn";
 
 const columns: TableColumn[] = [
@@ -43,47 +41,35 @@ const columns: TableColumn[] = [
     align: "right",
   },
 ];
-const searchFieldList = [
-  { label: "Name", key: "user.name" },
-  { label: "Phone Number", key: "user.phoneNumber" },
-  { label: "Email", key: "user.email" },
-];
 
 const User = () => {
-  const { partnerList, setPartnerList, fetchPartners, deletePartner } = usePartner();
+  const { partnerList, fetchPartners, deletePartner } = usePartner();
   const [filter, setFilter] = useState({});
   const [searchParam, setSearchParam] = useState("");
   const router = useRouter();
   const [searchField, setSearchField] = useState(0);
-  const notification = useNotifications();
-  const dialogs = useDialogs();
+  const dialog = useDialogs();
+  const notifications = useNotifications();
   useEffect(() => {
-    fetchPartners().then((data) => setPartnerList(filterAndSearch(data ?? [])));
-  }, [searchParam, filter]);
-  const filterAndSearch = (data: Partner[]) => {
-    const filteredData = _.filter(data, filter) as Partner[];
-    const { key } = searchFieldList[searchField];
-    const searchedData = filteredData?.filter((partner) => _.get(partner, key).includes(searchParam));
-    return searchedData;
-  };
-
-  useEffect(() => {
-    fetchPartners().then((data) => setPartnerList(filterAndSearch(data ?? [])));
+    const { id: key } = columns[searchField];
+    fetchPartners({ searchParam, searchField: key, filter });
   }, [searchParam, filter]);
   const handleDeletePartner = async (id: number) => {
     try {
-      const isAccepted = dialogs.confirm(`Are you want to delete partner with id ${id}`);
-      if (!isAccepted) return;
-      await deletePartner(id);
-      notification.show(`Successfully deleted partner ${id}`, {
-        severity: "success",
-        autoHideDuration: 3000,
-      });
-      fetchPartners().then((data) => setPartnerList(filterAndSearch(data ?? [])));
+      const isDelete = await dialog.confirm("Are you sure you want to delete");
+      if (isDelete) {
+        await deletePartner(id);
+        notifications.show(`Successfully deleted partner ${id}`, {
+          severity: "success",
+          autoHideDuration: 2000,
+        });
+        const { id: key } = columns[searchField];
+        fetchPartners({ searchParam, searchField: key, filter });
+      }
     } catch (err) {
-      notification.show(`Failed to delete partner with error ${(err as AxiosError).message}`, {
+      notifications.show(`Failed to delete partner with error ${(err as AxiosError).message}`, {
         severity: "error",
-        autoHideDuration: 3000,
+        autoHideDuration: 2000,
       });
     }
   };
@@ -149,7 +135,7 @@ const User = () => {
         </Box>
         <Box sx={{ display: "flex", gap: "10px" }}>
           <SelectInput
-            options={searchFieldList.map(({ label }) => label)}
+            options={columns.map(({ label }) => label)}
             label="Field"
             color="secondary"
             sx={{
@@ -160,7 +146,7 @@ const User = () => {
                 minWidth: "100px",
               },
             }}
-            onChange={(event) => setSearchField(searchFieldList.findIndex(({ label }) => label === event.target.value))}
+            onChange={(event) => setSearchField(columns.findIndex(({ label }) => label === event.target.value))}
             autoWidth
           />
           <SearchBox value={searchParam} onChange={(e) => setSearchParam(e.target.value)} />
@@ -170,8 +156,9 @@ const User = () => {
         <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
           <DataTable
             data={partnerList ?? []}
-            deleteItem={(value) => handleDeletePartner(value.id)}
             columns={columns}
+            deleteItem={(value) => handleDeletePartner(value.id)}
+            editItem={(value) => router.push("partner/" + value.id)}
             transformKey={(value) => "" + value.id}
           />
         </Box>
