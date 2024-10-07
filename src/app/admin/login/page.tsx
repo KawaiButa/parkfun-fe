@@ -2,8 +2,7 @@
 import React, { useContext } from "react";
 
 import { Container } from "@mui/material";
-import { AuthProvider, SignInPage, AuthenticationContext } from "@toolpad/core";
-import { AxiosError } from "axios";
+import { AuthProvider, SignInPage, AuthenticationContext, useNotifications } from "@toolpad/core";
 import { useRouter } from "next/navigation";
 
 import { loginWithEmailAndPassword } from "@/utils/authentication";
@@ -12,6 +11,7 @@ const providers: AuthProvider[] = [{ id: "credentials", name: "Email and Passwor
 const AdminLogin = () => {
   const router = useRouter();
   const authentication = useContext(AuthenticationContext);
+  const notification = useNotifications();
   function handleSignIn(provider: AuthProvider, formData?: FormData): void {
     if (!formData) return;
     const email = formData.get("email")?.toString();
@@ -21,11 +21,15 @@ const AdminLogin = () => {
       .then(() => {
         if (authentication) {
           authentication.signIn();
-          router.replace("/admin")
+          router.push("/admin")
         }
       })
       .catch((err) => {
-        alert((err as AxiosError).message);
+        notification.show(err.response.data.message, {
+          severity: "error",
+          autoHideDuration: 2000,
+
+        });
       });
   }
 

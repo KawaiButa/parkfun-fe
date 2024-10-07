@@ -145,7 +145,7 @@ const AdminDashboard = () => {
 };
 
 const IncomeBarChart = (props: BoxProps) => {
-  const { sx, ...remain } = props;
+  const { sx } = props;
   return (
     <Box {...props}>
       <BarChart
@@ -175,7 +175,6 @@ const IncomeBarChart = (props: BoxProps) => {
             hidden: true,
           },
         }}
-        {...remain}
       />
     </Box>
   );

@@ -1,19 +1,18 @@
 "use client";
-import { MouseEvent } from "react";
+import { MouseEvent, useContext } from "react";
 
+import { AuthenticationContext } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
-import { useSession } from "@/context/authenticationContext";
 
 const Layout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
+  const authentication = useContext(AuthenticationContext);
   const router = useRouter();
-  const session = useSession();
-  if (!session) redirect("/partner/login");
   return (
     <DashboardLayout
       slotProps={{
@@ -29,9 +28,7 @@ const Layout = ({
               color: "secondary",
               onClick: (e) => {
                 e.preventDefault();
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("profile");
-                router.push("/partner/login");
+                authentication?.signOut()
               },
             },
           },
