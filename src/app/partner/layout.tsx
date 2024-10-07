@@ -12,7 +12,7 @@ import { partnerTheme } from "@/themes/partner";
 const NAVIGATION: Navigation = [
   {
     kind: "header",
-    title: "home",
+    title: "Home",
   },
   {
     segment: "partner",

@@ -2,15 +2,17 @@
 import React, { useEffect } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { Box, BoxProps, Button, styled, Typography } from "@mui/material";
 import { useNotifications } from "@toolpad/core";
 import { useForm, Controller, useWatch } from "react-hook-form";
 
+import { FormRadioInput } from "@/components/formRadioInput/formRadioInput";
 import { useParkingLocation } from "@/hooks/useParkingLocation";
+import { ParkingLocation } from "@/interfaces";
 import { ParkingLocationFormData } from "@/interfaces/parkingLocationForm";
 
 import { parkingLocationSchema } from "./validationScheme";
-import { FormRadioInput } from "../formRadioInput/formRadioInput";
 import { FormTextInput } from "../formTextInput/formTextInput";
 import { ImageUpload, ImageUploadProps } from "../imageUpload/ImageUpload";
 const StyledImageUpload = styled(({ sx, ...props }: ImageUploadProps) => (
@@ -31,16 +33,17 @@ const StyledImageUpload = styled(({ sx, ...props }: ImageUploadProps) => (
     {...props}
   />
 ))();
-const ParkingLocationForm = (props: BoxProps) => {
-  const { sx, ...remain } = props;
-  const { createParkingLocation } = useParkingLocation();
+const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | null }) => {
+  const { sx, initValue, ...remain } = props;
+  const { createParkingLocation, updateParkingLocation } = useParkingLocation();
   const notification = useNotifications();
+  const { name, address } = initValue ?? {};
   const {
     control,
     setValue,
     reset,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ParkingLocationFormData>({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -50,13 +53,29 @@ const ParkingLocationForm = (props: BoxProps) => {
       access: "",
       paymentMethodId: 0,
       pricingOptionId: 0,
-      partnerId: 0,
-      imageList: [],
+      description: "",
+      images: [],
     },
     resolver: yupResolver(parkingLocationSchema),
   });
   const onSubmit = async (data: ParkingLocationFormData) => {
     try {
+      if (initValue) {
+        const { paymentMethodId, pricingOptionId, access, description, images } = data;
+        const res = await updateParkingLocation(initValue, {
+          paymentMethodId,
+          pricingOptionId,
+          access,
+          description,
+          images,
+        });
+        if (res) {
+          notification.show("Successfully updated parking location", {
+            severity: "success",
+            autoHideDuration: 1000,
+          });
+        }
+      }
       const res = await createParkingLocation(data);
       if (res) {
         reset();
@@ -73,12 +92,23 @@ const ParkingLocationForm = (props: BoxProps) => {
     }
   };
   useEffect(() => {
+    if (initValue) {
+      const {
+        images,
+        pricingOption: { id: pricingOptionId },
+        paymentMethod: { id: paymentMethodId },
+        ...remain
+      } = initValue as ParkingLocation;
+      reset((prev) => ({ ...prev, ...remain, pricingOptionId, paymentMethodId, images: images.map(({ url }) => url) }));
+    }
+  }, [initValue, reset]);
+  useEffect(() => {
     if (Object.keys(errors).length)
       notification.show(Object.values(errors)[0].message, {
         severity: "error",
         autoHideDuration: 1000,
       });
-  }, [errors]);
+  }, [errors, isSubmitting, notification]);
   const data = useWatch({ control, name: "pricingOptionId" });
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -105,14 +135,37 @@ const ParkingLocationForm = (props: BoxProps) => {
         >
           <Box>
             <Typography>1. Name of the parking location</Typography>
-            <FormTextInput name="name" placeholder="E.g. Super luxury parking lot" control={control} size="small" />
+            <Box sx={{ pl: "20px" }}>
+              {name ? (
+                <Typography>{name}</Typography>
+              ) : (
+                <FormTextInput name="name" placeholder="E.g. Super luxury parking lot" control={control} size="small" />
+              )}
+            </Box>
             <Typography>2. Address of the parking location</Typography>
-            <FormTextInput name="address" placeholder="E.g. Super luxury parking lot" control={control} size="small" />
+            <Box sx={{ pl: "20px" }}>
+              {address ? (
+                <Typography>{address}</Typography>
+              ) : (
+                <FormTextInput
+                  name="address"
+                  placeholder="E.g. Super luxury parking lot"
+                  control={control}
+                  size="small"
+                />
+              )}
+            </Box>
             <Typography>3. Describe as clearly as possible how to access to the parking location</Typography>
-            <FormTextInput name="access" placeholder="E.g. Super luxury parking lot" control={control} size="small" />
+            <Box
+              sx={{
+                pl: "20px",
+              }}
+            >
+              <FormTextInput name="access" placeholder="E.g. Super luxury parking lot" control={control} size="small" />
+            </Box>
           </Box>
           <Box>
-            <Typography>3. Description (This will be show when user search for your place)</Typography>
+            <Typography>4. Description (This will be show when user search for your place)</Typography>
             <FormTextInput
               name="description"
               placeholder="In 1000 works, write about your parking location"
@@ -161,44 +214,57 @@ const ParkingLocationForm = (props: BoxProps) => {
           transformValue={(value, options) => options?.findIndex((e) => e === value)}
         />
         <Typography variant="h5">Image</Typography>
-        <Typography variant="caption">
-          Please upload images to showcase your place. It will help customers to know where you are.
-        </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            gap: "10px",
-            justifyContent: "space-around",
-            alignItems: "center",
-          }}
-        >
-          <Controller
-            name="imageList"
-            control={control}
-            render={({ field: { value } }) => {
-              return (
-                <>
-                  {Array.from(Array(4)).map((_, index) => (
-                    <StyledImageUpload
-                      src={value.length > index ? URL.createObjectURL(value[index]) :  undefined}
-                      key={Math.random()}
-                      onChange={(e) =>
-                        setValue("imageList", [...(value as File[]), (e.currentTarget as HTMLInputElement).files![0]])
-                      }
-                    />
-                  ))}
-                </>
-              );
+        <>
+          <Typography variant="caption">
+            Please upload images to showcase your place. It will help customers to know where you are.
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              gap: "10px",
+              justifyContent: "space-around",
+              alignItems: "center",
             }}
-          />
-        </Box>
+          >
+            <Controller
+              name="images"
+              control={control}
+              render={({ field: { value } }) => {
+                return (
+                  <>
+                    {Array.from(Array(4)).map((_, index) => {
+                      const url =
+                        value.length > index
+                          ? value[index] instanceof File
+                            ? URL.createObjectURL(value[index])
+                            : value[index]
+                          : undefined;
+                      return (
+                        <StyledImageUpload
+                          src={url}
+                          key={Math.random()}
+                          onChange={(e) => {
+                            const temp = [...(value as File[])];
+                            temp[index] = (e.currentTarget as HTMLInputElement).files![0];
+                            setValue("images", temp);
+                          }}
+                        />
+                      );
+                    })}
+                  </>
+                );
+              }}
+            />
+          </Box>
+        </>
+
         <Box sx={{ display: "flex", gap: "10px", justifyContent: "flex-end", mt: "10px" }}>
-          <Button variant="contained" size="medium" color="info" onClick={() => reset()}>
+          <Button variant="outlined" size="medium" color="info" onClick={() => reset()}>
             Reset
           </Button>
-          <Button variant="contained" color="secondary" size="medium" type="submit">
+          <LoadingButton loading={isSubmitting} variant="contained" color="secondary" size="medium" type="submit">
             Save
-          </Button>
+          </LoadingButton>
         </Box>
       </Box>
     </form>

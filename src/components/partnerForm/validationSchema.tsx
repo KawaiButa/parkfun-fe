@@ -3,7 +3,7 @@ import * as yup from "yup";
 
 import { PartnerType } from "@/interfaces/partner";
 import { PartnerFormData } from "@/interfaces/partnerFormData";
-import { validateEmptyString } from "@/utils/stringUtils";
+import { validateEmptyString } from "@/utils/utils";
 export const partnerValidationSchema: yup.ObjectSchema<PartnerFormData> = yup.object({
   name: yup.string().required("The name is required"),
   email: yup.string().required("The email address is required").email("The email is invalid"),
