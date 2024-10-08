@@ -6,8 +6,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Box, Button, Typography, FormControl, Autocomplete, Container, styled } from "@mui/material";
 import { useDialogs, useNotifications } from "@toolpad/core";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 
+import { useSearchMapAPI } from "@/hooks/useMapApi";
 import { usePartner } from "@/hooks/usePartner";
 import { usePartnerType } from "@/hooks/userPartnerType";
 import { Partner } from "@/interfaces/partner";
@@ -37,6 +38,7 @@ const StyledFormTextInput = styled(({ sx, ...props }: FormTextInputProps) => (
 const PartnerForm = (props: { initValue?: Partner | null }) => {
   const { createPartner, udpatePartner } = usePartner();
   const { partnerTypeList, fetchPartnerType } = usePartnerType();
+  const { locations, setParam } = useSearchMapAPI();
   const notifications = useNotifications();
   const { initValue } = props;
   const dialogs = useDialogs();
@@ -44,6 +46,7 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<PartnerFormData>({
     mode: "all",
@@ -58,6 +61,8 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
       typeId: 0,
     },
   });
+  const locationInput = useWatch({ control, name: "location" });
+
   useEffect(() => {
     if (initValue) {
       const {
@@ -85,6 +90,7 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
     }
     fetchPartnerType();
   }, [initValue, reset]);
+
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
       notifications.show(Object.values(errors)[0].message, {
@@ -93,6 +99,9 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
       });
     }
   }, [errors]);
+  useEffect(() => {
+    setParam(locationInput);
+  }, [locationInput, setParam]);
   const onSubmit = async (formData: PartnerFormData) => {
     try {
       if (initValue) {
@@ -111,12 +120,13 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
       reset();
       await dialogs.alert(`Your password is ${formData.password}`);
     } catch (err) {
-      notifications.show(err.message, {
+      notifications.show((err as Error).message, {
         severity: "error",
         autoHideDuration: 2000,
       });
     }
   };
+
   return (
     <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
       <Box
@@ -221,8 +231,11 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
               <FormControl>
                 <Autocomplete
                   disablePortal
-                  options={[]}
+                  options={locations.map((features) => features.properties?.address?.formattedAddress ?? "")}
                   sx={{ marginTop: "10px" }}
+                  onChange={(e, value) => {
+                    if (value) setValue("location", value);
+                  }}
                   renderInput={(params) => (
                     <StyledFormTextInput name="location" control={control} label="Location" {...params} size="small" />
                   )}
