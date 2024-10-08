@@ -3,11 +3,12 @@ import React, { useEffect } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Box, BoxProps, Button, styled, Typography } from "@mui/material";
+import { Autocomplete, Box, BoxProps, Button, styled, Typography } from "@mui/material";
 import { useNotifications } from "@toolpad/core";
 import { useForm, Controller, useWatch } from "react-hook-form";
 
 import { FormRadioInput } from "@/components/formRadioInput/formRadioInput";
+import { useSearchMapAPI } from "@/hooks/useMapApi";
 import { useParkingLocation } from "@/hooks/useParkingLocation";
 import { usePaymentMethod } from "@/hooks/usePaymentMethod";
 import { usePricingOption } from "@/hooks/usePricingOption";
@@ -42,6 +43,7 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
   const { name, address } = initValue ?? {};
   const { pricingOptionList, fetchPricingOption } = usePricingOption();
   const { paymentMethodList, fetchPaymentMethod } = usePaymentMethod();
+  const { locations, setParam } = useSearchMapAPI();
   const {
     control,
     setValue,
@@ -62,6 +64,7 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
     },
     resolver: yupResolver(parkingLocationSchema),
   });
+  const locationInput = useWatch({ control, name: "address" });
   const onSubmit = async (data: ParkingLocationFormData) => {
     try {
       if (initValue) {
@@ -115,6 +118,9 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
         autoHideDuration: 1000,
       });
   }, [errors, isSubmitting, notification]);
+  useEffect(() => {
+    setParam(locationInput);
+  }, [locationInput, setParam]);
   const data = useWatch({ control, name: "pricingOptionId" });
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -153,11 +159,28 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
               {address ? (
                 <Typography>{address}</Typography>
               ) : (
-                <FormTextInput
-                  name="address"
-                  placeholder="E.g. Super luxury parking lot"
-                  control={control}
-                  size="small"
+                <Autocomplete
+                  disablePortal
+                  options={locations.map((loc) => loc.properties?.address?.formattedAddress)}
+                  onChange={(e, value) => {
+                    const selectedValue = locations.find(
+                      (location) => location.properties?.address?.formattedAddress === value
+                    );
+                    if (selectedValue) {
+                      setValue("lat", selectedValue.geometry.coordinates[1]);
+                      setValue("lng", selectedValue.geometry.coordinates[0]);
+                      if (value) setValue("address", value);
+                    }
+                  }}
+                  renderInput={(params) => (
+                    <FormTextInput
+                      name="address"
+                      placeholder="E.g. Super luxury parking lot"
+                      control={control}
+                      {...params}
+                      size="small"
+                    />
+                  )}
                 />
               )}
             </Box>
