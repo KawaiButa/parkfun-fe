@@ -89,6 +89,7 @@ export function usePartner() {
     const {partner, formData: {email, password, image, ...data}} = props;
     if(email !== partner.user.email && !password) return;
     try {
+      if(email !== partner.user.email && !password) return;
       if(image instanceof File){
         const key = partner.user.image.url.split(process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public/avatar/")[1];
         await replaceImage(image, key)

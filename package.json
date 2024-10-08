@@ -10,6 +10,8 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@azure-rest/maps-search": "^2.0.0-beta.1",
+    "@azure/identity": "^4.4.1",
     "@emotion/cache": "^11.13.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",

@@ -2,6 +2,7 @@ import React, { ChangeEvent, useEffect } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Close } from "@mui/icons-material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { Typography, Box, Grid2, Button, styled, InputAdornment } from "@mui/material";
 import { LocalizationProvider, TimeField } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -24,9 +25,7 @@ import { FormNumberInput } from "../formNumberInput.ts/formNumberInput";
 import { FormRadioInput } from "../formRadioInput/formRadioInput";
 import { FormTextInput } from "../formTextInput/formTextInput";
 import { ImageUploadProps, ImageUpload } from "../imageUpload/ImageUpload";
-import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 import SelectInput from "../selectInput/selectInput";
-
 const StyledImageUpload = styled(({ sx, ...props }: ImageUploadProps) => (
   <ImageUpload
     sx={{
@@ -48,7 +47,7 @@ const StyledImageUpload = styled(({ sx, ...props }: ImageUploadProps) => (
 const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initValue?: ParkingSlot | null }) => {
   const { initValue } = props;
   const { parkingLocationList } = props;
-  const { createParkingSlot } = useParkingSlot();
+  const { createParkingSlot, updateParkingSlot } = useParkingSlot();
   const { parkingSlotTypeList, fetchParkingSlotType } = useParkingSlotType();
   const notification = useNotifications();
   const { parkingServiceList, fetchParkingService } = useParkingService();
@@ -56,7 +55,7 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
     control,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(parkingSlotSchema),
     defaultValues: {
@@ -74,6 +73,14 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
 
   const onSubmit = async (formData: ParkingSlotFormData) => {
     try {
+      if(initValue){
+        await updateParkingSlot(initValue, formData);
+        notification.show("Successfully update parking slot", {
+          severity: "success",
+          autoHideDuration: 3000,
+        });
+        return;
+      }
       const res = await createParkingSlot(formData);
       if (res.status) {
         notification.show("Successfully create parking slot", {
@@ -81,6 +88,7 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
           autoHideDuration: 3000,
         });
         reset();
+        return;
       }
     } catch (err) {
       if (err instanceof AxiosError) {
@@ -371,7 +379,7 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
           <Button variant="contained" color="info" onClick={() => reset()}>
             Reset
           </Button>
-          <PrimaryContainedButton type="submit">Create</PrimaryContainedButton>
+          <LoadingButton loading={isSubmitting} type="submit">Save</LoadingButton>
         </Box>
       </ContainerFlexColumn>
     </LocalizationProvider>
