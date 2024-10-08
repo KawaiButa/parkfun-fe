@@ -20,7 +20,7 @@ const SessionProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("profile");
         const href = window.location.pathname.split("/")[1];
-        router.push(href + "/login");
+        router.push("/" + href + "/login");
       },
     };
   }, []);

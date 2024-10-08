@@ -130,7 +130,7 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
           mt: "50px",
         }}
       >
-        <Typography variant="h5" fontWeight={600} textAlign="left">
+        <Typography variant="h5" fontWeight={500} textAlign="left">
           Create parking slot
         </Typography>
         <Box

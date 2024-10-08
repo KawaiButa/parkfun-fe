@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Add, Check, Close, ErrorOutline, FilterList } from "@mui/icons-material";
-import { Box, Button, Container, Dialog, DialogActions, DialogContent } from "@mui/material";
+import { Box, Button, Container, Dialog, DialogActions, DialogContent, IconButton } from "@mui/material";
 import { DialogProps, PageContainer, PageContainerToolbar, useDialogs, useNotifications } from "@toolpad/core";
 import { useRouter } from "next/navigation";
 import Carousel from "react-material-ui-carousel";
@@ -210,9 +210,9 @@ const ShowImageDialog = ({ open, onClose, value }: DialogProps & { value: Parkin
   return (
     <Dialog fullWidth open={open} onClose={() => onClose()} title="Images">
       <DialogActions>
-        <Button onClick={() => onClose()} startIcon={<Close />}>
-          Close me
-        </Button>
+        <IconButton onClick={() => onClose()}>
+          <Close/>
+        </IconButton>
       </DialogActions>
       <DialogContent>
         <Carousel>

@@ -129,7 +129,7 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
         }}
         {...remain}
       >
-        <Typography variant="h5" fontWeight={600}>
+        <Typography variant="h5" fontWeight={500}>
           Parking location
         </Typography>
         <Typography variant="h6">Basic information</Typography>

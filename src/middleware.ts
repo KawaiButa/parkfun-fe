@@ -28,7 +28,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(redirectRoute, request.url));
     }
     return NextResponse.next();
-  } 
+  }
   return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
     
 }
