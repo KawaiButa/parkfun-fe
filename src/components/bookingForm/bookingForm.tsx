@@ -1,6 +1,16 @@
-import { Container, ContainerOwnProps, Input, Typography, TypographyProps } from "@mui/material";
+"use client";
+
+import {
+  Autocomplete,
+  Container,
+  ContainerOwnProps,
+  TextField,
+  Typography,
+  TypographyProps,
+} from "@mui/material";
 
 import { constants } from "@/constants";
+import { useSearchMapAPI } from "@/hooks/useMapApi";
 
 import BookingTimePicker from "./bookingTimePicker/bookingTimePicker";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
@@ -11,6 +21,7 @@ const StyledTypography = ({ children, ...props }: TypographyProps) => (
   </Typography>
 );
 function BookingForm(props: ContainerOwnProps) {
+  const { locations, setParam } = useSearchMapAPI();
   return (
     <Container
       maxWidth="md"
@@ -94,17 +105,27 @@ function BookingForm(props: ContainerOwnProps) {
         >
           1. Choose your location
         </StyledTypography>
-        <Container
-          sx={{
-            width: "100%",
-            height: "45px",
-            borderRadius: "5px",
-            backgroundColor: "var(--secondary-text-color)",
-            padding: "6px",
+        <Autocomplete
+          options={locations.map((location) => location.properties?.address?.formattedAddress)}
+          renderInput={(param) => {
+            return (
+              <TextField
+                {...param}
+                placeholder="Search for your location"
+                sx={{
+                  fontSize: {
+                    xs: "15px",
+                    md: "20px",
+                    borderRadius: "5px"
+                  },
+                  backgroundColor: "background.default",
+                }}
+                onChange={(e) => {setParam(e.target.value)}}
+                size="small"
+              />
+            );
           }}
-        >
-          <Input placeholder="Search here" disableUnderline={true} />
-        </Container>
+        />
         <StyledTypography
           sx={{
             display: {

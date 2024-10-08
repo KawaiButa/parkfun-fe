@@ -26,13 +26,12 @@ export const userTheme = createTheme({
       main: "#409760",
       contrastText: "#fff",
     },
-    text: {
-      primary: "#fff",
-      secondary: "#fff",
-      disabled: "#fff",
+    background: {
+      default: "#fff",
     },
   },
+
   typography: {
-    fontFamily: "var(--font-poppins)"
-  }
+    fontFamily: "var(--font-poppins)",
+  },
 });
