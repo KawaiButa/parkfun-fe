@@ -8,9 +8,10 @@ export interface FormCheckBoxInputProps<T, K> extends Pick<FormTextInputProps, "
   transformValue?: (value: T) => K;
   transformLabel?: (value: T) => string;
   checkboxProps?: CheckboxProps;
+  direction?: "row" | "column";
 }
 const FormCheckboxInput = <T, K>(props: FormCheckBoxInputProps<T, K>) => {
-  const { transformLabel, transformValue, options, ...remain } = props;
+  const { transformLabel, transformValue, options, direction, ...remain } = props;
   return (
     <Controller
       render={({ field: { onChange, value: fieldValue } }) => {
@@ -23,6 +24,10 @@ const FormCheckboxInput = <T, K>(props: FormCheckBoxInputProps<T, K>) => {
                 <FormGroup key={label}>
                   <FormControlLabel
                     label={label}
+                    sx={{
+                      display: "flex",
+                      flexDirection: direction
+                    }}
                     control={
                       <Checkbox
                         key={label}

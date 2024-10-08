@@ -100,7 +100,7 @@ export const useParkingLocation = () => {
       const oldImageUrl = parkingLocation.images.map(({ url }) => url);
       const hostName = process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public/parkingLocation/";
       await Promise.all(
-        formData.images.map(async (file, index) => {
+        images.map(async (file, index) => {
           const key = oldImageUrl[index].split(hostName)[1];
           if (file instanceof File) {
             const path = await replaceImage(file, key);

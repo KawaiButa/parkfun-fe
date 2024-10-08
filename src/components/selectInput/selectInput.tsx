@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 import {
   BaseSelectProps,
@@ -15,17 +15,21 @@ interface SelectInputProps<T, K> extends BaseSelectProps {
   menuProps?: Partial<MenuProps>;
   transformToLabel?: (data: T) => string;
   transformToValue?: (data: T) => K;
+  value?: T;
 }
 
 const SelectInput = <T, K>(props: SelectInputProps<T, K>) => {
-  const { onChange, options, label, menuProps, transformToLabel, transformToValue, ...remain } = props;
+  const { onChange, options, value, label, menuProps, transformToLabel, transformToValue, ...remain } = props;
   const [selectedValue, setSelectedValue] = useState<T>(options[0]);
   function handleOnChange(event: SelectChangeEvent<unknown>, child: ReactNode): void {
     event.preventDefault();
     setSelectedValue(event.target.value as T);
     if (onChange) onChange!(event, child);
   }
-
+  useEffect(() => {
+    if(value)
+    setSelectedValue(value)
+  },[])
   return (
     <FormControl
       size="small"

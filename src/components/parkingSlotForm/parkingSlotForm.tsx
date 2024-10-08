@@ -9,8 +9,11 @@ import { useNotifications } from "@toolpad/core";
 import { AxiosError } from "axios";
 import { Controller, useForm } from "react-hook-form";
 
-import { useParkingLocation } from "@/hooks/useParkingLocation";
+import { useParkingService } from "@/hooks/useParkingService";
 import { useParkingSlot } from "@/hooks/useParkingSlot";
+import { useParkingSlotType } from "@/hooks/useParkingSlotType";
+import { ParkingLocation } from "@/interfaces";
+import { ParkingSlot } from "@/interfaces/parkingSlot";
 import { ParkingSlotFormData } from "@/interfaces/parkingSlotFormData";
 import { timeToSeconds } from "@/utils/utils";
 
@@ -42,13 +45,13 @@ const StyledImageUpload = styled(({ sx, ...props }: ImageUploadProps) => (
     {...props}
   />
 ))();
-//TODO: Call API to get data
-const slotTypeData = ["Garage", "Car park", "On-street"];
-const serviceData = ["Car wask", "Electrical charger", "Fuel", "Shuttle services"];
-const ParkingSlotForm = () => {
+const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initValue?: ParkingSlot | null }) => {
+  const { initValue } = props;
+  const { parkingLocationList } = props;
   const { createParkingSlot } = useParkingSlot();
-  const { parkingLocationList, fetchParkingLocation } = useParkingLocation();
+  const { parkingSlotTypeList, fetchParkingSlotType } = useParkingSlotType();
   const notification = useNotifications();
+  const { parkingServiceList, fetchParkingService } = useParkingService();
   const {
     control,
     handleSubmit,
@@ -68,9 +71,6 @@ const ParkingSlotForm = () => {
       images: [],
     },
   });
-  useEffect(() => {
-    fetchParkingLocation();
-  }, []);
 
   const onSubmit = async (formData: ParkingSlotFormData) => {
     try {
@@ -96,6 +96,18 @@ const ParkingSlotForm = () => {
       }
     }
   };
+  useEffect(() => {
+    fetchParkingSlotType();
+    fetchParkingService();
+    if (initValue) {
+      const {
+        images,
+        parkingLocation: { id: parkingLocationId },
+      } = initValue;
+      const imageUrl = images.map(({ url }) => url);
+      reset((prev) => ({ ...prev, ...initValue, parkingLocationId, images: imageUrl }));
+    }
+  }, [initValue]);
   useEffect(() => {
     if (Object.keys(errors).length !== 0) {
       notification.show(Object.values(errors)[0].message, {
@@ -125,7 +137,7 @@ const ParkingSlotForm = () => {
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "baseline",
             gap: "10px",
           }}
         >
@@ -137,54 +149,70 @@ const ParkingSlotForm = () => {
               justifyContent: "flex-start",
             }}
           >
-            <Box sx={{ display: "flex", justifyContent: "space-between"}}>
-              <Box sx={{width: "50%"}}>
-                <Typography>1. Select your parking location</Typography>
-                {parkingLocationList && (
-                  <Controller
-                    name="parkingLocationId"
-                    control={control}
-                    render={({ field: { onChange } }) => (
-                      <SelectInput
-                        options={parkingLocationList}
-                        transformToLabel={(parkLoc) => parkLoc.name}
-                        transformToValue={(parkLoc) => parkLoc.id}
-                        onChange={(e) => {
-                          const selected = parkingLocationList!.find((a) => a.id == e.target.value);
-                          if (selected) {
-                            onChange(selected.id);
-                          }
-                        }}
-                        fullWidth={true}
-                      />
-                    )}
-                  />
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Box sx={{ width: "50%" }}>
+                {initValue ? (
+                  <>
+                    <Typography>1. Select your parking location</Typography>
+
+                    <FormTextInput
+                      name="parkingLocationId"
+                      control={control}
+                      value={initValue.parkingLocation.name}
+                      size="small"
+                      disabled
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Typography>1. Select your parking location</Typography>
+
+                    <Controller
+                      name="parkingLocationId"
+                      control={control}
+                      render={({ field: { onChange } }) => (
+                        <SelectInput
+                          options={parkingLocationList}
+                          transformToLabel={(parkLoc) => parkLoc.name}
+                          transformToValue={(parkLoc) => parkLoc.id}
+                          onChange={(e) => {
+                            const selected = parkingLocationList!.find((a) => a.id == e.target.value);
+                            if (selected) {
+                              onChange(selected.id);
+                            }
+                          }}
+                          fullWidth={true}
+                        />
+                      )}
+                    />
+                  </>
                 )}
               </Box>
               <Box>
                 <Typography>1.1 What is the slot called</Typography>
-                <FormTextInput
-                  control={control}
-                  name="name"
-                  size="small"
-                />
+                <FormTextInput control={control} name="name" size="small" />
               </Box>
             </Box>
-            <Typography>2. What is the type of the space</Typography>
-            <FormRadioInput
-              control={control}
-              options={slotTypeData}
-              name="parkingSlotTypeId"
-              transformValue={(b) => slotTypeData.findIndex((a) => a == b)}
-            />
-            <Typography>3. How many spaces of this parking slot that your parking location have?</Typography>
-            <Box
-              sx={{
-                width: "200px",
-              }}
-            >
-              <FormNumberInput control={control} name="space" />
-            </Box>
+            {!initValue && (
+              <>
+                <Typography>2. What is the type of the space</Typography>
+                <FormRadioInput
+                  control={control}
+                  options={parkingSlotTypeList ?? []}
+                  name="parkingSlotTypeId"
+                  transformLabel={(value) => value.name}
+                  transformValue={(b) => b.id}
+                />
+                <Typography>3. How many spaces of this parking slot that your parking location have?</Typography>
+                <Box
+                  sx={{
+                    width: "200px",
+                  }}
+                >
+                  <FormNumberInput control={control} name="space" />
+                </Box>
+              </>
+            )}
             <Typography>4. Size of the slot</Typography>
             <Box
               sx={{
@@ -215,12 +243,13 @@ const ParkingSlotForm = () => {
             <Typography>5. Which service do this type of parking slot provide?</Typography>
             <FormCheckboxInput
               control={control}
-              options={serviceData}
+              options={parkingServiceList ?? []}
               name="parkingServiceIds"
               sx={{
                 padding: "0 20px",
               }}
-              transformValue={(value) => serviceData.findIndex((a) => a == value)}
+              transformLabel={(value) => value.name}
+              transformValue={(value) => value.id}
             />
             <Typography>6. How much do you like to charge user for this slot by hours?</Typography>
 
@@ -304,22 +333,30 @@ const ParkingSlotForm = () => {
           render={({ field: { onChange, value } }) => {
             return (
               <Grid2 container spacing={2}>
-                {Array.from(Array(4)).map((_, index) => (
-                  <Grid2 key={index} size={3}>
-                    <StyledImageUpload
-                      src={value && value[index] ? URL.createObjectURL(value[index]) : ""}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        if (e.target.files) {
-                          if (value?.length > index) {
-                            const temp = [...value];
-                            temp[index] = e.target.files[0];
-                            onChange(temp);
-                          } else onChange((value as File[]).concat([e.target.files[0]]));
-                        }
-                      }}
-                    />
-                  </Grid2>
-                ))}
+                {Array.from(Array(4)).map((_, index) => {
+                  const url =
+                    value.length > index
+                      ? value[index] instanceof File
+                        ? URL.createObjectURL(value[index])
+                        : value[index]
+                      : undefined;
+                  return (
+                    <Grid2 key={index} size={3}>
+                      <StyledImageUpload
+                        src={url}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                          if (e.target.files) {
+                            if (value?.length > index) {
+                              const temp = [...value];
+                              temp[index] = e.target.files[0];
+                              onChange(temp);
+                            } else onChange((value as File[]).concat([e.target.files[0]]));
+                          }
+                        }}
+                      />
+                    </Grid2>
+                  );
+                })}
               </Grid2>
             );
           }}

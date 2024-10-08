@@ -1,3 +1,4 @@
+import { Image } from "./image";
 import { ParkingLocation } from "./parkingLocation";
 import { ParkingSlotType } from "./parkingSlotType";
 import { Service } from "./service";
@@ -13,6 +14,7 @@ export interface ParkingSlot {
   length: number;
   startTime: number;
   endTime: number;
-  images: string[];
+  images: Image[];
   services: Service[];
+  name: string;
 }

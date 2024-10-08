@@ -7,7 +7,7 @@ export interface ParkingSlotFormData {
   length: number;
   price: number;
   parkingLocationId: number;
-  images: File[];
+  images: Array<File | string>;
   startAt: number;
   endAt: number;
   space: number;

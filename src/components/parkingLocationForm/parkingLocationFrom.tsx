@@ -9,6 +9,8 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 
 import { FormRadioInput } from "@/components/formRadioInput/formRadioInput";
 import { useParkingLocation } from "@/hooks/useParkingLocation";
+import { usePaymentMethod } from "@/hooks/usePaymentMethod";
+import { usePricingOption } from "@/hooks/usePricingOption";
 import { ParkingLocation } from "@/interfaces";
 import { ParkingLocationFormData } from "@/interfaces/parkingLocationForm";
 
@@ -38,6 +40,8 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
   const { createParkingLocation, updateParkingLocation } = useParkingLocation();
   const notification = useNotifications();
   const { name, address } = initValue ?? {};
+  const { pricingOptionList, fetchPricingOption } = usePricingOption();
+  const { paymentMethodList, fetchPaymentMethod } = usePaymentMethod();
   const {
     control,
     setValue,
@@ -101,6 +105,8 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
       } = initValue as ParkingLocation;
       reset((prev) => ({ ...prev, ...remain, pricingOptionId, paymentMethodId, images: images.map(({ url }) => url) }));
     }
+    fetchPricingOption();
+    fetchPaymentMethod();
   }, [initValue, reset]);
   useEffect(() => {
     if (Object.keys(errors).length)
@@ -189,8 +195,14 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
             <FormRadioInput
               name="pricingOptionId"
               control={control}
-              options={["Percentage", "Fixed"]}
-              transformValue={(value, options) => options?.findIndex((e) => e === value)}
+              options={pricingOptionList ?? []}
+              transformLabel={(value) => value.name}
+              transformValue={(value) => value.id}
+              sx={{
+                ":first-letter": {
+                  textTransform: "uppercase",
+                },
+              }}
             />
           </Box>
           <Typography
@@ -204,14 +216,20 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
           </Typography>
         </Box>
         <Typography>
-          2. Payment method.{" "}
+          2. Payment method.
           <Typography variant="caption">This will be your main method for receiving money</Typography>
         </Typography>
         <FormRadioInput
           name="paymentMethodId"
           control={control}
-          options={["Zalopay", "Momo", "PayPal", "VNPAY"]}
-          transformValue={(value, options) => options?.findIndex((e) => e === value)}
+          options={paymentMethodList ?? []}
+          transformLabel={(value) => value.name}
+          transformValue={(value) => value.id}
+          sx={{
+            ":first-letter": {
+              textTransform: "uppercase",
+            },
+          }}
         />
         <Typography variant="h5">Image</Typography>
         <>

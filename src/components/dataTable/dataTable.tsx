@@ -2,7 +2,17 @@
 import React, { ChangeEvent, useState } from "react";
 
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Button, Table, TableBody, TableCell, TableHead, TablePagination, TableProps, TableRow } from "@mui/material";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableProps,
+  TableRow,
+} from "@mui/material";
 import _ from "lodash";
 
 import { TableColumn } from "@/interfaces/tableColumn";
@@ -10,12 +20,13 @@ import { TableColumn } from "@/interfaces/tableColumn";
 interface DataTableProps<T> extends TableProps {
   data: T[];
   columns: TableColumn[];
+  onRowClick?: (value: T) => void;
   deleteItem?: (value: T) => void;
   editItem?: (value: T) => void;
   transformKey: (value: T) => string;
 }
 const DataTable = <T,>(props: DataTableProps<T>) => {
-  const { deleteItem, editItem, columns, data, transformKey, ...remain } = props;
+  const { deleteItem, editItem, columns, onRowClick, data, transformKey, ...remain } = props;
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -39,52 +50,77 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-      <Table {...remain}>
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth, fontWeight: "600" }}>
-                {column.label}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-            const key = transformKey(row);
-            return (
-              <TableRow hover role="checkbox" tabIndex={-1} key={key}>
-                {columns.map((column) => {
-                  const value = _.get(row, column.id);
-                  return (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.format ? column.format(value) : value}
-                    </TableCell>
-                  );
-                })}
-                <TableCell width={220}>
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      if (editItem) editItem(row);
-                    }}
-                    sx={{
-                      mr: "10px",
-                    }}
-                  >
-                    Edit
-                  </Button>
-                  <DeleteRowButton
-                    onClick={() => {
-                      if (deleteItem) deleteItem(row);
-                    }}
-                  />
+      <TableContainer
+        {...remain}
+        sx={{
+          minHeight: "150px",
+          maxHeight: "60vh",
+          overflow: "auto",
+        }}
+      >
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  align={column.align}
+                  style={{ minWidth: column.minWidth, fontWeight: "600" }}
+                >
+                  {column.label}
                 </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+              ))}
+              <TableCell key={"action"} style={{ minWidth: "100px", fontWeight: "600" }}>
+                {"Action"}
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+              const key = transformKey(row);
+              return (
+                <TableRow hover role="checkbox" tabIndex={-1} key={key}>
+                  {columns.map((column) => {
+                    const value = _.get(row, column.id);
+                    return (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        onClick={() => {
+                          if (onRowClick) onRowClick(row);
+                        }}
+                        sx={{
+                          cursor: onRowClick ? "pointer" : "default",
+                        }}
+                      >
+                        {column.format ? column.format(value) : value}
+                      </TableCell>
+                    );
+                  })}
+                  <TableCell width={220}>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        if (editItem) editItem(row);
+                      }}
+                      sx={{
+                        mr: "10px",
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <DeleteRowButton
+                      onClick={() => {
+                        if (deleteItem) deleteItem(row);
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   );
 };

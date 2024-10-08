@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Box, Button, Typography, FormControl, Autocomplete, Container, styled } from "@mui/material";
-import { useNotifications } from "@toolpad/core";
+import { useDialogs, useNotifications } from "@toolpad/core";
 import { Controller, useForm } from "react-hook-form";
 
 import { usePartner } from "@/hooks/usePartner";
@@ -39,6 +39,7 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
   const { partnerTypeList, fetchPartnerType } = usePartnerType();
   const notifications = useNotifications();
   const { initValue } = props;
+  const dialogs = useDialogs();
   const {
     control,
     handleSubmit,
@@ -108,6 +109,7 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
         autoHideDuration: 2000,
       });
       reset();
+      await dialogs.alert(`Your password is ${formData.password}`);
     } catch (err) {
       notifications.show(err.message, {
         severity: "error",
