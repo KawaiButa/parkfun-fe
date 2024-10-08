@@ -5,7 +5,6 @@ import { AuthenticationContext } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { useRouter } from "next/navigation";
 
-
 const Layout = ({
   children,
 }: Readonly<{
@@ -28,7 +27,7 @@ const Layout = ({
               color: "secondary",
               onClick: (e) => {
                 e.preventDefault();
-                authentication?.signOut()
+                authentication?.signOut();
                 router.push("/logout");
               },
             },

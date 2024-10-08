@@ -1,13 +1,13 @@
 "use client";
 import { Suspense, useContext } from "react";
 
-import { BarChart, Dashboard, Description, Layers } from "@mui/icons-material";
+import { BarChart, Dashboard, Description, Layers, Person } from "@mui/icons-material";
 import { NotificationsProvider } from "@toolpad/core";
 import { AuthenticationContext, Navigation } from "@toolpad/core/AppProvider";
 import { AppProvider } from "@toolpad/core/nextjs";
 
 import { constants } from "@/constants";
-import { SessionProvider, useSession } from "@/context/authenticationContext";
+import { useSession } from "@/context/authenticationContext";
 import { adminTheme } from "@/themes/admin";
 
 const NAVIGATION: Navigation = [
@@ -23,7 +23,7 @@ const NAVIGATION: Navigation = [
   {
     segment: "admin/partner",
     title: "Partners",
-    icon: <Dashboard />,
+    icon: <Person />,
   },
   {
     kind: "divider",
@@ -75,9 +75,7 @@ const Layout = ({
         }}
         session={session}
       >
-        <SessionProvider>
-          <NotificationsProvider>{children}</NotificationsProvider>
-        </SessionProvider>
+        <NotificationsProvider>{children}</NotificationsProvider>
       </AppProvider>
     </Suspense>
   );
