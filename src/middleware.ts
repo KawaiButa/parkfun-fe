@@ -20,7 +20,7 @@ export function middleware(request: NextRequest) {
     return response;
   }
   if (!data || !data.id) return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
-  const isMatchRole = request.nextUrl.href.includes(data.role);
+  const isMatchRole = request.nextUrl.href.includes(data.role as string);
   if (isMatchRole){
     if([`/${data.role}`, "/"].includes(request.nextUrl.pathname)){
       const redirectRoute = data.role == "user" ? "/home" : `/${data.role}/dashboard`;
