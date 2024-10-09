@@ -1,4 +1,5 @@
 "use client";
+import {v4 as uuidv4} from "uuid"
 import * as yup from "yup";
 
 import { PartnerFormData } from "@/interfaces/partnerFormData";
@@ -12,5 +13,5 @@ export const partnerValidationSchema: yup.ObjectSchema<PartnerFormData> = yup.ob
   image: yup
     .mixed<File | string>().required()
     .test("isFile", "The provided data is not image", (avatar) => (typeof avatar === "string" || avatar instanceof File)),
-  password: yup.string().required().default(window.crypto.randomUUID().split("-").join("")),
+  password: yup.string().required().default(uuidv4()),
 });
