@@ -49,14 +49,13 @@ const LoginForm = (props: ContainerOwnProps) => {
         maxWidth="sm"
         sx={{
           ...props.sx,
-          backgroundColor: "var(--secondary-color)",
           padding: "30px",
           borderRadius: "10px",
           gap: "20px",
         }}
       >
-        <FormTextInput label="Email" name="email" control={control} outlineColor="primary" type="email" />
-        <FormTextInput label="Password" name="password" control={control} outlineColor="primary" type="password" />
+        <FormTextInput label="Email" name="email" control={control} type="email" />
+        <FormTextInput label="Password" name="password" control={control} type="password" />
         <PrimaryContainedButton
           type="submit"
           sx={{

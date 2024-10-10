@@ -1,8 +1,18 @@
-import { Container, ContainerOwnProps, Input, Typography, TypographyProps } from "@mui/material";
+"use client";
+
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Autocomplete, Container, ContainerOwnProps, TextField, Typography, TypographyProps } from "@mui/material";
+import { Dayjs } from "dayjs";
+import { useRouter } from "next/navigation";
+import queryString from "query-string";
+import { useForm } from "react-hook-form";
 
 import { constants } from "@/constants";
+import { useSearchMapAPI } from "@/hooks/useMapApi";
+import { timeToSeconds } from "@/utils/utils";
 
 import BookingTimePicker from "./bookingTimePicker/bookingTimePicker";
+import { bookingFormValidation } from "./validationSchema";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 const StyledTypography = ({ children, ...props }: TypographyProps) => (
@@ -11,6 +21,18 @@ const StyledTypography = ({ children, ...props }: TypographyProps) => (
   </Typography>
 );
 function BookingForm(props: ContainerOwnProps) {
+  const { locations, setParam } = useSearchMapAPI();
+  const { handleSubmit, setValue } = useForm({
+    defaultValues: {
+      startAt: 28800,
+      endAt: 30600,
+    },
+    resolver: yupResolver(bookingFormValidation)
+  });
+  const router = useRouter();
+  const onSubmit = (data: { lat: number; lng: number; startAt: number; endAt: number }) => {
+    router.push("home/map?" + queryString.stringify(data));
+  };
   return (
     <Container
       maxWidth="md"
@@ -52,6 +74,8 @@ function BookingForm(props: ContainerOwnProps) {
         sx={{
           gap: "10px",
         }}
+        onSubmit={handleSubmit(onSubmit)}
+        component={"form"}
       >
         <Container
           sx={{
@@ -94,17 +118,36 @@ function BookingForm(props: ContainerOwnProps) {
         >
           1. Choose your location
         </StyledTypography>
-        <Container
-          sx={{
-            width: "100%",
-            height: "45px",
-            borderRadius: "5px",
-            backgroundColor: "var(--secondary-text-color)",
-            padding: "6px",
+        <Autocomplete
+          options={locations}
+          getOptionLabel={(value) => value.properties?.address?.formattedAddress ?? ""}
+          onChange={(e, value) => {
+            if (value?.geometry) {
+              setValue("lat", value?.geometry.coordinates[1]);
+              setValue("lng", value?.geometry.coordinates[0]);
+            }
           }}
-        >
-          <Input placeholder="Search here" disableUnderline={true} />
-        </Container>
+          renderInput={(param) => {
+            return (
+              <TextField
+                {...param}
+                placeholder="Search for your location"
+                sx={{
+                  fontSize: {
+                    xs: "15px",
+                    md: "20px",
+                    borderRadius: "5px",
+                  },
+                  backgroundColor: "background.paper",
+                }}
+                onChange={(e) => {
+                  setParam(e.target.value);
+                }}
+                size="small"
+              />
+            );
+          }}
+        />
         <StyledTypography
           sx={{
             display: {
@@ -115,7 +158,14 @@ function BookingForm(props: ContainerOwnProps) {
         >
           2. Select the time and duration
         </StyledTypography>
-        <BookingTimePicker />
+        <BookingTimePicker
+          onStartChange={(e: Dayjs | null) => {
+            if (e) setValue("startAt", timeToSeconds(e));
+          }}
+          onEndChange={(e: Dayjs | null) => {
+            if (e) setValue("endAt", timeToSeconds(e));
+          }}
+        />
         <StyledTypography
           sx={{
             display: {
@@ -130,6 +180,7 @@ function BookingForm(props: ContainerOwnProps) {
           sx={{
             fontWeight: "bold",
           }}
+          type="submit"
         >
           Book
         </PrimaryContainedButton>

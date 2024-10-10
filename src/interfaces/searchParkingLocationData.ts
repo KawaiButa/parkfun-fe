@@ -1,18 +1,19 @@
 export interface SearchParkingLocationData {
+  position: number[];
+
+  type?: number | string;
+
+  price?: number[];
+
+  time: number[];
+
+  radius?: number;
+
+  services?: number[];
+
+  width?: number;
+
+  height?: number;
   
-  lat: number;
-
-  lng: number;
-
-  radius: number;
-
-  priceStartAt?: number;
-
-  priceEndAt?: number;
-
-  startAt?: number;
-
-  endAt?: number;
-
-  services?: string;  
+  length?: number;
 }
