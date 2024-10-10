@@ -77,10 +77,8 @@ const NavigationBar = () => {
               open={open}
               onClose={handleClose}
               anchorEl={anchorEl}
+              color="secondary.contrastText"
               sx={{
-                "& a": {
-                  color: "secondary.main",
-                },
                 "& .MuiPopover-paper": {
                   padding: "5px 15px",
                 },

@@ -1,5 +1,8 @@
 "use client";
 
+import { Stack } from "@mui/material";
+import { DialogsProvider } from "@toolpad/core";
+
 import NavigationBar from "@/components/NavigationBar/navigationBar";
 const AuthLayout = ({
   children,
@@ -7,10 +10,12 @@ const AuthLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <>
-      <NavigationBar />
-      {children}
-    </>
+    <DialogsProvider>
+      <Stack direction="column" maxHeight="100vh">
+        <NavigationBar />
+        {children}
+      </Stack>
+    </DialogsProvider>
   );
 };
 

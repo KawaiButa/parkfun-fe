@@ -4,17 +4,21 @@
   --secondary-text-color: #ffff;
   --form-background-color: #ffffffa6;
   --unknown-field-color: #9b9b99;
-  --dropdown-menu-shadow: #000 0px 0px 0px 0px, #0000000f 0px 0px 0px 1px, #000000f0 0px 10px 15px -3px, #0000008f 0px 4px 6px -2px
-
+  --dropdown-menu-shadow: #000 0px 0px 0px 0px, #0000000f 0px 0px 0px 1px, #000000f0 0px 10px 15px -3px,
+    #0000008f 0px 4px 6px -2px;
 }
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  color: white;
 }
+/* 
+.MuiSvgIcon-root {
+  color: white !important
+} */
 
 body {
-  color: var(--foreground);
   background-image: url("../../public/images/background.jpg");
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
@@ -32,13 +36,25 @@ a {
   color: inherit;
   text-decoration: none;
 }
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
-.timePicker label.MuiFormLabel-root{
-  color: var(--secondary-color) !important;
+.timePicker label.MuiFormLabel-root {
   font-weight: bold;
+}
+div[role="presentation"].MuiAutocomplete-popper {
+  z-index: 1000000;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hideScrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hideScrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.MuiStack-root, .MuiBox-root{
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

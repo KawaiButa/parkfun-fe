@@ -4,8 +4,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "", proces
 
 export const useUploadImage = (bucket: string) => {
   const data = localStorage.getItem("profile");
-  if (!data) throw new Error("You have to login first");
-  const profile = JSON.parse(data);
+  const profile = data ? JSON.parse(data) : {};
   const getPublicUrl = (key: string) => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public" + "/" + key;
     return url;
