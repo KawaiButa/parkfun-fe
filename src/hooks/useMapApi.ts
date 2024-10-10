@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 
 import { AzureKeyCredential } from "@azure/core-auth";
@@ -7,13 +7,16 @@ import MapsSearch, { FeaturesItemOutput, isUnexpected } from "@azure-rest/maps-s
 import { constants } from "@/constants";
 
 import useDebounce from "./useDebounce";
+
 const credential = new AzureKeyCredential(constants.AZURE_MAP_KEY);
 const client = MapsSearch(credential);
+
 export const useSearchMapAPI = () => {
   const [param, setParam] = useState("");
   const [locations, setLocation] = useState<FeaturesItemOutput[]>([]);
   const debouncedValue = useDebounce(param, 500);
   const search = (value: string) => {
+    if(value === "") return
     client
       .path("/geocode")
       .get({ queryParameters: { query: value } })
@@ -23,7 +26,7 @@ export const useSearchMapAPI = () => {
         }
 
         if (res.body.features) {
-          const result =  (res.body.features ?? []);
+          const result = res.body.features ?? [];
           setLocation(result);
         }
         return [];
@@ -31,6 +34,6 @@ export const useSearchMapAPI = () => {
   };
   useEffect(() => {
     search(debouncedValue);
-  }, [debouncedValue])
+  }, [debouncedValue]);
   return { locations, setParam };
 };

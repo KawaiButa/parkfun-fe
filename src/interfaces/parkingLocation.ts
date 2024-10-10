@@ -1,4 +1,5 @@
 import { Image } from "./image";
+import { ParkingSlot } from "./parkingSlot";
 import { Partner } from "./partner";
 import { PaymentMethod } from "./paymentMethod";
 import { PricingOption } from "./pricingOption";
@@ -14,4 +15,5 @@ export interface ParkingLocation {
   pricingOption: PricingOption;
   description: string;
   images: Image[];
+  parkingSlots: ParkingSlot[];
 }

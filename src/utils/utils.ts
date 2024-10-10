@@ -1,4 +1,4 @@
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import _, { ObjectIterateeCustom } from "lodash";
 
 const filterAndSearch = <T>(props: {
@@ -21,4 +21,17 @@ const timeToSeconds = (time: Dayjs) => {
   return hours * 3600 + minutes * 60 + seconds;
 };
 
-export { validateEmptyString, timeToSeconds, filterAndSearch };
+function getNearestRoundTime(date: Dayjs, interval: number = 15): Dayjs {
+  const minutes = date.minute();
+  const roundedMinutes = Math.round(minutes / interval) * interval;
+  
+  return date.startOf('hour').add(roundedMinutes, 'minute');
+}
+
+function secondToDayTime(seconds: number): Dayjs {
+  const midnight = dayjs().startOf('day');
+  const time = midnight.add(seconds,"second");
+  return time;
+}
+
+export { validateEmptyString, timeToSeconds, filterAndSearch, getNearestRoundTime, secondToDayTime};

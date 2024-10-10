@@ -4,9 +4,11 @@ import { useState } from "react";
 
 import { AxiosError } from "axios";
 import { ObjectIterateeCustom } from "lodash";
+import queryString from "query-string";
 
 import { ParkingLocation } from "@/interfaces";
 import { ParkingLocationFormData } from "@/interfaces/parkingLocationForm";
+import { SearchParkingLocationData } from "@/interfaces/searchParkingLocationData";
 import AxiosInstance from "@/utils/axios";
 import { filterAndSearch } from "@/utils/utils";
 
@@ -119,11 +121,31 @@ export const useParkingLocation = () => {
       throw err;
     }
   };
+
+  const searchParkingLocation = async (data: SearchParkingLocationData) => {
+    try {
+      const { time, position } = data;
+      if (position.length != 2) return;
+      if (time.length != 2) return;
+      const res = await AxiosInstance.get(
+        "/parking-location?" + queryString.stringify({ ...data, lng: position[0], lat: position[1], startAt: time[0], endAt: time[1] })
+      );
+      if (res.status === 200) return res.data as ParkingLocation[];
+      return null;
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message = err.response?.data.message;
+        throw new Error(message);
+      }
+      throw err;
+    }
+  };
   return {
     createParkingLocation,
     fetchOneParkingLocation,
     fetchParkingLocation,
     parkingLocationList,
+    searchParkingLocation,
     deleteParkingLocation,
     updateParkingLocation,
   };
