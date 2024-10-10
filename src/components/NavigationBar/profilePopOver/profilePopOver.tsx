@@ -24,7 +24,7 @@ const ProfilePopOver = (props: ProfilePopoverProps) => {
     >
       <ContainerFlexColumn>
         {linkList.map(({ label, href, onClick }) => (
-          <Button variant="text" key={href} onClick={onClick}>
+          <Button variant="text" key={href} onClick={onClick} fullWidth>
             <Link href={href ?? ""}>{label}</Link>
           </Button>
         ))}

@@ -47,6 +47,4 @@ export const partnerTheme = createTheme({
       secondary: '#6C5D5D',
     },
   },
-  // You can add more theme customizations here, such as:
-  // typography, spacing, breakpoints, components, etc.
 });
