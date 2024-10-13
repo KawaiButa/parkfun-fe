@@ -11,30 +11,32 @@ import {
   FormControl,
   FormControlLabel,
   IconButton,
-  Paper,
   Radio,
   RadioGroup,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
+import { useNotifications } from "@toolpad/core";
+import atlas, { source } from "azure-maps-control";
 import dayjs from "dayjs";
 import { isNumber } from "lodash";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { AzureMapFeature, useAzureMaps } from "react-azure-maps";
+import { AzureMapLayerProvider, useAzureMaps } from "react-azure-maps";
 import { Controller, useForm } from "react-hook-form";
 import Carousel from "react-material-ui-carousel";
 
 import BookingTimePicker from "@/components/bookingForm/bookingTimePicker/bookingTimePicker";
 import BookingModal from "@/components/bookingModal/bookingModal";
 import FilterForm from "@/components/filterForm/filterForm";
-import { AzureRoute } from "@/hooks/azureRoute";
+import ParkingLocationPanel from "@/components/parkingLocationPanel/parkingLocationPanel";
 import { useSearchMapAPI } from "@/hooks/useMapApi";
 import { useParkingLocation } from "@/hooks/useParkingLocation";
 import { useParkingService } from "@/hooks/useParkingService";
 import { useParkingSlotType } from "@/hooks/useParkingSlotType";
 import { ParkingLocation } from "@/interfaces";
+import { AzureRoute } from "@/interfaces/azureRoute";
 import { ParkingService } from "@/interfaces/parkingService";
 import { ParkingSlotType } from "@/interfaces/parkingSlotType";
 import { SearchParkingLocationData } from "@/interfaces/searchParkingLocationData";
@@ -45,6 +47,7 @@ const AzureMapWithoutSSR = dynamic(() => import("@/components/azureMap/azureMapC
   loading: () => <p>Loading React azure maps ...</p>,
   ssr: false,
 });
+
 const MapPage = () => {
   const formRef = useRef<HTMLFormElement | null>(null);
   const searchParam = useSearchParams();
@@ -54,15 +57,15 @@ const MapPage = () => {
   const [openFilter, setOpenFilter] = useState(false);
   const { parkingServiceList, fetchParkingService } = useParkingService();
   const { parkingSlotTypeList, fetchParkingSlotType } = useParkingSlotType();
-  const { mapRef } = useAzureMaps();
-  const [center, setCenter] = useState<number[]>([0, 0]);
+  const { mapRef, isMapReady } = useAzureMaps();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [sortBy, setSortBy] = useState("distance");
+  const notifications = useNotifications();
   const filterFormData = [
-    { name: "width", type: "slider", label: "Width", max: "500"},
-    { name: "height", type: "slider", label: "Height", max: "500"},
-    { name: "length", type: "slider", label: "Length", max: "500"},
+    { name: "width", type: "slider", label: "Width", max: "500" },
+    { name: "height", type: "slider", label: "Height", max: "500" },
+    { name: "length", type: "slider", label: "Length", max: "500" },
     { name: "radius", type: "slider", label: "Radius" },
     { name: "price", type: "slider", label: "Price" },
     {
@@ -87,8 +90,11 @@ const MapPage = () => {
       position: [0, 0],
       type: "All",
       price: [10, 1000],
-      time: [timeToSeconds(getNearestRoundTime(dayjs())), timeToSeconds(dayjs()) + 3600],
-      radius: 10,
+      time:
+        searchParam.get("startAt") && searchParam.get("endAt")
+          ? [+searchParam.get("startAt")!, +searchParam.get("endAt")!]
+          : [timeToSeconds(getNearestRoundTime(dayjs())), timeToSeconds(dayjs()) + 3600],
+      radius: 10000,
       width: 90,
       height: 200,
       length: 300,
@@ -96,22 +102,43 @@ const MapPage = () => {
     },
   });
   const { setParam, locations } = useSearchMapAPI();
-  useEffect(() => {
-    searchParam.forEach((value, key) => setValue(key as keyof SearchParkingLocationData, +value));
-    if (!searchParam.get("lat") && !searchParam.get("lng") && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setCenter([position.coords.longitude, position.coords.latitude]);
-      });
+  const setCenter = (point: number[]) => {
+    if (mapRef) {
+      const dataSource = mapRef.sources.getById("center AzureMapDataSourceProvider") as source.DataSource;
+      if (!dataSource) return;
+      const centerShape = dataSource.getShapeById("center");
+      if (!centerShape) {
+        dataSource.add(
+          new atlas.data.Feature(
+            new atlas.data.Point(point),
+            {
+              id: "center",
+              type: "Point",
+            },
+            "center"
+          )
+        );
+      } else centerShape.setCoordinates(point);
+      mapRef.setCamera({ center: point, zoom: 16 });
     }
-    fetchParkingSlotType();
-    fetchParkingService();
-  }, []);
+  };
   useEffect(() => {
-    if (mapRef && selectedParkingLocation && selectedParkingLocation.lat && selectedParkingLocation.lng) {
-      const center = [+selectedParkingLocation.lng, +selectedParkingLocation.lat];
-      mapRef.setCamera({ center: center, zoom: 16 });
+    if (isMapReady) {
+      let point = [0, 0];
+      if (searchParam.get("lat") && searchParam.get("lng")) {
+        point = [+searchParam.get("lng")!, +searchParam.get("lat")!];
+      } else {
+        navigator.geolocation.getCurrentPosition((position) => {
+          point = [position.coords.longitude, position.coords.latitude];
+        });
+      }
+      setValue("position", point);
+
+      fetchParkingSlotType();
+      fetchParkingService();
+      handleSubmit(onSubmit)();
     }
-  }, [mapRef, selectedParkingLocation]);
+  }, [mapRef, isMapReady]);
   const buildParkingLocationList = () => {
     if (isLoading) return <CircularProgress />;
     if (!parkingLocationList.length)
@@ -133,23 +160,56 @@ const MapPage = () => {
         <ParkingLocationCard
           key={parkingLocation.id}
           parkingLocation={parkingLocation}
-          onClick={(e, value) => setSelectedParkingLocation(value)}
-          origin={center}
+          onClick={(e, value) => {
+            setSelectedParkingLocation(value);
+            if (value.lat && value.lng && mapRef) mapRef.setCamera({center: [+value.lng, +value.lat], zoom: 16});
+          }}
         />
       );
     });
   };
+  const getRoute = async (parkingLocationList: ParkingLocation[]): Promise<ParkingLocation[]> => {
+    if (parkingLocationList.length == 0) return [];
+    const destinations = parkingLocationList.filter(({ lat, lng }) => lat && lng).map(({ lat, lng }) => [lng!, lat!]);
+    try {
+      const res = await AzureAPI.routing([0, 0], destinations);
+      const locationWithRoute = parkingLocationList.map((location, index) => ({ ...location, route: res[index] }));
+      return locationWithRoute;
+    } catch (e) {
+      notifications.show((e as Error).message, {
+        severity: "error",
+        autoHideDuration: 5000,
+      });
+      return parkingLocationList;
+    }
+  };
   const onSubmit = (formData: SearchParkingLocationData) => {
     setIsLoading(true);
-    mapRef?.setCamera(formData.position);
+    setCenter(formData.position);
     const { type, ...data } = formData;
     (isNumber(type) ? searchParkingLocation({ ...data, type }) : searchParkingLocation(data))
       .then((result) => {
-        setParkingLocation(result ?? []);
+        const typeSafedResult = result ?? [];
+        setParkingLocation(typeSafedResult);
+        getRoute(typeSafedResult).then((value) => {
+          if (mapRef) {
+            const dataSource = mapRef.sources.getById(
+              "parkingLocation AzureMapDataSourceProvider"
+            ) as source.DataSource;
+            dataSource.clear();
+            dataSource.add(
+              value
+                .filter(({ lat, lng }) => lat && lng)
+                .map((location) => {
+                  const { lat, lng } = location;
+                  return new atlas.data.Feature(new atlas.data.Point([lng!, lat!]), location);
+                })
+            );
+          }
+        });
       })
       .finally(() => setIsLoading(false));
   };
-
   return (
     <>
       <Box
@@ -178,7 +238,6 @@ const MapPage = () => {
             zIndex: 1,
             justifyContent: "flex-start",
             padding: "20px 10px",
-            overflow: "auto",
           }}
         >
           <Stack direction="row" width={"100%"} alignItems="center">
@@ -192,7 +251,8 @@ const MapPage = () => {
                 },
               }}
               onChange={(_, value) => {
-                setValue("position", value?.geometry.coordinates ?? []);
+                const point = value?.geometry.coordinates;
+                if (point) setValue("position", point);
                 handleSubmit(onSubmit)();
               }}
               renderInput={(param) => {
@@ -284,7 +344,14 @@ const MapPage = () => {
               );
             }}
           />
-          {buildParkingLocationList()}
+          <Stack
+            sx={{
+              width: "100%",
+              overflow: "auto",
+            }}
+          >
+            {buildParkingLocationList()}
+          </Stack>
         </Stack>
         <Stack
           className="detail-panel"
@@ -307,114 +374,12 @@ const MapPage = () => {
             padding: "10px",
           }}
         >
-          <Stack direction="row" justifyContent="space-between" alignItems="center" position="relative">
-            <Typography variant="h3" fontWeight={600} color="primary">
-              Parking details:
-            </Typography>
-            <IconButton
-              sx={{
-                width: "fit-content",
-              }}
-              onClick={() => setSelectedParkingLocation(null)}
-            >
-              <Close color="primary" />
-            </IconButton>
-          </Stack>
           {selectedParkingLocation && (
-            <>
-              <Carousel
-                sx={{
-                  width: "100%",
-                  minHeight: "300px",
-                  padding: "0px 10px",
-                }}
-              >
-                {selectedParkingLocation.images.map((image) => (
-                  <img
-                    key={image.id}
-                    src={image.url}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover", // or cover, scale-down, etc.
-                      borderRadius: "5px",
-                    }}
-                    alt={`Image ${image.id}`}
-                  />
-                ))}
-              </Carousel>
-              <Typography variant="h5" fontWeight={500}>
-                {selectedParkingLocation.name}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  padding: "0px 10px",
-                }}
-              >
-                {selectedParkingLocation.address}
-              </Typography>
-              <Paper
-                sx={{
-                  padding: "10px",
-                }}
-              >
-                <Typography variant="body1" fontWeight={500}>
-                  About us:
-                </Typography>
-                <Typography variant="caption" ml={1}>
-                  {selectedParkingLocation.description}
-                </Typography>
-              </Paper>
-              <Paper
-                sx={{
-                  padding: "10px",
-                }}
-              >
-                <Typography variant="body2">
-                  <Typography variant="h6" fontWeight={500}>
-                    Owner:
-                  </Typography>
-                  <Typography ml={1}>{selectedParkingLocation.partner?.user.name}</Typography>
-                </Typography>
-                <Typography variant="body2">
-                  <Typography variant="h6" fontWeight={500}>
-                    Description:
-                  </Typography>
-                  <Typography ml={1}>{selectedParkingLocation.partner?.description}</Typography>
-                </Typography>
-                <Typography variant="body2">
-                  <Typography variant="h6" fontWeight={500}>
-                    Location:
-                  </Typography>
-                  <Typography ml={1}>{selectedParkingLocation.partner?.location}</Typography>
-                </Typography>
-                <Typography variant="body2">
-                  <Typography variant="h6" fontWeight={500}>
-                    Contact:
-                  </Typography>
-                  <Box ml={1}>
-                    {`Email: ${selectedParkingLocation.partner?.user.email} `}
-                    <br />
-                    {`Phone number: ${selectedParkingLocation.partner?.user.phoneNumber}`}
-                  </Box>
-                </Typography>
-              </Paper>
-
-              <Button
-                variant="contained"
-                sx={{
-                  position: "fixed",
-                  bottom: "10px",
-                  width: "200px",
-                }}
-                onClick={() => {
-                  setOpen(true);
-                }}
-              >
-                Book
-              </Button>
-            </>
+            <ParkingLocationPanel
+              parkingLocation={selectedParkingLocation}
+              onBook={() => setOpen(true)}
+              onClose={() => setSelectedParkingLocation(null)}
+            />
           )}
         </Stack>
         <Stack
@@ -425,21 +390,27 @@ const MapPage = () => {
             zIndex: 2,
             width: {
               xs: "100%",
-              md: "500px",
+              md: "490px",
             },
             height: "80%",
-            overflow: "hidden",
+            overflow: "scroll",
             transition: "bottom 0.3s ease-in-out",
             bottom: openFilter ? "0px" : "-100%",
             gap: "10px",
+            borderRadius: "5px",
             backgroundColor: "background.paper",
             justifyContent: "flex-start",
             padding: "20px 10px",
           }}
         >
-          <Typography variant="h3" fontWeight={600} color="primary">
-            Filter by:
-          </Typography>
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography variant="h3" fontWeight={600} color="primary">
+              Filter by:
+            </Typography>
+            <IconButton>
+              <Close onClick={() => setOpenFilter(false)} />
+            </IconButton>
+          </Stack>
           <Box sx={{ padding: "0 10px" }}>
             <FilterForm control={control} data={filterFormData}></FilterForm>
           </Box>
@@ -453,13 +424,25 @@ const MapPage = () => {
             image: "pin-blue",
           }}
           onClick={(e) => setSelectedParkingLocation(e as ParkingLocation)}
-          render={(value) => (
-            <AzureMapFeature
-              id={"" + (value as ParkingLocation).id}
-              type="Point"
-              coordinate={[(value as ParkingLocation).lng ?? 0, (value as ParkingLocation).lat ?? 0]}
-              properties={{
-                ...(value as ParkingLocation),
+          render={() => (
+            <AzureMapLayerProvider
+              id="parkingLocation AuzureLayerProvider"
+              type="SymbolLayer"
+              options={{
+                iconOptions: {
+                  image: "blue-red",
+                },
+              }}
+            />
+          )}
+          renderCenter={() => (
+            <AzureMapLayerProvider
+              id="center AuzureLayerProvider"
+              type="SymbolLayer"
+              options={{
+                iconOptions: {
+                  image: "pin-red",
+                },
               }}
             />
           )}
@@ -480,12 +463,10 @@ const MapPage = () => {
           }}
           onClick={() => {
             if (mapRef) {
-              navigator.geolocation.getCurrentPosition((position) => {
-                mapRef.setCamera({
-                  center: [position.coords.longitude, position.coords.latitude],
-                  zoom: 16,
-                });
-              });
+              const dataSource = mapRef.sources.getById("center AzureMapDataSourceProvider") as source.DataSource;
+              if (!dataSource) return;
+              const centerShape = dataSource.getShapeById("center");
+              if (centerShape) mapRef?.setCamera({ center: centerShape.getCoordinates(), zoom: 16 });
             }
           }}
         >
@@ -506,20 +487,13 @@ const MapPage = () => {
 const ParkingLocationCard = (props: {
   parkingLocation: ParkingLocation;
   onClick: (e: MouseEvent, value: ParkingLocation) => void;
-  origin: number[];
+  route?: AzureRoute;
 }) => {
-  const { parkingLocation, origin, onClick } = props;
-  const [routingSummary, setRoutingSummary] = useState<AzureRoute | null>(null);
-  useEffect(() => {
-    const { lat, lng } = parkingLocation;
-    if (lat && lng)
-      AzureAPI.routing(origin, [lng, lat]).then((value) => {
-        setRoutingSummary(value[0]);
-      });
-  }, []);
+  const { parkingLocation, route, onClick } = props;
   return (
     <Stack
       component={"button"}
+      type="button"
       key={parkingLocation.id}
       sx={{
         margin: "10px",
@@ -544,9 +518,10 @@ const ParkingLocationCard = (props: {
       <Carousel
         sx={{
           width: "160px",
-          height: "100%",
+          // height: "100%",
         }}
         indicators={false}
+        navButtonsAlwaysInvisible
       >
         {parkingLocation.images.map((image) => (
           <img
@@ -569,11 +544,11 @@ const ParkingLocationCard = (props: {
           </Typography>
           <Typography variant="caption">{parkingLocation.address}</Typography>
         </Box>
-        {routingSummary && (
+        {route && (
           <Stack direction="row" justifyContent="space-between">
             <Typography fontSize="13px">
               <DirectionsWalk sx={{ fontSize: "16px" }} />
-              {" " + routingSummary.lengthInMeters / 1000} km
+              {" " + route.lengthInMeters / 1000} km
             </Typography>
           </Stack>
         )}

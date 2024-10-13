@@ -25,13 +25,14 @@ export const useParkingLocation = () => {
     try {
       const res = await AxiosInstance.get("/parking-location");
       if (res.status === 200) {
+        const data = res.data.data;
         if (props) {
-          const filteredData = filterAndSearch({ data: res.data, ...props });
+          const filteredData = filterAndSearch({ data, ...props });
           setParkingLocationList(filteredData);
           return filteredData;
         }
-        setParkingLocationList(res.data);
-        return res.data;
+        setParkingLocationList(data);
+        return data;
       }
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -130,7 +131,7 @@ export const useParkingLocation = () => {
       const res = await AxiosInstance.get(
         "/parking-location?" + queryString.stringify({ ...data, lng: position[0], lat: position[1], startAt: time[0], endAt: time[1] })
       );
-      if (res.status === 200) return res.data as ParkingLocation[];
+      if (res.status === 200) return res.data.data as ParkingLocation[];
       return null;
     } catch (err) {
       if (err instanceof AxiosError) {

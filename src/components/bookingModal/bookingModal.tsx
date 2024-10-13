@@ -19,7 +19,7 @@ import { DialogProps, useDialogs, useNotifications } from "@toolpad/core";
 import { AxiosError } from "axios";
 import dayjs from "dayjs";
 import Image from "next/image";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import Carousel from "react-material-ui-carousel";
 
 import { useSession } from "@/context/authenticationContext";
@@ -54,7 +54,7 @@ const BookingModal = (props: BookingModalProps) => {
     },
     resolver: yupResolver(bookingValidationSchema),
   });
-
+  const time = useWatch({ control, name: "time" });
   useEffect(() => {
     if (startAt && endAt) {
       reset((prev) => ({ ...prev, startAt, endAt }));
@@ -68,8 +68,8 @@ const BookingModal = (props: BookingModalProps) => {
     }
   }, [endAt, startAt, props.parkingSlotList]);
   const onSubmit = (formData: BookingFormData) => {
-    if(!session) {
-      dialogs.open(requestLoginDialog)
+    if (!session) {
+      dialogs.open(requestLoginDialog);
     }
     try {
       const result = bookParkingLocation(formData);
@@ -96,7 +96,6 @@ const BookingModal = (props: BookingModalProps) => {
       sx={{
         display: "flex",
         p: 1,
-
         alignItems: "center",
         justifyContent: "center",
       }}
@@ -111,6 +110,11 @@ const BookingModal = (props: BookingModalProps) => {
               xs: "90%",
               md: "700px",
             },
+            height: {
+              xs: "fit-content",
+              md: "80vh",
+            },
+            overflow: "scroll",
             maxWidth: "100%",
             gap: "20px",
             padding: "20px",
@@ -143,7 +147,7 @@ const BookingModal = (props: BookingModalProps) => {
               sx={{
                 backgroundColor: "background.default",
                 borderRadius: "5px",
-                height: "300px",
+                height: "fit-content",
                 overflow: "auto",
                 maxHeight: "300px",
               }}
@@ -160,7 +164,8 @@ const BookingModal = (props: BookingModalProps) => {
                         borderRadius: "5px",
                         backgroundColor: "background.paper",
                         overflow: "scroll",
-                        border: "none",
+                        border: selectedParkingSlot && parkingSlot.id === selectedParkingSlot.id ? "2px solid" : "none",
+                        borderColor: "primarymain",
                         "&:hover": {
                           border: "1.5px solid",
                           borderColor: "primary.main",
@@ -215,7 +220,7 @@ const BookingModal = (props: BookingModalProps) => {
             </Stack>
           </Stack>
           <Typography variant="h4" mt={2}>
-            Details
+            {selectedParkingSlot?.name}
           </Typography>
           <Stack m={2}>
             <Typography variant="h6">Access:</Typography>
@@ -249,6 +254,16 @@ const BookingModal = (props: BookingModalProps) => {
               />
             </Box>
           </Stack>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end" my={2}>
+            <Typography variant="h4" mr={3}>
+              Total fee:
+            </Typography>
+            {selectedParkingSlot && (
+              <Typography variant="h4">
+                {((selectedParkingSlot?.price * (time[1] - time[0])) / 3600).toFixed(2)}
+              </Typography>
+            )}
+          </Stack>
           <LoadingButton variant="contained" fullWidth type="submit">
             Book
           </LoadingButton>
@@ -264,9 +279,7 @@ const requestLoginDialog = ({ open, onClose }: DialogProps) => {
   return (
     <Dialog open={open} onClose={() => onClose}>
       <DialogTitle>Want to book this slot?</DialogTitle>
-      <DialogContent>
-        Please login first in order to book this slot
-      </DialogContent>
+      <DialogContent>Please login first in order to book this slot</DialogContent>
     </Dialog>
   );
 };

@@ -12,7 +12,7 @@ export const userTheme = createTheme({
     secondary: {
       main: "#171616",
       light: "#3B3B3B",
-      dark: "#fff",
+      dark: "#121111",
       contrastText: "#fff",
     },
     error: {
