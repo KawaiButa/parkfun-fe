@@ -27,8 +27,7 @@ const Layout = ({
               color: "secondary",
               onClick: (e) => {
                 e.preventDefault();
-                authentication?.signOut();
-                router.push("/logout");
+                authentication?.signOut()
               },
             },
           },

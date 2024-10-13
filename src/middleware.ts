@@ -11,6 +11,7 @@ export function middleware(request: NextRequest) {
   }
   const accessToken = request.cookies.get("accessToken");
   if (!accessToken) return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
+  console.log(request.nextUrl.pathname)
   const data = decodeJwt(accessToken.value) as JWTPayload;
   if (request.nextUrl.pathname.startsWith("/logout")) {
     const logOutRoute = data.role == "user" ? "/home" : `/${data.role}/login`;
