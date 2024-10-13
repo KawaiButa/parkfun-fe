@@ -1,6 +1,10 @@
-import { Partner } from "./partner";
-import { User } from "./user";
-
-export interface PartnerFormData extends Omit<Partner & User, "id" | "user" | "partner"| "role">{
+export interface PartnerFormData {
   password: string;
+  image?: File | string;
+  typeId: number;
+  location: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  description: string;
 }

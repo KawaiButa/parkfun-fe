@@ -1,17 +1,24 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Typography,
-} from "@mui/material";
+import { useEffect, useState } from "react";
+
+import { Box, Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 import PartnerForm from "@/components/partnerForm/partnerForm";
-const AddPartner = () => {
-  
+import { usePartner } from "@/hooks/usePartner";
+import { Partner } from "@/interfaces";
+const EditPartner = ({ params }: { params: { id: number } }) => {
   const router = useRouter();
-
+  const { fetchOnePartner } = usePartner();
+  const [partner, setPartner] = useState<Partner | null>();
+  useEffect(() => {
+    fetchOnePartner(params.id)
+      .then((value) => {
+        setPartner(value);
+      })
+      .catch(() => router.back());
+  }, []);
   return (
     <Box>
       <Box sx={{ display: "flex", marginBottom: "20px", justifyContent: "space-between" }}>
@@ -28,9 +35,9 @@ const AddPartner = () => {
           Back
         </Button>
       </Box>
-      <PartnerForm />
+      <PartnerForm initValue={partner} />
     </Box>
   );
 };
 
-export default AddPartner;
+export default EditPartner;

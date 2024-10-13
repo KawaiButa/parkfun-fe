@@ -21,9 +21,15 @@ export function middleware(request: NextRequest) {
   }
   if (!data || !data.id) return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
   const isMatchRole = request.nextUrl.href.includes(data.role);
-  if (isMatchRole) return NextResponse.next();
-  const redirectRoute = data.role == "user" ? "/home" : `/${data.role}`;
-  return NextResponse.redirect(new URL(redirectRoute, request.url));
+  if (isMatchRole){
+    if([`/${data.role}`, "/"].includes(request.nextUrl.pathname)){
+      const redirectRoute = data.role == "user" ? "/home" : `/${data.role}/dashboard`;
+      return NextResponse.redirect(new URL(redirectRoute, request.url));
+    }
+    return NextResponse.next();
+  } 
+  return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
+    
 }
 const redirectToLogin = (url: string) => {
   if (url.includes("/admin")) return "/admin/login";

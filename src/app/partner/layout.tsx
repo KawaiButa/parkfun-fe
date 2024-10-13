@@ -1,18 +1,18 @@
 "use client";
 import { useContext } from "react";
 
-import { Build, Dashboard } from "@mui/icons-material";
-import { NotificationsProvider } from "@toolpad/core";
+import { Build, CarCrash, Dashboard } from "@mui/icons-material";
+import { DialogsProvider, NotificationsProvider } from "@toolpad/core";
 import { AuthenticationContext, Navigation } from "@toolpad/core/AppProvider";
 import { AppProvider } from "@toolpad/core/nextjs";
 
 import { constants } from "@/constants";
-import { useSession } from "@/context/authenticationContext";
+import { SessionProvider, useSession } from "@/context/authenticationContext";
 import { partnerTheme } from "@/themes/partner";
 const NAVIGATION: Navigation = [
   {
     kind: "header",
-    title: "home",
+    title: "Home",
   },
   {
     segment: "partner",
@@ -23,6 +23,11 @@ const NAVIGATION: Navigation = [
     segment: "partner/parkinglocation",
     title: "Parking location",
     icon: <Build />,
+  },
+  {
+    segment: "partner/parkingslot",
+    title: "Parking slot",
+    icon: <CarCrash />,
   },
 ];
 
@@ -45,7 +50,9 @@ const Layout = ({
       session={session}
     >
       <NotificationsProvider>
-        {children}
+        <DialogsProvider>
+          <SessionProvider>{children}</SessionProvider>
+        </DialogsProvider>
       </NotificationsProvider>
     </AppProvider>
   );

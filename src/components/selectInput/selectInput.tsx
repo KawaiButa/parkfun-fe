@@ -1,23 +1,42 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
-import { BaseSelectProps, FormControl, InputLabel, MenuItem, MenuProps, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
-interface SelectInputProps extends BaseSelectProps {
-  options: Array<string>;
-  menuProps?: Partial<MenuProps>,
+import {
+  BaseSelectProps,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  MenuProps,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
+interface SelectInputProps<T, K> extends BaseSelectProps {
+  options: Array<T>;
+  menuProps?: Partial<MenuProps>;
+  transformToLabel?: (data: T) => string;
+  transformToValue?: (data: T) => K;
+  value?: T;
 }
 
-const SelectInput = (props: SelectInputProps) => {
-  const {onChange , options, label, menuProps, ...remain} = props;
-  const [selectedValue, setSelectedValue] = useState<string>(options[0]);
+const SelectInput = <T, K>(props: SelectInputProps<T, K>) => {
+  const { onChange, options, value, label, menuProps, transformToLabel, transformToValue, ...remain } = props;
+  const [selectedValue, setSelectedValue] = useState<T>(options[0]);
   function handleOnChange(event: SelectChangeEvent<unknown>, child: ReactNode): void {
     event.preventDefault();
-    setSelectedValue(event.target.value as string);
-    if(onChange)
-      onChange!(event, child);
+    setSelectedValue(event.target.value as T);
+    if (onChange) onChange!(event, child);
   }
-
+  useEffect(() => {
+    if(value)
+    setSelectedValue(value)
+  },[])
   return (
-    <FormControl size="small">
+    <FormControl
+      size="small"
+      sx={{
+        width: "100%",
+      }}
+    >
       <InputLabel>{label}</InputLabel>
       <Select
         autoWidth
@@ -27,11 +46,15 @@ const SelectInput = (props: SelectInputProps) => {
         MenuProps={menuProps}
         {...remain}
       >
-        {options.map((value) => (
-          <MenuItem key={value} value={value}>
-            {value}
-          </MenuItem>
-        ))}
+        {options.map((rawValue) => {
+          const label = transformToLabel ? transformToLabel(rawValue) : String(rawValue);
+          const value = transformToValue ? transformToValue(rawValue) : String(rawValue);
+          return (
+            <MenuItem key={value} value={value}>
+              {label}
+            </MenuItem>
+          );
+        })}
       </Select>
     </FormControl>
   );

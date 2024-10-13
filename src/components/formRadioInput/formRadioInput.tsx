@@ -17,6 +17,7 @@ export interface FormTextInputProps<T, K>
   label?: string;
   rule?: Omit<RegisterOptions, "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled">;
   options: Array<T>;
+  multiple?: boolean;
   transformLabel?: (value: T, options?: T[]) => string;
   transformValue?: (value: T, options?: T[]) => K;
   radioProps?: RadioProps;

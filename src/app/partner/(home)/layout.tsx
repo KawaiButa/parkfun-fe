@@ -5,7 +5,6 @@ import { AuthenticationContext } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { useRouter } from "next/navigation";
 
-
 const Layout = ({
   children,
 }: Readonly<{
