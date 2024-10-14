@@ -286,16 +286,18 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
           marginRight: "0",
         }}
       >
-        <Button
-          variant="contained"
-          color="secondary"
-          sx={{
-            marginRight: "10px",
-          }}
-          onClick={() => reset()}
-        >
-          Reset
-        </Button>
+        {!isSubmitting && (
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{
+              marginRight: "10px",
+            }}
+            onClick={() => reset()}
+          >
+            Reset
+          </Button>
+        )}
 
         <LoadingButton loading={isSubmitting} variant="contained" color="primary" type="submit">
           Save

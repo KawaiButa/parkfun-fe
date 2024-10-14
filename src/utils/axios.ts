@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import { redirect } from "next/navigation";
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_HOSTNAME;
 const REFRESH_URL = process.env.NEXT_PUBLIC_BACKEND_URL + "/refresh";
 const optionsHeader = { "Content-Type": "application/json" };
@@ -32,7 +33,7 @@ AxiosInstance.interceptors.response.use(
 
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) {
-        redirectToLogin();
+        redirect("/logout");
         return Promise.reject(error);
       }
 

@@ -18,6 +18,12 @@ export function middleware(request: NextRequest) {
     response.cookies.delete("accessToken");
     return response;
   }
+  if (request.nextUrl.pathname.startsWith("/logout")) {
+    const logOutRoute = data.role == "user" ? "/home" : `/${data.role}/login`;
+    const response = NextResponse.redirect(new URL(logOutRoute, request.url));
+    response.cookies.delete("accessToken");
+    return response;
+  }
   if (!data || !data.id) return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
   const isMatchRole = request.nextUrl.href.includes(data.role as string);
   if (isMatchRole){

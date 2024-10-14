@@ -23,11 +23,11 @@ export function usePartner() {
       const res = await AxiosInstance.get("/partner");
       if (res.status === 200) {
         if (props) {
-          const filteredData = filterAndSearch({ data: res.data, ...props });
+          const filteredData = filterAndSearch({ data: res.data.data, ...props });
           setPartnerList(filteredData);
           return filteredData;
         }
-        return res.data as Partner[];
+        return res.data.data as Partner[];
       }
     } catch (err) {
       if (err instanceof AxiosError) {

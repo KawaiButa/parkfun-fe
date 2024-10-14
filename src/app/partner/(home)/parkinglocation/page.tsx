@@ -32,7 +32,7 @@ const columns: TableColumn[] = [
     align: "right",
   },
   {
-    id: "parkingSlot",
+    id: "parkingSlots",
     label: "Available",
     align: "right",
     format: (value: ParkingSlot[]) => value.filter((a) => a.isAvailable).length + "/" + value.length,

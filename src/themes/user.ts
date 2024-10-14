@@ -109,6 +109,6 @@ export const userTheme = createTheme({
     
   },
   zIndex: {
-    modal: 1000,
+    modal: 4,
   }
 });
