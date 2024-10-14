@@ -12,8 +12,8 @@ export const usePartnerType = () => {
     try {
       const res = await AxiosInstance.get("/partner-type");
       if (res.status === 200) {
-        setPartnerTypeList(res.data);
-        return res.data;
+        setPartnerTypeList(res.data.data);
+        return res.data.data;
       }
       return null;
     } catch (err) {

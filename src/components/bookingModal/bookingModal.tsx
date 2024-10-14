@@ -1,32 +1,18 @@
+"use client";
 import { useEffect, useState } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Close } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
-import {
-  Box,
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Modal,
-  ModalProps,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { DialogProps, useDialogs, useNotifications } from "@toolpad/core";
-import { AxiosError } from "axios";
+import { Box, CircularProgress, IconButton, Modal, ModalProps, Stack, Typography } from "@mui/material";
+import { useNotifications } from "@toolpad/core";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import Carousel from "react-material-ui-carousel";
 
-import { useSession } from "@/context/authenticationContext";
 import { useParkingSlot } from "@/hooks/useParkingSlot";
-import { BookingFormData } from "@/interfaces/bookingFormData";
 import { ParkingSlot } from "@/interfaces/parkingSlot";
-import { bookParkingLocation } from "@/utils/booking";
 import { getNearestRoundTime, secondToDayTime, timeToSeconds } from "@/utils/utils";
 
 import { bookingValidationSchema } from "./validationSchema";
@@ -39,18 +25,23 @@ export interface BookingModalProps extends Omit<ModalProps, "children"> {
   startAt?: number;
   endAt?: number;
 }
+
 const BookingModal = (props: BookingModalProps) => {
   const { startAt, endAt, onClose, ...modalProps } = props;
   const [parkingSlotList, setParkingSlotList] = useState<ParkingSlot[] | null>(null);
   const { fetchOneParkingSlot } = useParkingSlot();
   const [selectedParkingSlot, setSelectedParkingSlot] = useState<ParkingSlot | null>(null);
   const notifcations = useNotifications();
-  const session = useSession();
-  const dialogs = useDialogs();
-  const { control, reset, handleSubmit } = useForm({
+  const {
+    control,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
+      parkingSlotId: props.parkingSlotList[0],
       time: [timeToSeconds(getNearestRoundTime(dayjs())), timeToSeconds(getNearestRoundTime(dayjs())) + 3600],
-      services: [],
+      serviceIds: [],
     },
     resolver: yupResolver(bookingValidationSchema),
   });
@@ -66,30 +57,15 @@ const BookingModal = (props: BookingModalProps) => {
         setSelectedParkingSlot(filteredList[0]);
       });
     }
-  }, [endAt, startAt, props.parkingSlotList]);
-  const onSubmit = (formData: BookingFormData) => {
-    if (!session) {
-      dialogs.open(requestLoginDialog);
-    }
-    try {
-      const result = bookParkingLocation(formData);
-      notifcations.show(result, {
-        severity: "success",
-        autoHideDuration: 3000,
+  }, [endAt, startAt]);
+  useEffect(() => {
+    if (Object.keys(errors).length)
+      notifcations.show(Object.values(errors)[0].message, {
+        severity: "error",
+        autoHideDuration: 1000,
       });
-    } catch (error) {
-      if (error instanceof AxiosError)
-        notifcations.show(error.response?.data.message, {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
-      else
-        notifcations.show((error as Error).message, {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
-    }
-  };
+  }, [errors, notifcations]);
+  const onSubmit = async () => {};
   return (
     <Modal
       {...modalProps}
@@ -142,13 +118,20 @@ const BookingModal = (props: BookingModalProps) => {
               />
             </IconButton>
           </Stack>
-          <Stack direction="row" gap={"10px"}>
-            <Box
+          <Stack
+            direction="row"
+            gap={"10px"}
+            sx={{
+              borderRadius: "5px",
+              padding: "10px",
+              backgroundColor: "background.default",
+            }}
+          >
+            <Stack
+              gap="10px"
               sx={{
-                backgroundColor: "background.default",
-                borderRadius: "5px",
                 height: "fit-content",
-                overflow: "auto",
+                overflow: "scroll",
                 maxHeight: "300px",
               }}
             >
@@ -157,17 +140,17 @@ const BookingModal = (props: BookingModalProps) => {
                   return (
                     <Stack
                       component={"button"}
+                      type="button"
                       key={parkingSlot.id}
                       sx={{
-                        margin: "10px",
                         cursor: "pointer",
                         borderRadius: "5px",
                         backgroundColor: "background.paper",
                         overflow: "scroll",
                         border: selectedParkingSlot && parkingSlot.id === selectedParkingSlot.id ? "2px solid" : "none",
-                        borderColor: "primarymain",
+                        borderColor: "primary.main",
                         "&:hover": {
-                          border: "1.5px solid",
+                          border: "2px solid",
                           borderColor: "primary.main",
                         },
                       }}
@@ -177,7 +160,7 @@ const BookingModal = (props: BookingModalProps) => {
                       direction="row"
                     >
                       {parkingSlot.images.length ? (
-                        <Image
+                        <img
                           key={parkingSlot.images[0].url}
                           src={parkingSlot.images[0].url}
                           width={100}
@@ -190,7 +173,7 @@ const BookingModal = (props: BookingModalProps) => {
                     </Stack>
                   );
                 })}
-            </Box>
+            </Stack>
             <Stack flexGrow={1}>
               <Carousel
                 indicators={false}
@@ -233,7 +216,7 @@ const BookingModal = (props: BookingModalProps) => {
             <Typography variant="h6">Services:</Typography>
             <FormCheckboxInput
               control={control}
-              name="services"
+              name="serviceIds"
               options={selectedParkingSlot?.services ?? []}
               transformLabel={({ name }) => name}
               transformValue={({ id }) => id}
@@ -272,15 +255,6 @@ const BookingModal = (props: BookingModalProps) => {
         <CircularProgress />
       )}
     </Modal>
-  );
-};
-
-const requestLoginDialog = ({ open, onClose }: DialogProps) => {
-  return (
-    <Dialog open={open} onClose={() => onClose}>
-      <DialogTitle>Want to book this slot?</DialogTitle>
-      <DialogContent>Please login first in order to book this slot</DialogContent>
-    </Dialog>
   );
 };
 export default BookingModal;

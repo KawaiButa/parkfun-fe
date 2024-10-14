@@ -300,9 +300,11 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
         </>
 
         <Box sx={{ display: "flex", gap: "10px", justifyContent: "flex-end", mt: "10px" }}>
-          <Button variant="outlined" size="medium" color="info" onClick={() => reset()}>
-            Reset
-          </Button>
+          {!isSubmitting && (
+            <Button variant="outlined" size="medium" color="info" onClick={() => reset()}>
+              Reset
+            </Button>
+          )}
           <LoadingButton loading={isSubmitting} variant="contained" color="secondary" size="medium" type="submit">
             Save
           </LoadingButton>

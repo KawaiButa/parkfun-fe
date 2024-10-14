@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { Close } from "@mui/icons-material";
 import { Stack, Typography, IconButton, Paper, Box, Button, CircularProgress } from "@mui/material";
+import Image from "next/image";
 import Carousel from "react-material-ui-carousel";
 
 import { usePartner } from "@/hooks/usePartner";
@@ -99,16 +100,18 @@ const ParkingLocationPanel = (props: {
             height={"300px"}
           >
             {parkingLocation.images.map((image) => (
-              <img
+              <Image
                 key={image.id}
                 src={image.url}
                 style={{
                   width: "100%",
                   height: "100%",
-                  objectFit: "cover", // or cover, scale-down, etc.
+                  objectFit: "cover",
                   borderRadius: "5px",
                 }}
                 alt={`Image ${image.id}`}
+                width={500}
+                height={300}
               />
             ))}
           </Carousel>
@@ -149,6 +152,7 @@ const ParkingLocationPanel = (props: {
           </Button>
         </>
       )}
+      <Box height={100}/>
     </>
   );
 };

@@ -1,3 +1,4 @@
+"use client";
 import React, { ReactElement } from "react";
 
 import { IconOptions, MapMouseEvent } from "azure-maps-control";
@@ -29,21 +30,21 @@ const AzureMapComponent = <T,>(props: {
     zoom: 1,
     view: "auto",
   };
+  if (typeof window === "undefined") return <></>;
   return (
     <>
       <div style={{ height: "100vh", width: "100%" }}>
         <AzureMap options={option}>
           <link href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" rel="stylesheet" />
           <>
-          <AzureMapDataSourceProvider id="center AzureMapDataSourceProvider">
+            <AzureMapDataSourceProvider id="center AzureMapDataSourceProvider">
               {renderCenter && renderCenter()}
             </AzureMapDataSourceProvider>
-            <AzureMapDataSourceProvider id="parkingLocation AzureMapDataSourceProvider"  >       
+            <AzureMapDataSourceProvider id="parkingLocation AzureMapDataSourceProvider">
               <AzureMapLayerProvider
                 options={{
                   iconOptions: iconOptions,
                 }}
-                
                 events={{
                   click: (e: MapMouseEvent) => {
                     if (e.shapes && e.shapes.length > 0) {

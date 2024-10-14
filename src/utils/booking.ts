@@ -1,15 +1,16 @@
+"use client"
 import { AxiosError } from "axios";
 
 import { BookingFormData } from "@/interfaces/bookingFormData";
 
 import AxiosInstance from "./axios";
 
-const bookParkingLocation = async (formData: BookingFormData) => {
-  const {parkingSlotId, time, services } = formData
-  const startTime = time[0]
-  const endTime = time[1]
+const bookParkingLocation = async (formData: BookingFormData & {amount: number}) => {
+  const {parkingSlotId, time, ...data } = formData
+  const startAt = time[0]
+  const endAt = time[1]
   try{
-    const result = await AxiosInstance.post("/book", {parkingSlotId, startTime, endTime, services})
+    const result = await AxiosInstance.post("/payment", {...data, parkingSlotId, startAt, endAt})
     if(result.status === 200) return result.data;
     return null;
   } catch(err) {
