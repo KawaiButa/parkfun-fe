@@ -1,7 +1,7 @@
 "use client";
 
 import { Stack } from "@mui/material";
-import { DialogsProvider } from "@toolpad/core";
+import { DialogsProvider, NotificationsProvider } from "@toolpad/core";
 
 import NavigationBar from "@/components/NavigationBar/navigationBar";
 const AuthLayout = ({
@@ -11,10 +11,12 @@ const AuthLayout = ({
 }>) => {
   return (
     <DialogsProvider>
-      <Stack direction="column" maxHeight="100vh">
-        <NavigationBar />
-        {children}
-      </Stack>
+      <NotificationsProvider>
+        <Stack direction="column" maxHeight="100vh">
+          <NavigationBar />
+          {children}
+        </Stack>
+      </NotificationsProvider>
     </DialogsProvider>
   );
 };

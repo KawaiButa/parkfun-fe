@@ -1,6 +1,7 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Container, ContainerOwnProps, styled } from "@mui/material";
+import { useNotifications } from "@toolpad/core";
 import { useForm } from "react-hook-form";
 
 import { FormField } from "@/interfaces/formField";
@@ -50,6 +51,7 @@ const fieldDataWithValidation: Array<FormField | Array<FormField>> = [
 ];
 
 const RegisterForm = (props: ContainerOwnProps) => {
+  const notifications = useNotifications();
   const { handleSubmit, control } = useForm<RegisterFormData>({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -65,7 +67,10 @@ const RegisterForm = (props: ContainerOwnProps) => {
   const onSubmit = async (data: RegisterFormData) => {
     const result = await registerNewUser(data);
     if (result) {
-      alert(`You have successfully logged in ${JSON.stringify(result)}`);
+      notifications.show(`You have successfully logged in.`, {
+        severity: "success",
+        autoHideDuration: 2000,
+      });
     }
   };
 

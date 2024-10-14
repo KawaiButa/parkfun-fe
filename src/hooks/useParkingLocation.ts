@@ -11,8 +11,14 @@ import AxiosInstance from "@/utils/axios";
 import { filterAndSearch } from "@/utils/utils";
 
 import { useUploadImage } from "./useUploadImage";
+export interface SearchedParkingLocation extends ParkingLocation {
+  minPrice: number;
+}
 
 export const useParkingLocation = () => {
+  const limit = 20;
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(true);
   const [parkingLocationList, setParkingLocationList] = useState<ParkingLocation[] | null>(null);
   const { uploadImage, getPublicUrl, replaceImage } = useUploadImage("parkingLocation");
   const fetchParkingLocation = async (props?: {
@@ -21,16 +27,25 @@ export const useParkingLocation = () => {
     filter: ObjectIterateeCustom<ParkingLocation, boolean>;
   }) => {
     try {
-      const res = await AxiosInstance.get("/parking-location");
+      if (!hasNextPage) return;
+      const res = await AxiosInstance.get(
+        "/parking-location?" +
+          queryString.stringify({
+            limit,
+            page: page + 1,
+          })
+      );
       if (res.status === 200) {
-        const data = res.data.data;
+        let data = res.data.data;
         if (props) {
-          const filteredData = filterAndSearch({ data, ...props });
-          setParkingLocationList(filteredData);
-          return filteredData;
+          data = filterAndSearch({ data, ...props });
         }
+        const { fetchedPage, fetchedHasNextPage } = res.data.meta;
+        if (fetchedPage > page && parkingLocationList) data = parkingLocationList?.concat(data);
         setParkingLocationList(data);
-        return data;
+        setPage(fetchedPage);
+        if (fetchedHasNextPage !== hasNextPage) setHasNextPage(!hasNextPage);
+        return parkingLocationList?.concat(data);
       }
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -124,14 +139,29 @@ export const useParkingLocation = () => {
 =======
 
   const searchParkingLocation = async (data: SearchParkingLocationData) => {
+    if (!hasNextPage) return null;
     try {
       const { time, position } = data;
       if (position.length != 2) return;
       if (time.length != 2) return;
       const res = await AxiosInstance.get(
-        "/parking-location?" + queryString.stringify({ ...data, lng: position[0], lat: position[1], startAt: time[0], endAt: time[1] })
+        "/parking-location?" +
+          queryString.stringify({
+            ...data,
+            lng: position[0],
+            lat: position[1],
+            startAt: time[0],
+            endAt: time[1],
+            page: page + 1,
+            limit,
+          })
       );
-      if (res.status === 200) return res.data.data as ParkingLocation[];
+      if (res.status === 200) {
+        const { data, meta } = res.data;
+        setPage(meta.page);
+        setHasNextPage(meta.hasNextPage);
+        return data as SearchedParkingLocation[];
+      }
       return null;
     } catch (err) {
       if (err instanceof AxiosError) {

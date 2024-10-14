@@ -34,4 +34,8 @@ function secondToDayTime(seconds: number): Dayjs {
   return time;
 }
 
-export { validateEmptyString, timeToSeconds, filterAndSearch, getNearestRoundTime, secondToDayTime};
+const getDuration = (startAt: number, endAt: number) => {
+  if(startAt < endAt) return endAt - startAt;
+  return 86400 - (startAt - endAt); 
+}
+export { validateEmptyString, getDuration, timeToSeconds, filterAndSearch, getNearestRoundTime, secondToDayTime};

@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Tab, Tabs, Typography } from "@mui/material";
+import { NotificationsProvider } from "@toolpad/core";
 import { useRouter } from "next/navigation";
 
 import ContainerFlexColumn from "@/components/containerFlexColumn/containerFlexColumn";
@@ -16,8 +17,15 @@ const AuthLayout = ({
   const label = value === "login" ? "Login" : "Sign up";
   const router = useRouter();
   const session = useSession();
+  useEffect(() => {
+    if(
+      window.location.href.includes("login")) 
+      setValue("login");
+    else setValue('signup');
+  },[])
+
   return (
-    <>
+    <NotificationsProvider>
       {!session && <NavigationBar />}
       <ContainerFlexColumn
         maxWidth="sm"
@@ -67,7 +75,7 @@ const AuthLayout = ({
         </Tabs>
         {children}
       </ContainerFlexColumn>
-    </>
+    </NotificationsProvider>
   );
 };
 

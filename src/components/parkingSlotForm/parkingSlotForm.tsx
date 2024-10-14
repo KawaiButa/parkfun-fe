@@ -2,6 +2,7 @@ import React, { ChangeEvent, useEffect } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Close } from "@mui/icons-material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { Typography, Box, Grid2, Button, styled, InputAdornment } from "@mui/material";
 import { LocalizationProvider, TimeField } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -24,7 +25,6 @@ import { FormNumberInput } from "../formNumberInput.ts/formNumberInput";
 import { FormRadioInput } from "../formRadioInput/formRadioInput";
 import { FormTextInput } from "../formTextInput/formTextInput";
 import { ImageUploadProps, ImageUpload } from "../imageUpload/ImageUpload";
-import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 import SelectInput from "../selectInput/selectInput";
 
 const StyledImageUpload = styled(({ sx, ...props }: ImageUploadProps) => (
@@ -56,7 +56,7 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
     control,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(parkingSlotSchema),
     defaultValues: {
@@ -75,7 +75,7 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
   const onSubmit = async (formData: ParkingSlotFormData) => {
     try {
       const res = await createParkingSlot(formData);
-      if (res.status) {
+      if (res) {
         notification.show("Successfully create parking slot", {
           severity: "success",
           autoHideDuration: 3000,
@@ -368,10 +368,14 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
             justifyContent: "flex-end",
           }}
         >
-          <Button variant="contained" color="info" onClick={() => reset()}>
-            Reset
-          </Button>
-          <PrimaryContainedButton type="submit">Create</PrimaryContainedButton>
+          {!isSubmitting && (
+            <Button variant="contained" color="info" onClick={() => reset()}>
+              Reset
+            </Button>
+          )}
+          <LoadingButton loading={isSubmitting} type="submit" variant="contained" color="primary">
+            Create
+          </LoadingButton>
         </Box>
       </ContainerFlexColumn>
     </LocalizationProvider>

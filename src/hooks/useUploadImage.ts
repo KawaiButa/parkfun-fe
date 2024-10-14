@@ -1,16 +1,19 @@
+"use client";
 import { createClient } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "", process.env.NEXT_PUBLIC_SUPABASE_KEY ?? "");
+
+import { constants } from "@/constants";
+import { useProfile } from "@/context/profileContext";
+const supabase = createClient(constants.SUPABASE_URL,  constants.SUPABASE_KEY);
 
 export const useUploadImage = (bucket: string) => {
-  const data = localStorage.getItem("profile");
-  const profile = data ? JSON.parse(data) : {};
+  const {profile} = useProfile();
   const getPublicUrl = (key: string) => {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public" + "/" + key;
+    const url = constants.SUPABASE_URL + "/storage/v1/object/public" + "/" + key;
     return url;
   };
   const uploadImage = async (file: File) => {
-    const { data, error } = await supabase.storage.from(bucket).upload(profile.id + "/" + uuidv4(), file);
+    const { data, error } = await supabase.storage.from(bucket).upload(profile?.id + "/" + uuidv4(), file);
     if (data) return data.fullPath;
     throw new Error(error.message);
   };
@@ -23,15 +26,6 @@ export const useUploadImage = (bucket: string) => {
     if (data) return data!.path;
     throw new Error(error.message);
   };
-  const getAllImages = async () => {
-    const { data, error } = await supabase.storage.from(bucket).list(profile.id, {
-      limit: 100,
-      offset: 0,
-      sortBy: { column: "name", order: "asc" },
-    });
-    if (data) return data;
-    throw new Error(error.message);
-  };
   const replaceImage = async (file: File, key: string) => {
     const { data, error } = await supabase.storage.from(bucket).update(key, file, {
       cacheControl: "3600",
@@ -41,5 +35,5 @@ export const useUploadImage = (bucket: string) => {
     if (data) return data.fullPath;
     throw new Error(error.message);
   };
-  return { uploadImage, getPublicUrl, deleteImage, copyImage, getAllImages, replaceImage };
+  return { uploadImage, getPublicUrl, deleteImage, copyImage, replaceImage };
 };

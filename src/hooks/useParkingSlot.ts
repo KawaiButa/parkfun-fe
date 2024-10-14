@@ -65,12 +65,12 @@ export const useParkingSlot = () => {
       const res = await AxiosInstance.get("/parking-slot");
       if (res.status === 200) {
         if (props) {
-          const filteredData = filterAndSearch({ data: res.data, ...props });
+          const filteredData = filterAndSearch({ data: res.data.data, ...props });
           setParkingSlotList(filteredData);
           return filteredData;
         }
-        setParkingSlotList(res.data);
-        return res.data;
+        setParkingSlotList(res.data.data);
+        return res.data.data;
       }
       return null;
     } catch (err) {
