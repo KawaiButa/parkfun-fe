@@ -45,6 +45,7 @@ function BookingForm(props: ContainerOwnProps) {
           xs: "15px",
           md: "20px 20px",
         },
+        color: "secondary.contrastText",
         gap: "20px",
         display: "flex",
         flexDirection: {
