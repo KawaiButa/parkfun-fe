@@ -10,15 +10,15 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-interface SelectInputProps<T> extends BaseSelectProps {
+interface SelectInputProps<T,> extends BaseSelectProps {
   options: Array<T>;
   menuProps?: Partial<MenuProps>;
   transformToLabel?: (data: T) => string;
-  transformToValue?: (data: T) => string | number;
+  transformToValue?: (data: T) => string;
   value?: T;
 }
 
-const SelectInput = <T,>(props: SelectInputProps<T>) => {
+const SelectInput = <T, >(props: SelectInputProps<T>) => {
   const { onChange, options, value, label, menuProps, transformToLabel, transformToValue, ...remain } = props;
   const [selectedValue, setSelectedValue] = useState<T>(options[0]);
   function handleOnChange(event: SelectChangeEvent<unknown>, child: ReactNode): void {
@@ -50,7 +50,7 @@ const SelectInput = <T,>(props: SelectInputProps<T>) => {
           const label = transformToLabel ? transformToLabel(rawValue) : String(rawValue);
           const value = transformToValue ? transformToValue(rawValue) : String(rawValue);
           return (
-            <MenuItem key={value} value={value}>
+            <MenuItem key={label} value={value}>
               {label}
             </MenuItem>
           );

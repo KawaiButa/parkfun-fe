@@ -2,15 +2,18 @@
 
 import { ReactNode } from "react";
 
-import { BaseTextFieldProps, TextField } from "@mui/material";
-import { Control, Controller, RegisterOptions } from "react-hook-form";
+import { BaseTextFieldProps, TextField, TextFieldProps } from "@mui/material";
+import { Control, Controller, ControllerProps, RegisterOptions } from "react-hook-form";
 
-export interface FormTextInputProps extends BaseTextFieldProps {
+export interface FormTextInputProps extends Omit<BaseTextFieldProps, "slotProps"> {
   name: string;
   control: Control<any, unknown>;
   label?: string;
   rule?: Omit<RegisterOptions, "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled">;
-  slotProps?: any;
+  slotProps?: {
+    controller?: ControllerProps,
+    textField?: TextFieldProps,
+  };
   outlineColor?: string;
   startAdornment?: ReactNode;
   endAdornment?: ReactNode;
@@ -27,6 +30,7 @@ const FormTextInput = (props: FormTextInputProps) => {
     startAdornment,
     endAdornment,
     sx,
+    slotProps,
     outlineColor,
     ...textFieldProps
   } = props;
@@ -40,8 +44,8 @@ const FormTextInput = (props: FormTextInputProps) => {
           helperText={error?.message}
           error={Boolean(error)}
           onChange={(e) => {
-            onChange(e);
-            if (onInputChange) onInputChange(e);
+            onChange(e)
+            if(onInputChange) onInputChange(e)
           }}
           InputProps={{
             startAdornment: startAdornment,
@@ -58,8 +62,10 @@ const FormTextInput = (props: FormTextInputProps) => {
             },
             ...sx,
           }}
+          {...slotProps?.textField}
         />
       )}
+      {...slotProps?.controller}
     />
   );
 };

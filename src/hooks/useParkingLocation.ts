@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { AxiosError } from "axios";
 import { ObjectIterateeCustom } from "lodash";
-import queryString from "query-string";
+import queryString from 'query-string';
 
 import { ParkingLocation } from "@/interfaces";
 import { ParkingLocationFormData } from "@/interfaces/parkingLocationForm";

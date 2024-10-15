@@ -87,6 +87,7 @@ export function usePartner() {
 
   const udpatePartner = async (props: {partner: Partner, formData: PartnerFormData}) => {
     const {partner, formData: {email, password, image, ...data}} = props;
+    if(!email || !password) return;
     try {
       if(email !== partner.user.email && !password) return;
       if(image instanceof File){

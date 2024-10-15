@@ -2,10 +2,10 @@
 import { useContext, useState } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Alert, Container, ContainerOwnProps, Divider, Typography } from "@mui/material";
+import { Alert, Container, ContainerOwnProps, Divider, styled, Typography } from "@mui/material";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthenticationContext } from "@toolpad/core";
-import {  useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import { LoginFormData } from "@/interfaces/loginFormData";
@@ -13,11 +13,20 @@ import { handleLoginWithGoogleSuccess, loginWithEmailAndPassword } from "@/utils
 
 import { loginValidationSchema } from "./validationSchema";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
-import { FormTextInput } from "../formTextInput/formTextInput";
+import { FormTextInput, FormTextInputProps } from "../formTextInput/formTextInput";
 import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
-
+const StypedFormTextInput = styled((props: FormTextInputProps) => <FormTextInput          slotProps={{
+  textField: {
+    sx: {
+      "& fieldset": {
+        borderColor: "secondary.contrastText",
+      },
+    },
+  },
+}} {...props}/>)()
 const LoginForm = (props: ContainerOwnProps) => {
   const router = useRouter();
+  const searchParam = useSearchParams();
   const authentication = useContext(AuthenticationContext);
   const [error, setError] = useState<string | undefined>(undefined);
   const { handleSubmit, control } = useForm<LoginFormData>({
@@ -34,7 +43,9 @@ const LoginForm = (props: ContainerOwnProps) => {
       const res = await loginWithEmailAndPassword(data);
       if (res) {
         authentication?.signIn();
-        router.replace("/");
+        const redirectUrl = searchParam.get("redirect");
+        if (redirectUrl) router.push(redirectUrl);
+        else router.replace("/");
       }
     } catch (err) {
       if (err instanceof Error) setError(err.message);
@@ -54,8 +65,22 @@ const LoginForm = (props: ContainerOwnProps) => {
           gap: "20px",
         }}
       >
-        <FormTextInput label="Email" name="email" control={control} type="email" />
-        <FormTextInput label="Password" name="password" control={control} type="password" />
+        <StypedFormTextInput
+          label="Email"
+          name="email"
+          control={control}
+          type="email"
+          slotProps={{
+            textField: {
+              sx: {
+                "& fieldset": {
+                  borderColor: "secondary.contrastText",
+                },
+              },
+            },
+          }}
+        />
+        <StypedFormTextInput label="Password" name="password" control={control} type="password" />
         <PrimaryContainedButton
           type="submit"
           sx={{

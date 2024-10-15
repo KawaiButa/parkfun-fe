@@ -14,10 +14,16 @@ import { FormTextInput, FormTextInputProps } from "../formTextInput/formTextInpu
 import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 const StyledFormTextField = styled((props: FormTextInputProps) => (
   <FormTextInput
-    sx={{
-      height: "40px",
+
+    slotProps={{
+      textField: {
+        sx: {
+          "& fieldset": {
+            borderColor: "secondary.contrastText",
+          },
+        },
+      },
     }}
-    outlineColor="primary"
     {...props}
   />
 ))();
@@ -98,7 +104,7 @@ const RegisterForm = (props: ContainerOwnProps) => {
         backgroundColor: "var(--secondary-color)",
         padding: "30px",
         borderRadius: "10px",
-        gap: "50px",
+        gap: "25px",
       }}
     >
       {buildForm(fieldDataWithValidation)}

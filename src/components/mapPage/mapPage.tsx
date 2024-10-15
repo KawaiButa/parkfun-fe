@@ -124,7 +124,7 @@ const MapPage = () => {
       mapRef.setCamera({ center: point, zoom: 16 });
     }
   };
-  const time = useWatch({control, name: "time"})
+  const time = useWatch({ control, name: "time" });
   const forceUpdate = useReducer(() => ({}), {})[1];
   const checkAndRequestUnresolvedBooking = async () => {
     const unresolvedBooking = localStorage.getItem("booking");
@@ -136,19 +136,19 @@ const MapPage = () => {
         dialogs.open(BookingModal, {
           startAt: time[0],
           endAt: time[1],
-          initialValue: booking
-        })
+          initialValue: booking,
+        });
         localStorage.removeItem("booking");
       }
     }
-  }
-  
+  };
+
   useEffect(() => {
     import("react-azure-maps").then((module) => {
       reactMapRef.current = module;
       forceUpdate();
     });
-    checkAndRequestUnresolvedBooking()
+    checkAndRequestUnresolvedBooking();
   }, []);
   useEffect(() => {
     if (isMapReady) {
@@ -167,7 +167,7 @@ const MapPage = () => {
     }
   }, [mapRef, isMapReady]);
   const buildParkingLocationList = () => {
-    if (isLoading) return <CircularProgress />;
+    if (isLoading) return <Stack><CircularProgress /></Stack>;
     if (!parkingLocationList.length)
       return (
         <Stack
@@ -307,6 +307,7 @@ const MapPage = () => {
             <IconButton
               sx={{
                 height: "fit-content",
+                color: openFilter ? "primary.main" : "secondary.contrastText",
               }}
               onClick={() => setOpenFilter(!openFilter)}
             >
@@ -341,7 +342,10 @@ const MapPage = () => {
             <FormControl>
               <Stack direction="row" sx={{ padding: "0 10px" }}>
                 <RadioGroup row value={sortBy}>
-                  {[{label: "Distance", key: "distance"},{label: "Price", key: "minPrice"}].map(({label, key}) => {
+                  {[
+                    { label: "Distance", key: "distance" },
+                    { label: "Price", key: "minPrice" },
+                  ].map(({ label, key }) => {
                     return (
                       <FormControlLabel
                         key={key}
@@ -367,6 +371,33 @@ const MapPage = () => {
                   defaultEndTime={secondToDayTime(value[1])}
                   onStartChange={(e) => onChange([e, value[1]])}
                   onEndChange={(e) => onChange([value[0], e])}
+                  slotProps={{
+                    leftTimePicker: {
+                      sx: {
+                        "& fieldset": {
+                          borderColor: "secondary.contrastText",
+                        },
+                        "&:hover": {
+                          "& fieldset": {
+                            borderColor: "primary",
+                          },
+                        },
+                        "& svg": {
+                          color: "secondary.contrastText",
+                        },
+                      },
+                    },
+                    rightTimePicker: {
+                      sx: {
+                        "& fieldset": {
+                          borderColor: "secondary.contrastText",
+                        },
+                        "& svg": {
+                          color: "secondary.contrastText",
+                        },
+                      },
+                    },
+                  }}
                 />
               );
             }}
@@ -405,11 +436,13 @@ const MapPage = () => {
           {selectedParkingLocation && (
             <ParkingLocationPanel
               parkingLocation={selectedParkingLocation}
-              onBook={() =>dialogs.open(BookingModal, {
-                parkingSlotList: selectedParkingLocation!.parkingSlots.map(({ id }) => id),
-                startAt: time[0],
-                endAt: time[1],
-              })}
+              onBook={() =>
+                dialogs.open(BookingModal, {
+                  parkingSlotList: selectedParkingLocation!.parkingSlots.map(({ id }) => id),
+                  startAt: time[0],
+                  endAt: time[1],
+                })
+              }
               onClose={() => setSelectedParkingLocation(null)}
             />
           )}
@@ -581,7 +614,9 @@ const ParkingLocationCard = (props: {
             </Typography>
           </Stack>
         )}
-        <Typography ml={"auto"} width={"fit-content"}>{"$"+(parkingLocation.minPrice).toFixed(2)+"/hr"}</Typography>
+        <Typography ml={"auto"} width={"fit-content"}>
+          {"$" + parkingLocation.minPrice.toFixed(2) + "/hr"}
+        </Typography>
       </Stack>
     </Stack>
   );
