@@ -111,7 +111,7 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
       reset();
       await dialogs.alert(`Your password is ${formData.password}`);
     } catch (err) {
-      notifications.show(err.message, {
+      notifications.show((err as Error).message, {
         severity: "error",
         autoHideDuration: 2000,
       });

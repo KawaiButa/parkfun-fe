@@ -174,7 +174,7 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
                         <SelectInput
                           options={parkingLocationList}
                           transformToLabel={(parkLoc) => parkLoc.name}
-                          transformToValue={(parkLoc) => parkLoc.id}
+                          transformToValue={(parkLoc) => ""+parkLoc.id}
                           onChange={(e) => {
                             const selected = parkingLocationList!.find((a) => a.id == e.target.value);
                             if (selected) {

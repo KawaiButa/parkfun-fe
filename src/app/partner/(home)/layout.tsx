@@ -25,8 +25,7 @@ const Layout = ({
             },
             signOutButton: {
               color: "secondary",
-              onClick: (e) => {
-                e.preventDefault();
+              onClick: () => {
                 authentication?.signOut()
               },
             },

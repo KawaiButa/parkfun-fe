@@ -16,7 +16,7 @@ import { bookingFormValidation } from "./validationSchema";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 const StyledTypography = ({ children, ...props }: TypographyProps) => (
-  <Typography variant="h6" color="secondary" {...props}>
+  <Typography variant="h6" {...props}>
     {children}
   </Typography>
 );
@@ -27,7 +27,7 @@ function BookingForm(props: ContainerOwnProps) {
       startAt: 28800,
       endAt: 30600,
     },
-    resolver: yupResolver(bookingFormValidation)
+    resolver: yupResolver(bookingFormValidation),
   });
   const router = useRouter();
   const onSubmit = (data: { lat: number; lng: number; startAt: number; endAt: number }) => {
@@ -39,9 +39,9 @@ function BookingForm(props: ContainerOwnProps) {
       {...props}
       sx={{
         ...props.sx,
-        backgroundColor: "var(--form-background-color)",
+        backgroundColor: "background.default",
         borderRadius: "10px",
-        padding: {
+                padding: {
           xs: "15px",
           md: "20px 20px",
         },
@@ -86,7 +86,6 @@ function BookingForm(props: ContainerOwnProps) {
         >
           <Typography
             variant="h2"
-            color="secondary"
             sx={{
               fontWeight: "bold",
               fontSize: {
@@ -137,8 +136,8 @@ function BookingForm(props: ContainerOwnProps) {
                     xs: "15px",
                     md: "20px",
                     borderRadius: "5px",
+                    borderColor: "secondary.contrastText",
                   },
-                  backgroundColor: "background.paper",
                 }}
                 onChange={(e) => {
                   setParam(e.target.value);
@@ -164,6 +163,22 @@ function BookingForm(props: ContainerOwnProps) {
           }}
           onEndChange={(e: Dayjs | null) => {
             if (e) setValue("endAt", timeToSeconds(e));
+          }}
+          slotProps={{
+            leftTimePicker: {
+              sx: {
+                "& svg": {
+                  color: "secondary.contrastText",
+                },
+              },
+            },
+            rightTimePicker: {
+              sx: {
+                "& svg": {
+                  color: "secondary.contrastText",
+                },
+              },
+            },
           }}
         />
         <StyledTypography

@@ -10,6 +10,8 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@azure-rest/maps-search": "^2.0.0-beta.1",
+    "@azure/core-auth": "^1.8.0",
     "@emotion/cache": "^11.13.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
@@ -37,6 +39,7 @@
     "lodash": "^4.17.21",
     "next": "14.2.13",
     "notistack": "^3.0.1",
+    "query-string": "^9.1.1",
     "react": "^18.0.0",
     "react-azure-maps": "^1.0.0",
     "react-carousel-mui": "^1.0.0",

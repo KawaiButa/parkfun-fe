@@ -2,22 +2,38 @@
 
 import { ReactNode } from "react";
 
-import { BaseTextFieldProps, TextField } from "@mui/material";
-import { Control, Controller, RegisterOptions } from "react-hook-form";
+import { BaseTextFieldProps, TextField, TextFieldProps } from "@mui/material";
+import { Control, Controller, ControllerProps, RegisterOptions } from "react-hook-form";
 
-export interface FormTextInputProps extends BaseTextFieldProps{
+export interface FormTextInputProps extends Omit<BaseTextFieldProps, "slotProps"> {
   name: string;
   control: Control<any, unknown>,
   label?: string;
-  rule?: Omit<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'>
-  slotProps?: any,
-  outlineColor?: string,
-  startAdornment?: ReactNode,
-  endAdornment?: ReactNode,
+  rule?: Omit<RegisterOptions, "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled">;
+  slotProps?: {
+    controller?: ControllerProps,
+    textField?: TextFieldProps,
+  };
+  outlineColor?: string;
+  startAdornment?: ReactNode;
+  endAdornment?: ReactNode;
+  onChange?: (event: any) => void;
 }
 
-const FormTextInput = ( props: FormTextInputProps) => {
-  const {name, control, label, rule, startAdornment, endAdornment, sx, outlineColor, ...textFieldProps} = props;
+const FormTextInput = (props: FormTextInputProps) => {
+  const {
+    name,
+    control,
+    label,
+    rule,
+    onChange: onInputChange,
+    startAdornment,
+    endAdornment,
+    sx,
+    slotProps,
+    outlineColor,
+    ...textFieldProps
+  } = props;
   return (
     <Controller
       name={name}
@@ -30,7 +46,10 @@ const FormTextInput = ( props: FormTextInputProps) => {
         <TextField
           helperText={error?.message}
           error={Boolean(error)}
-          onChange={onChange}
+          onChange={(e) => {
+            onChange(e)
+            if(onInputChange) onInputChange(e)
+          }}
           InputProps={{
             startAdornment: startAdornment,
             endAdornment: endAdornment
@@ -46,8 +65,10 @@ const FormTextInput = ( props: FormTextInputProps) => {
             },
             ...sx
           }}
+          {...slotProps?.textField}
         />
       )}
+      {...slotProps?.controller}
     />
   );
 

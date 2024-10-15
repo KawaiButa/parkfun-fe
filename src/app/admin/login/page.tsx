@@ -3,14 +3,13 @@ import React, { useContext } from "react";
 
 import { Container } from "@mui/material";
 import { AuthProvider, SignInPage, AuthenticationContext, useNotifications } from "@toolpad/core";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { loginWithEmailAndPassword } from "@/utils/authentication";
 
 const providers: AuthProvider[] = [{ id: "credentials", name: "Email and Password" }];
 const AdminLogin = () => {
   const router = useRouter();
-  const searchParam = useSearchParams();
   const authentication = useContext(AuthenticationContext);
   const notification = useNotifications();
   function handleSignIn(provider: AuthProvider, formData?: FormData): void {
@@ -22,9 +21,7 @@ const AdminLogin = () => {
       .then(() => {
         if (authentication) {
           authentication.signIn();
-          const redirectUrl = searchParam.get("redirect");
-          if (redirectUrl) router.push(redirectUrl);
-          else router.push("/admin");
+          router.push("/admin");
         }
       })
       .catch((err) => {

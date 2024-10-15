@@ -1,17 +1,23 @@
 "use client";
 import { ArrowRightAlt } from "@mui/icons-material";
-import { Container } from "@mui/material";
+import { Container, ContainerProps, IconProps } from "@mui/material";
 import { LocalizationProvider, TimePicker, TimePickerProps } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Dayjs } from "dayjs";
-export interface BookingTImePickerPros extends TimePickerProps<Dayjs> {
+export interface BookingTImePickerPros extends Omit<TimePickerProps<Dayjs>, "slotProps"> {
   onStartChange?: (value: Dayjs | null) => void;
   onEndChange?: (value: Dayjs | null) => void;
+  slotProps?: {
+    container?: ContainerProps,
+    leftTimePicker?: TimePickerProps<Dayjs>,
+    rightTimePicker?: TimePickerProps<Dayjs>,
+    arrowButton?: IconProps
+  }
   defaultStartTime?:Dayjs | null;
   defaultEndTime?:Dayjs | null;
 }
 const BookingTimePicker = (props: BookingTImePickerPros) => {
-  const { onStartChange, onEndChange, defaultStartTime, defaultEndTime } = props;
+  const { onStartChange, onEndChange,slotProps, defaultStartTime, defaultEndTime } = props;
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container
@@ -23,6 +29,7 @@ const BookingTimePicker = (props: BookingTImePickerPros) => {
           color: 'wheat',
           alignItems: "center",
         }}
+        {...slotProps?.container}
       >
         <TimePicker
           label="From"
@@ -31,13 +38,15 @@ const BookingTimePicker = (props: BookingTImePickerPros) => {
           defaultValue={defaultStartTime}
           sx={{
             fontWeight: "600",
+            color: "white"
           }}
           
           onChange={(value) => {
             if (onStartChange) onStartChange(value);
           }}
+          {...slotProps?.leftTimePicker}
         />
-        <ArrowRightAlt color="secondary" />
+        <ArrowRightAlt color="primary" />
         <TimePicker
           label="Until"
           ampm={false}
@@ -49,6 +58,7 @@ const BookingTimePicker = (props: BookingTImePickerPros) => {
           onChange={(value) => {
             if (onEndChange) onEndChange(value);
           }}
+          {...slotProps?.rightTimePicker}
         />
       </Container>
     </LocalizationProvider>

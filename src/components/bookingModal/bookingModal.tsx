@@ -292,6 +292,33 @@ const BookingModal = (
                         defaultEndTime={secondToDayTime(value[1])}
                         onStartChange={(e) => onChange([timeToSeconds(e ?? new Dayjs()), value[1]])}
                         onEndChange={(e) => onChange([timeToSeconds(e ?? new Dayjs()), e])}
+                        slotProps={{
+                          leftTimePicker: {
+                            sx: {
+                              "& fieldset": {
+                                borderColor: "secondary.contrastText",
+                              },
+                              "&:hover": {
+                                "& fieldset": {
+                                  borderColor: "primary",
+                                },
+                              },
+                              "& svg": {
+                                color: "secondary.contrastText",
+                              },
+                            },
+                          },
+                          rightTimePicker: {
+                            sx: {
+                              "& fieldset": {
+                                borderColor: "secondary.contrastText",
+                              },
+                              "& svg": {
+                                color: "secondary.contrastText",
+                              },
+                            },
+                          },
+                        }}
                       />
                     )}
                   />

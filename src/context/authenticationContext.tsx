@@ -19,7 +19,8 @@ const SessionProvider = ({ children }: { children: ReactNode }) => {
         setSession(null);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("profile");
-        router.push("/logout", )
+        localStorage.removeItem("booking");
+        router.push("/logout");
       },
     };
   }, []);

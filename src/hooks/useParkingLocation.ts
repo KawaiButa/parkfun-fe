@@ -4,9 +4,11 @@ import { useState } from "react";
 
 import { AxiosError } from "axios";
 import { ObjectIterateeCustom } from "lodash";
+import queryString from 'query-string';
 
 import { ParkingLocation } from "@/interfaces";
 import { ParkingLocationFormData } from "@/interfaces/parkingLocationForm";
+import { SearchParkingLocationData } from "@/interfaces/searchParkingLocationData";
 import AxiosInstance from "@/utils/axios";
 import { filterAndSearch } from "@/utils/utils";
 
@@ -135,8 +137,6 @@ export const useParkingLocation = () => {
       throw err;
     }
   };
-<<<<<<< HEAD
-=======
 
   const searchParkingLocation = async (data: SearchParkingLocationData) => {
     if (!hasNextPage) return null;
@@ -171,12 +171,12 @@ export const useParkingLocation = () => {
       throw err;
     }
   };
->>>>>>> 04a7036 (<FEATURE>: Booking UI)
   return {
     createParkingLocation,
     fetchOneParkingLocation,
     fetchParkingLocation,
     parkingLocationList,
+    searchParkingLocation,
     deleteParkingLocation,
     updateParkingLocation,
   };

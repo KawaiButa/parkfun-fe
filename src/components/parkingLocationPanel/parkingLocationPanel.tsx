@@ -30,7 +30,7 @@ const ParkingLocationPanel = (props: {
   }, [props]);
 
   const buildOwnerSection = () => {
-    if (loading) return <CircularProgress />;
+    if (loading) return <Stack width={"100%"}><CircularProgress /></Stack>;
     if (!parkingLocation.partner || !parkingLocation.partner.user)
       return (
         <Paper>
