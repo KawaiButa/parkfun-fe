@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 import styled from "@emotion/styled";
-import { Alert, AlertColor, Button, Container, Typography } from "@mui/material";
+import { Alert, AlertColor, Button, Container, Stack, Typography } from "@mui/material";
 import { AxiosResponse } from "axios";
 import { useForm } from "react-hook-form";
 
@@ -60,7 +60,28 @@ const ProfileForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Stack
+      component={"form"}
+      onSubmit={handleSubmit(onSubmit)}
+      direction="row"
+      alignItems="center"
+      p={2}
+      sx={{
+        borderRadius: "10px",
+        backgroundColor: "secondary.contrastText",
+      }}
+    >
+      <Container sx={{ width: "240px", height: "200px" }} disableGutters>
+        <img
+          src={profile?.image.url ?? ""}
+          style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
+      </Container>
       <ContainerFlexColumn
         sx={{
           gap: "10px",
@@ -89,9 +110,10 @@ const ProfileForm = () => {
                   xs: "14px",
                   md: "16px",
                 },
+                maxWidth: 100,
                 height: "fit-content",
                 transform: "translateY(10px)",
-                textAlign: "right",
+                textAlign: "left",
                 fontWeight: "500",
                 marginRight: {
                   xs: "10px",
@@ -138,7 +160,7 @@ const ProfileForm = () => {
           {error.message}
         </Alert>
       )}
-    </form>
+    </Stack>
   );
 };
 

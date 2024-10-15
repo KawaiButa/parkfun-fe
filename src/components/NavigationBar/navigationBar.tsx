@@ -71,7 +71,7 @@ const NavigationBar = () => {
             </SecondaryContainedButton>
             <ProfilePopOver
               linkList={[
-                { label: "Profile", href: "/profile" },
+                { label: "Profile", href: "/home/profile" },
                 { label: "Log out", onClick: handleLogout },
               ]}
               open={open}
