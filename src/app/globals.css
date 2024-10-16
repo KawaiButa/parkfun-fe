@@ -40,6 +40,6 @@ a {
   }
 }
 .timePicker label.MuiFormLabel-root{
-  color: var(--secondary-color) !important;
+  /* color: var(--secondary-color) !important; */
   font-weight: bold;
 }

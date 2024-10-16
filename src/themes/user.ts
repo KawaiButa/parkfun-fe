@@ -31,6 +31,10 @@ export const userTheme = createTheme({
       secondary: "#fff",
       disabled: "#fff",
     },
+    background: {
+      default: "#17161A",
+      paper: "#2C2A30"
+    }
   },
   typography: {
     fontFamily: "var(--font-poppins)"
