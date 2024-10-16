@@ -1,17 +1,32 @@
-import React, { ReactNode } from "react";
+"use client";
+import React, { ReactNode, useEffect, useState } from "react";
 
 import { ShowChart } from "@mui/icons-material";
 import { Box, BoxProps, ContainerProps, Typography } from "@mui/material";
 import { BarChart } from "@mui/x-charts";
 import { LineChart } from "@mui/x-charts/LineChart";
-import _ from "lodash";
+import dayjs from "dayjs";
 
 import ContainerFlexColumn from "@/components/containerFlexColumn/containerFlexColumn";
-import { activeLot } from "@/data/activeLot";
-import { incomeData } from "@/data/incomeData";
-import { newUserData } from "@/data/newUserData";
+import { StatisticField, useStatistic } from "@/hooks/useStatistic";
+import { Period } from "@/interfaces/statisticsQuery";
 
 const AdminDashboard = () => {
+  const { getCombinedStatistics, getDetailData } = useStatistic();
+  const [combinedStatistics, setCombinedStatistics] = useState<{
+    newCustomersCount: number;
+    newParkingLocationsCount: number;
+    newPartnersCount: number;
+    bookingsCount: number;
+    totalIncome: number;
+  } | null>(null);
+  const [dataTableyPeriod, setDataByPeriod] = useState<
+    { label: string; data: { period: number | string; amount: number }[] }[] | null
+  >(null);
+  useEffect(() => {
+    getCombinedStatistics({ period: Period.MONTH }).then((res) => setCombinedStatistics(res));
+    getDetailData(StatisticField.USER, { period: Period.MONTH }).then((e) => setDataByPeriod(e));
+  }, [getCombinedStatistics, getDetailData]);
   return (
     <ContainerFlexColumn
       maxWidth="xl"
@@ -24,60 +39,98 @@ const AdminDashboard = () => {
         padding: "20px",
       }}
     >
-      <Box
-        sx={{
-          borderRadius: "10px",
-          gap: "10px",
-          margin: "0",
-        }}
-      >
-        <Typography
-          variant="h6"
-          fontWeight={600}
+      {combinedStatistics && (
+        <Box
           sx={{
-            marginBottom: "10px",
+            borderRadius: "10px",
+            gap: "10px",
+            margin: "0",
           }}
         >
-          Summary
-        </Typography>
-        <Box sx={{ display: "flex", justifyContent: "flex-start", gap: "10px" }}>
-          <DataContainer
-            label={"Expenses"}
-            data="$5000"
-            helperTag="80%"
-            helperIcon={<ShowChart sx={{ fontSize: "14px", marginRight: "10px" }} />}
-          >
-            You spent 3000 this month
-          </DataContainer>
-          <DataContainer
-            label={"Sales"}
-            data="1500"
-            helperTag="120%"
-            helperIcon={<ShowChart sx={{ fontSize: "14px", marginRight: "10px" }} />}
-          >
-            You sold 1000 more items this month
-          </DataContainer>
-          <DataContainer
-            label={"Customers"}
-            data="200"
-            helperTag="105%"
-            helperIcon={<ShowChart sx={{ fontSize: "14px", marginRight: "10px" }} />}
-          >
-            You gained 50 new customers this month
-          </DataContainer>
-          <DataContainer
-            label={"Customers"}
-            data="200"
-            helperTag="105%"
-            helperIcon={<ShowChart sx={{ fontSize: "14px", marginRight: "10px" }} />}
-          >
-            You gained 50 new customers this month
-          </DataContainer>
+          <Box sx={{ display: "flex", justifyContent: "flex-start", gap: "10px" }}>
+            <DataContainer
+              onClick={() =>
+                getDetailData(StatisticField.BOOKING, { period: Period.MONTH }).then((data) => setDataByPeriod(data))
+              }
+              label={"Sales"}
+              data={combinedStatistics.bookingsCount}
+              sx={{
+                "&:hover": {
+                  borderColor: "black",
+                  borderStyle: "solid",
+                  borderWidth: "2px",
+                  cursor: "pointer",
+                },
+              }}
+              helperTag="120%"
+              helperIcon={<ShowChart sx={{ fontSize: "14px", marginRight: "10px" }} />}
+            >
+              {combinedStatistics.bookingsCount} booking time this month
+            </DataContainer>
+            <DataContainer
+              onClick={() =>
+                getDetailData(StatisticField.INCOME, { period: Period.MONTH }).then((data) => setDataByPeriod(data))
+              }
+              label={"Revenue"}
+              data={combinedStatistics?.totalIncome.toFixed(2)}
+              helperTag="105%"
+              helperIcon={<ShowChart sx={{ fontSize: "14px", marginRight: "10px" }} />}
+              sx={{
+                "&:hover": {
+                  borderColor: "black",
+                  borderStyle: "solid",
+                  borderWidth: "2px",
+                  cursor: "pointer",
+                },
+              }}
+            >
+              You earned {combinedStatistics?.totalIncome.toFixed(2)} in total income this month.
+            </DataContainer>
+            <DataContainer
+              onClick={() =>
+                getDetailData(StatisticField.USER, { period: Period.MONTH }).then((data) => setDataByPeriod(data))
+              }
+              label={"Customers"}
+              data={combinedStatistics.newCustomersCount}
+              helperTag="105%"
+              helperIcon={<ShowChart sx={{ fontSize: "14px", marginRight: "10px" }} />}
+              sx={{
+                "&:hover": {
+                  borderColor: "black",
+                  borderStyle: "solid",
+                  borderWidth: "2px",
+                  cursor: "pointer",
+                },
+              }}
+            >
+              You gained {combinedStatistics?.newCustomersCount} new customers this month
+            </DataContainer>
+            <DataContainer
+              label={"Partner"}
+              onClick={() =>
+                getDetailData(StatisticField.PARTNER, { period: Period.MONTH }).then((data) => setDataByPeriod(data))
+              }
+              data={combinedStatistics.newPartnersCount}
+              helperTag="105%"
+              helperIcon={<ShowChart sx={{ fontSize: "14px", marginRight: "10px" }} />}
+              sx={{
+                "&:hover": {
+                  borderColor: "black",
+                  borderStyle: "solid",
+                  borderWidth: "2px",
+                  cursor: "pointer",
+                },
+              }}
+            >
+              {combinedStatistics.newPartnersCount} partners have registered lately.
+            </DataContainer>
+          </Box>
         </Box>
-      </Box>
-      <Box sx={{ display: "flex", gap: "20px" }}>
-        <Box sx={{ width: "70%", borderRadius: "5px", backgroundColor: "secondary.light", margin: "0" }}>
-          <Box>
+      )}
+
+      {dataTableyPeriod && (
+        <Box sx={{ display: "flex", gap: "20px" }}>
+          <Box sx={{ width: "70%", borderRadius: "5px", backgroundColor: "secondary.light", margin: "0" }}>
             <Typography
               variant="h6"
               fontWeight={600}
@@ -85,86 +138,85 @@ const AdminDashboard = () => {
                 marginBottom: "10px",
               }}
             >
-              User & Parking lot
+              {getLabel(Period.MONTH)}
             </Typography>
-            {/* TODO: ADD RADIO BUTTON TO ADD OPTIONAL FIELD  */}
-          </Box>
-          <UserLineChart
-            height="500px"
-            sx={{ backgroundColor: "secondary.contrastText", borderRadius: "10px", padding: "20px" }}
-          />
-        </Box>
-        <Box
-          sx={{
-            width: "30%",
-          }}
-        >
-          <Typography
-            variant="h6"
-            fontWeight={600}
-            sx={{
-              marginBottom: "10px",
-            }}
-          >
-            Income overview
-          </Typography>
-          <Box
-            sx={{
-              backgroundColor: "secondary.contrastText",
-              borderRadius: "10px",
-              height: "500px",
-            }}
-          >
-            <Box
-              sx={{
-                paddingTop: "20px",
-                marginLeft: "20px",
-              }}
-            >
-              <Typography>This week income</Typography>
-              <Typography
-                variant="h4"
-                sx={{
-                  fontWeight: "600",
-                }}
-              >
-                {"$" + _.sum(incomeData).toLocaleString("en", {})}
-              </Typography>
-            </Box>
-
-            <IncomeBarChart
-              sx={{
-                height: "80%",
-              }}
+            <StatisticLineChart
+              height="500px"
+              data={dataTableyPeriod}
+              transformXAxisLabel={(value) => dayjs(value).format(getDateFormat(Period.MONTH))}
+              sx={{ backgroundColor: "secondary.contrastText", borderRadius: "10px", padding: "20px" }}
             />
           </Box>
+          <Box
+            sx={{
+              width: "30%",
+            }}
+          >
+            <Typography
+              variant="h6"
+              fontWeight={600}
+              sx={{
+                marginBottom: "10px",
+              }}
+            >
+              Growth overview
+            </Typography>
+            <Box
+              sx={{
+                backgroundColor: "secondary.contrastText",
+                borderRadius: "10px",
+                height: "500px",
+              }}
+            >
+              <Box
+                sx={{
+                  paddingTop: "20px",
+                  marginLeft: "20px",
+                }}
+              >
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: "600",
+                  }}
+                >
+                  {dataTableyPeriod[1].data[dataTableyPeriod[1].data.length - 1].amount.toFixed(2)}
+                </Typography>
+              </Box>
+
+              <StatisticBarChart
+                data={dataTableyPeriod}
+                sx={{
+                  height: "80%",
+                }}
+                transformXAxisLabel={(value) => dayjs(value).format(getDateFormat(Period.MONTH))}
+              />
+            </Box>
+          </Box>
         </Box>
-      </Box>
+      )}
     </ContainerFlexColumn>
   );
 };
-
-const IncomeBarChart = (props: BoxProps) => {
-  const { sx } = props;
+interface StatisticBarChart extends BoxProps {
+  data: { label: string; data: { period: number | string; amount: number }[] }[];
+  transformXAxisLabel?: (value: string) => string;
+}
+const StatisticBarChart = (props: StatisticBarChart) => {
+  const { sx, data, transformXAxisLabel } = props;
   return (
     <Box {...props}>
       <BarChart
-        series={[{ data: incomeData, label: "Income" }]}
-        xAxis={[{ scaleType: "band", data: Array.from(Array(7), (_, i) => i + 1) }]}
-        yAxis={[
+        series={[{ data: data[0].data.map(({ amount }) => amount), label: data[0].label }]}
+        xAxis={[
           {
-            colorMap: {
-              type: "continuous",
-              min: 0,
-              max: 100000,
-              color: ["#e6d60f", "#495E57"],
-            },
-            position: "right",
+            scaleType: "band",
+            data: data[0].data.map(({ period }) => (transformXAxisLabel ? transformXAxisLabel("" + period) : period)),
           },
         ]}
         sx={{
           "& rect.MuiBarElement-root": {
-            width: "2.75rem !important",
+            width: "1.24rem !important",
             borderRadius: "10px",
           },
           ...sx,
@@ -179,12 +231,14 @@ const IncomeBarChart = (props: BoxProps) => {
     </Box>
   );
 };
-interface IncomeChartProps extends BoxProps {
+interface StatisticLineChartProps extends BoxProps {
   width?: number | string;
   height?: number | string;
+  data: { label: string; data: { period: number | string; amount: number }[] }[];
+  transformXAxisLabel?: (value: string) => string;
 }
-const UserLineChart = (props: IncomeChartProps) => {
-  const { width, height, sx } = props;
+const StatisticLineChart = (props: StatisticLineChartProps) => {
+  const { width, height, data, transformXAxisLabel, sx } = props;
   return (
     <Box
       sx={{
@@ -197,11 +251,15 @@ const UserLineChart = (props: IncomeChartProps) => {
       {...props}
     >
       <LineChart
-        series={[
-          { data: newUserData, label: "New user", color: "#e6d60f" },
-          { data: activeLot, label: "Active lot", color: "#495E57"},
+        series={data.map(({ data, label }) => ({ data: data.map(({ amount }) => amount), label }))}
+        xAxis={[
+          {
+            scaleType: "point",
+            data: data.flatMap(({ data }) =>
+              data.map(({ period }) => (transformXAxisLabel ? transformXAxisLabel("" + period) : period))
+            ),
+          },
         ]}
-        xAxis={[{ scaleType: "point", data: Array.from(Array(11), (_, i) => i + 1) }]}
         slotProps={{
           legend: {
             itemMarkHeight: 10,
@@ -218,11 +276,10 @@ interface DataContainerProps<T> extends ContainerProps {
   helperTag?: string;
   helperIcon?: ReactNode;
   helperTagStyle?: string;
-
   children?: ReactNode;
 }
-const DataContainer = (props: DataContainerProps<string>) => {
-  const { label, data, helperTag, helperIcon, children } = props;
+const DataContainer = <T,>(props: DataContainerProps<T>) => {
+  const { label, data, helperTag, helperIcon, children, sx, ...containerProps } = props;
   return (
     <ContainerFlexColumn
       sx={{
@@ -232,7 +289,9 @@ const DataContainer = (props: DataContainerProps<string>) => {
         gap: "10px",
         margin: "0",
         backgroundColor: "white",
+        ...sx,
       }}
+      {...containerProps}
     >
       <Typography>{label}</Typography>
       <Box
@@ -242,7 +301,7 @@ const DataContainer = (props: DataContainerProps<string>) => {
         }}
       >
         <Typography variant="h5" fontWeight={600}>
-          {data}
+          {data as string}
         </Typography>
         <Box
           sx={{
@@ -260,6 +319,26 @@ const DataContainer = (props: DataContainerProps<string>) => {
       {children}
     </ContainerFlexColumn>
   );
+};
+const getDateFormat = (period: Period): string => {
+  switch (period) {
+    case Period.MONTH:
+      return "YYYY-MM";
+    case Period.DAY:
+      return "YYYY-MM-DD";
+    default:
+      return "YYYY";
+  }
+};
+const getLabel = (period: Period): string => {
+  switch (period) {
+    case Period.MONTH:
+      return "This month's statistics";
+    case Period.DAY:
+      return "Today's statistics";
+    default:
+      return "This week's statistics";
+  }
 };
 
 export default AdminDashboard;

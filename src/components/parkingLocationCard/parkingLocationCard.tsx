@@ -27,15 +27,22 @@ const ParkingLocationCard = (props: ParkingLocationCardProps) => {
       <Carousel sx={{ width: "100%", height: "60%" }} autoPlay={false} indicators={false}>
         {data.images &&
           data.images.map((image) => (
-            <Box key={image.id} sx={{
-              width: '100%',
-              height: '100%',
-            }}><img src={image.url} style={{
-              display: "block",
-              marginLeft: "auto",
-              marginRight: "auto",
-              height: "220px",
-             }} />
+            <Box
+              key={image.id}
+              sx={{
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <img
+                src={image.url}
+                style={{
+                  display: "block",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  height: "220px",
+                }}
+              />
             </Box>
           ))}
       </Carousel>
@@ -45,27 +52,31 @@ const ParkingLocationCard = (props: ParkingLocationCardProps) => {
             display: "flex",
           }}
         >
-          <Typography variant="h5" fontWeight={600}>{data.name}</Typography>
+          <Typography variant="h5" fontWeight={600}>
+            {data.name}
+          </Typography>
         </Box>
         <Typography variant="body1">{data.address}</Typography>
         <Typography variant="caption">{data.description}</Typography>
       </Box>
-      <IconButton sx={{
-        position: "absolute",
-        top: "10px",
-        right: "10px",
-        color: "white",
-        opacity: 0.5,
-        borderRadius: "50%",
-        width: "30px",
-        height: "30px",
-        cursor: "pointer",
-        zIndex: "12",
-        "&:hover": {
-          opacity: "1",
-        },
-      }}>
-        <Delete/>
+      <IconButton
+        sx={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          color: "white",
+          opacity: 0.5,
+          borderRadius: "50%",
+          width: "30px",
+          height: "30px",
+          cursor: "pointer",
+          zIndex: "12",
+          "&:hover": {
+            opacity: "1",
+          },
+        }}
+      >
+        <Delete />
       </IconButton>
     </Box>
   );

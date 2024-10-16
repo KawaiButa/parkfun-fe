@@ -39,7 +39,14 @@ a {
   color: inherit;
   text-decoration: none;
 }
-.timePicker label.MuiFormLabel-root {
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+.timePicker label.MuiFormLabel-root{
+  /* color: var(--secondary-color) !important; */
   font-weight: bold;
 }
 div[role="presentation"].MuiAutocomplete-popper {
