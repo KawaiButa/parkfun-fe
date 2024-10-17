@@ -25,17 +25,6 @@ const StypedFormTextInput = styled((props: FormTextInputProps) => (
             borderColor: "secondary.contrastText",
           },
         },
-        slotProps: {
-          input: {
-            sx: {
-              '&:-webkit-autofill': {
-                '-webkit-box-shadow': '0 0 0 100px #000 inset',
-                '-webkit-text-fill-color': '#fff'
-              }
-            },
-          },
-          
-        },
       },
     }}
     {...props}

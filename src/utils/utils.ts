@@ -18,7 +18,6 @@ const timeToSeconds = (time: Dayjs) => {
 function getNearestRoundTime(date: Dayjs, interval: number = 30): Dayjs {
   const minutes = date.minute();
   const roundedMinutes = Math.ceil(minutes / interval) * interval;
-
   return date.startOf("hour").add(roundedMinutes, "minute");
 }
 

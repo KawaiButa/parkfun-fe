@@ -40,7 +40,7 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
   const { createPartner, udpatePartner } = usePartner();
   const { partnerTypeList, fetchPartnerType } = usePartnerType();
   const { locations, setParam } = useSearchMapAPI();
-  const {showError, showSuccess} = useNotify();
+  const { showError, showSuccess } = useNotify();
   const { initValue } = props;
   const dialogs = useDialogs();
   const {
@@ -224,7 +224,7 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
                   getOptionLabel={(location) => location.properties?.address?.formattedAddress ?? ""}
                   sx={{ marginTop: "10px" }}
                   onChange={(e, value) => {
-                    setValue("location", value?.properties?.address?.formattedAddress ?? "")
+                    setValue("location", value?.properties?.address?.formattedAddress ?? "");
                   }}
                   renderInput={(params) => (
                     <StyledFormTextInput

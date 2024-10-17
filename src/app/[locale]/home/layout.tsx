@@ -5,7 +5,6 @@ import { DialogsProvider, NotificationsProvider } from "@toolpad/core";
 
 import NavigationBar from "@/components/NavigationBar/navigationBar";
 import { LocationContextProvider } from "@/context/locationContext";
-
 const AuthLayout = ({
   children,
 }: Readonly<{
