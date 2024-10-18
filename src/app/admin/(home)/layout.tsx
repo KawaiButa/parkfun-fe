@@ -26,6 +26,7 @@ const Layout = ({
               color: "secondary",
               onClick: () => {
                 authentication?.signOut();
+                router.push("/logout");
               }
             },
           },

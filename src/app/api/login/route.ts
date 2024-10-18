@@ -7,7 +7,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (resFromBE.status === 200) {
       return NextResponse.json(resFromBE.data, {
         headers: {
-          "Set-Cookie": `accessToken=${resFromBE.data.accessToken}; Path=/; HttpOnly; SameSite=Strict;`,
+          "Set-Cookie": `accessToken=${resFromBE.data.accessToken}; Path=/; HttpOnly; SameSite=Strict; Expires=3600000`,
         },
       });
     }

@@ -5,5 +5,6 @@ export const constants = {
   SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
   SUPABASE_KEY: process.env.NEXT_PUBLIC_SUPABASE_KEY ?? "",
   AZURE_MAP_KEY: process.env.NEXT_PUBLIC_AZURE_MAP_KEY ?? "",
-  STRIPE_KEY: process.env.NEXT_PUBLIC_STRIPE_KEY ?? ""
+  STRIPE_KEY: process.env.NEXT_PUBLIC_STRIPE_KEY ?? "",
+  BASE_URL: process.env.NEXT_PUBLIC_BASE_URL ?? ""
 };
