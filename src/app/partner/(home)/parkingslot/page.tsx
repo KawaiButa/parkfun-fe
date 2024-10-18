@@ -1,18 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-import { Add, Check, Close, ErrorOutline, FilterList } from "@mui/icons-material";
-import { Box, Button, Container, Dialog, DialogActions, DialogContent } from "@mui/material";
-import { DialogProps, PageContainer, PageContainerToolbar, useDialogs, useNotifications } from "@toolpad/core";
+import { Add, Check, ErrorOutline, FilterList } from "@mui/icons-material";
+import { Box, Button, Container } from "@mui/material";
+import { PageContainer, PageContainerToolbar, useDialogs, useNotifications } from "@toolpad/core";
 import { useRouter } from "next/navigation";
-import Carousel from "react-material-ui-carousel";
 
 import DataTable from "@/components/dataTable/dataTable";
 import SearchBox from "@/components/searchBox/searchBox";
 import SelectInput from "@/components/selectInput/selectInput";
 import { useParkingSlot } from "@/hooks/useParkingSlot";
 import { useParkingSlotType } from "@/hooks/useParkingSlotType";
-import { ParkingSlot } from "@/interfaces/parkingSlot";
 import { ParkingSlotType } from "@/interfaces/parkingSlotType";
 import { TableColumn } from "@/interfaces/tableColumn";
 
@@ -61,14 +59,15 @@ const columns: TableColumn[] = [
   },
 ];
 const ParkSlotPage = () => {
-  const { parkingSlotList, fetchParkingSlot, deleteParkingSlot } = useParkingSlot();
+  const { fetchParkingSlot, deleteParkingSlot, parkingSlotList, page, take, setPage, setTake, count } =
+    useParkingSlot();
   const [filter, setFilter] = useState({});
   const [searchParam, setSearchParam] = useState("");
   const router = useRouter();
   const [searchField, setSearchField] = useState(0);
-  const dialogs = useDialogs();
-  const notifications = useNotifications();
   const { parkingSlotTypeList, fetchParkingSlotType } = useParkingSlotType();
+  const notifications = useNotifications();
+  const dialogs = useDialogs();
   useEffect(() => {
     const { id: key } = columns[searchField];
     fetchParkingSlot({ searchParam, searchField: key, filter });
@@ -190,54 +189,22 @@ const ParkSlotPage = () => {
       <Box sx={{ width: "100%", overflow: "auto" }}>
         <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
           <DataTable
+            pageSize={take}
             data={parkingSlotList ?? []}
+            currentPage={page}
+            count={count}
+            onChangePage={setPage}
+            onChangePageSize={setTake}
             deleteItem={(value) => handleDeletePartner(value.id)}
             editItem={(value) => {
               router.push(`parkingslot/${value.id}`);
             }}
-            onRowClick={(value) =>
-              value.images.length > 0 && dialogs.open((props) => ShowImageDialog({ ...props, value }))
-            }
             columns={columns}
             transformKey={(value) => "" + value.id}
           />
         </Box>
       </Box>
     </PageContainer>
-  );
-};
-const ShowImageDialog = ({ open, onClose, value }: DialogProps & { value: ParkingSlot }) => {
-  return (
-    <Dialog fullWidth open={open} onClose={() => onClose()} title="Images">
-      <DialogActions>
-        <Button onClick={() => onClose()} startIcon={<Close />}>
-          Close me
-        </Button>
-      </DialogActions>
-      <DialogContent>
-        <Carousel>
-          {value.images.map(({ url }) => (
-            <Box
-              key={url}
-              sx={{
-                width: "100%",
-                height: "300px",
-                overflow: "auto",
-              }}
-            >
-              <img
-                src={url}
-                key={url}
-                style={{
-                  width: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            </Box>
-          ))}
-        </Carousel>
-      </DialogContent>
-    </Dialog>
   );
 };
 export default ParkSlotPage;

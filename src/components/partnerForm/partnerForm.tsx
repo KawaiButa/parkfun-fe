@@ -8,6 +8,7 @@ import { Box, Button, Typography, FormControl, Autocomplete, Container, styled }
 import { useDialogs, useNotifications } from "@toolpad/core";
 import { Controller, useForm } from "react-hook-form";
 
+import { useSearchMapAPI } from "@/hooks/useMapApi";
 import { usePartner } from "@/hooks/usePartner";
 import { usePartnerType } from "@/hooks/userPartnerType";
 import { Partner } from "@/interfaces/partner";
@@ -40,10 +41,12 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
   const notifications = useNotifications();
   const { initValue } = props;
   const dialogs = useDialogs();
+  const { locations, setParam } = useSearchMapAPI();
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<PartnerFormData>({
     mode: "all",
@@ -221,10 +224,21 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
               <FormControl>
                 <Autocomplete
                   disablePortal
-                  options={[]}
+                  options={locations}
+                  getOptionLabel={(location) => location.properties?.address?.formattedAddress ?? ""}
                   sx={{ marginTop: "10px" }}
+                  onChange={(e, value) => {
+                    setValue("location", value?.properties?.address?.formattedAddress ?? "")
+                  }}
                   renderInput={(params) => (
-                    <StyledFormTextInput name="location" control={control} label="Location" {...params} size="small" />
+                    <StyledFormTextInput
+                      name="location"
+                      control={control}
+                      label="Location"
+                      {...params}
+                      size="small"
+                      onChange={(value) => setParam(value.target.value)}
+                    />
                   )}
                 />
               </FormControl>

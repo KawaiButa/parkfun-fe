@@ -39,7 +39,7 @@ const columns: TableColumn[] = [
   },
 ];
 const ParkLocPage = () => {
-  const { parkingLocationList, fetchParkingLocation, deleteParkingLocation } = useParkingLocation();
+  const { parkingLocationList, fetchParkingLocation, deleteParkingLocation, page, take, count, setTake, setPage} = useParkingLocation();
   const [filter, setFilter] = useState({});
   const [searchParam, setSearchParam] = useState("");
   const router = useRouter();
@@ -156,6 +156,11 @@ const ParkLocPage = () => {
       <Box sx={{ width: "100%", overflow: "auto" }}>
         <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
           <DataTable
+            onChangePage={setPage}
+            onChangePageSize={setTake}
+            pageSize={take}
+            currentPage={page}
+            count={count}
             data={parkingLocationList ?? []}
             deleteItem={(value) => handleDeletePartner(value.id)}
             editItem={(value) => {

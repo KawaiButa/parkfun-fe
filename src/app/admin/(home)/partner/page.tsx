@@ -2,11 +2,7 @@
 import { useEffect, useState } from "react";
 
 import { Add, FilterList } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Container,
-} from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import { PageContainer, PageContainerToolbar, useDialogs, useNotifications } from "@toolpad/core";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
@@ -14,6 +10,7 @@ import { useRouter } from "next/navigation";
 import DataTable from "@/components/dataTable/dataTable";
 import SearchBox from "@/components/searchBox/searchBox";
 import SelectInput from "@/components/selectInput/selectInput";
+import useDebounce from "@/hooks/useDebounce";
 import { usePartner } from "@/hooks/usePartner";
 import { TableColumn } from "@/interfaces/tableColumn";
 
@@ -43,17 +40,23 @@ const columns: TableColumn[] = [
 ];
 
 const User = () => {
-  const { partnerList, fetchPartners, deletePartner } = usePartner();
+  const { partnerList, fetchPartners, deletePartner, take, count, setTake, setPage, page } = usePartner();
   const [filter, setFilter] = useState({});
-  const [searchParam, setSearchParam] = useState("");
   const router = useRouter();
   const [searchField, setSearchField] = useState(0);
   const dialog = useDialogs();
   const notifications = useNotifications();
+  const [loading, setLoading] = useState(false);
+  const [searchParam, setSearchParam] = useState("");
+  const debouncedValue = useDebounce(searchParam, 0);
   useEffect(() => {
-    const { id: key } = columns[searchField];
-    fetchPartners({ searchParam, searchField: key, filter });
-  }, [searchParam, filter]);
+      setLoading(true);
+      const { id: key } = columns[searchField];
+      fetchPartners({ searchParam: debouncedValue, searchField: key, filter }).finally(() => {
+        setLoading(false);
+      });
+    
+  }, [page, take, debouncedValue]);
   const handleDeletePartner = async (id: number) => {
     try {
       const isDelete = await dialog.confirm("Are you sure you want to delete");
@@ -64,7 +67,7 @@ const User = () => {
           autoHideDuration: 2000,
         });
         const { id: key } = columns[searchField];
-        fetchPartners({ searchParam, searchField: key, filter });
+        fetchPartners({ searchParam: debouncedValue, searchField: key, filter });
       }
     } catch (err) {
       notifications.show(`Failed to delete partner with error ${(err as AxiosError).message}`, {
@@ -86,17 +89,13 @@ const User = () => {
       }}
       sx={{
         backgroundColor: "background.default",
-        padding: "10px",
         borderRadius: "10px",
-        mt: "20px",
       }}
     >
       <Container
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          margin: "10px",
-          paddingRight: "20px",
         }}
         disableGutters
       >
@@ -155,6 +154,12 @@ const User = () => {
       <Box sx={{ width: "100%", overflow: "auto" }}>
         <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
           <DataTable
+            loading={loading}
+            pageSize={take}
+            currentPage={page}
+            onChangePage={setPage}
+            onChangePageSize={setTake}
+            count={count}
             data={partnerList ?? []}
             columns={columns}
             deleteItem={(value) => handleDeletePartner(value.id)}
