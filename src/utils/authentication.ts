@@ -1,6 +1,7 @@
 "use client";
 import { CredentialResponse } from "@react-oauth/google";
 
+import { constants } from "@/constants";
 import { User } from "@/interfaces";
 import { LoginFormData } from "@/interfaces/loginFormData";
 import { RegisterFormData } from "@/interfaces/registerFormData";
@@ -9,7 +10,7 @@ import AxiosInstance from "./axios";
 
 async function loginWithEmailAndPassword({ email, password }: LoginFormData): Promise<User | null> {
   
-  const res = await AxiosInstance.post("http://" + window.location.host + "/api/login", { email, password });
+  const res = await AxiosInstance.post(constants.BASE_URL + "/api/login", { email, password });
   if (res.status == 200) {
     localStorage.setItem("profile", JSON.stringify(res.data.user));
     return res.data.user;
