@@ -231,13 +231,21 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
               <FormControl>
                 <Autocomplete
                   disablePortal
-                  options={locations.map((features) => features.properties?.address?.formattedAddress ?? "")}
+                  options={locations}
+                  getOptionLabel={(location) => location.properties?.address?.formattedAddress ?? ""}
                   sx={{ marginTop: "10px" }}
                   onChange={(e, value) => {
-                    if (value) setValue("location", value);
+                    setValue("location", value?.properties?.address?.formattedAddress ?? "")
                   }}
                   renderInput={(params) => (
-                    <StyledFormTextInput name="location" control={control} label="Location" {...params} size="small" />
+                    <StyledFormTextInput
+                      name="location"
+                      control={control}
+                      label="Location"
+                      {...params}
+                      size="small"
+                      onChange={(value) => setParam(value.target.value)}
+                    />
                   )}
                 />
               </FormControl>
