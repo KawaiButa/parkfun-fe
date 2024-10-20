@@ -1,15 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
+
+import { FeaturesItemOutput } from "@azure-rest/maps-search";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Autocomplete, Container, ContainerOwnProps, TextField, Typography, TypographyProps } from "@mui/material";
-import { Dayjs } from "dayjs";
+import { useNotifications } from "@toolpad/core";
+import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
 import queryString from "query-string";
 import { useForm } from "react-hook-form";
 
 import { constants } from "@/constants";
 import { useSearchMapAPI } from "@/hooks/useMapApi";
-import { timeToSeconds } from "@/utils/utils";
+import { getNearestRoundTime } from "@/utils/utils";
 
 import BookingTimePicker from "./bookingTimePicker/bookingTimePicker";
 import { bookingFormValidation } from "./validationSchema";
@@ -22,17 +26,31 @@ const StyledTypography = ({ children, ...props }: TypographyProps) => (
 );
 function BookingForm(props: ContainerOwnProps) {
   const { locations, setParam } = useSearchMapAPI();
-  const { handleSubmit, setValue } = useForm({
+  const notifications = useNotifications();
+  const {
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
-      startAt: 28800,
-      endAt: 30600,
+      startAt: getNearestRoundTime(dayjs()).toDate(),
+      endAt: getNearestRoundTime(dayjs()).add(30, "minutes").toDate(),
     },
     resolver: yupResolver(bookingFormValidation),
   });
   const router = useRouter();
-  const onSubmit = (data: { lat: number; lng: number; startAt: number; endAt: number }) => {
-    router.push("home/map?" + queryString.stringify(data));
+  const onSubmit = (data: { lat: number; lng: number; startAt: Date; endAt: Date }) => {
+    router.push(
+      "home/map?" + queryString.stringify({ ...data, startAt: data.startAt.toJSON(), endAt: data.endAt.toJSON() })
+    );
   };
+  useEffect(() => {
+    if (Object.values(errors).length)
+      notifications.show(Object.values(errors)[0].message, {
+        severity: "error",
+        autoHideDuration: 3000,
+      });
+  }, [errors]);
   return (
     <Container
       maxWidth="md"
@@ -75,8 +93,8 @@ function BookingForm(props: ContainerOwnProps) {
         sx={{
           gap: "10px",
         }}
-        onSubmit={handleSubmit(onSubmit)}
         component={"form"}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <Container
           sx={{
@@ -119,12 +137,18 @@ function BookingForm(props: ContainerOwnProps) {
           1. Choose your location
         </StyledTypography>
         <Autocomplete
-          options={locations}
-          getOptionLabel={(value) => value.properties?.address?.formattedAddress ?? ""}
+          loading={isLoading}
+          options={[...locations, location]}
+          getOptionLabel={(location) => {
+            if (location instanceof Array) return "Find parking location arount my location.";
+            return (location as FeaturesItemOutput).properties?.address?.formattedAddress ?? "";
+          }}
           onChange={(e, value) => {
-            if (value?.geometry) {
-              setValue("lat", value?.geometry.coordinates[1]);
-              setValue("lng", value?.geometry.coordinates[0]);
+            if (value) {
+              const point =
+                value instanceof Array ? [value[0], value[1]] : (value as FeaturesItemOutput).geometry.coordinates;
+              setValue("lng", point[0]);
+              setValue("lat", point[1]);
             }
           }}
           renderInput={(param) => {
@@ -137,7 +161,9 @@ function BookingForm(props: ContainerOwnProps) {
                     xs: "15px",
                     md: "20px",
                     borderRadius: "5px",
-                    borderColor: "secondary.contrastText",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "white",
+                    },
                   },
                 }}
                 onChange={(e) => {
@@ -160,10 +186,10 @@ function BookingForm(props: ContainerOwnProps) {
         </StyledTypography>
         <BookingTimePicker
           onStartChange={(e: Dayjs | null) => {
-            if (e) setValue("startAt", timeToSeconds(e));
+            if (e) setValue("startAt", e.toDate());
           }}
           onEndChange={(e: Dayjs | null) => {
-            if (e) setValue("endAt", timeToSeconds(e));
+            if (e) setValue("endAt", e.toDate());
           }}
           slotProps={{
             leftTimePicker: {
@@ -175,6 +201,10 @@ function BookingForm(props: ContainerOwnProps) {
             },
             rightTimePicker: {
               sx: {
+                width: "200px",
+                "& fieldset": {
+                  borderColor: "secondary.contrastText",
+                },
                 "& svg": {
                   color: "secondary.contrastText",
                 },

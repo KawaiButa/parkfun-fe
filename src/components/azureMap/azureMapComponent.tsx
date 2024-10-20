@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 
 import { IconOptions, MapMouseEvent } from "azure-maps-control";
 import {
@@ -8,19 +8,35 @@ import {
   AzureMapDataSourceProvider,
   AzureMapLayerProvider,
   FeatureType,
+  useAzureMaps,
 } from "react-azure-maps";
 
 import { constants } from "@/constants";
 
 const AzureMapComponent = <T,>(props: {
-  data: T[];
   render: () => ReactElement;
-  renderPopUp?: (value: T) => ReactElement;
   renderCenter?: () => ReactElement;
+  renderPopUp: (value: T) => ReactElement;
   iconOptions?: IconOptions;
   onClick?: (value: T) => void;
 }) => {
-  const { render, renderCenter, onClick, iconOptions } = props;
+  const { render, onClick, renderCenter, iconOptions } = props;
+  const { mapRef, isMapReady } = useAzureMaps();
+  const [center, setCenter] = useState<number[]>([0, 0]);
+  useEffect(() => {
+    if (mapRef) {
+      mapRef.events.add("ready", () => {
+        navigator.geolocation.getCurrentPosition((position) => {
+          setCenter([position.coords.longitude, position.coords.latitude]);
+        });
+      });
+    }
+  }, [mapRef, isMapReady]);
+  useEffect(() => {
+    if (mapRef) {
+      mapRef.setCamera({ center, zoom: 16 });
+    }
+  }, [center]);
   const option = {
     authOptions: {
       authType: AuthenticationType.subscriptionKey,
@@ -37,8 +53,17 @@ const AzureMapComponent = <T,>(props: {
         <AzureMap options={option}>
           <link href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" rel="stylesheet" />
           <>
-            <AzureMapDataSourceProvider id="center AzureMapDataSourceProvider">
-              {renderCenter && renderCenter()}
+            <AzureMapDataSourceProvider id="direction AzureMapDataSourceProvider">
+              <AzureMapLayerProvider
+                id="direction AzureMapLayerProvider"
+                type={"LineLayer"}
+                options={{
+                  strokeColor: "#2272B9",
+                  strokeWidth: 5,
+                  lineJoin: "round",
+                  lineCap: "round",
+                }}
+              />
             </AzureMapDataSourceProvider>
             <AzureMapDataSourceProvider id="parkingLocation AzureMapDataSourceProvider">
               <AzureMapLayerProvider
@@ -51,7 +76,7 @@ const AzureMapComponent = <T,>(props: {
                     if (e.shapes && e.shapes.length > 0) {
                       const feature = e.shapes[0] as unknown as { data: FeatureType };
                       if (onClick) {
-                        onClick(feature.data.properties);
+                        onClick(feature.data.properties.properties);
                       }
                     }
                   },
@@ -59,6 +84,9 @@ const AzureMapComponent = <T,>(props: {
                 type="SymbolLayer"
               />
               {render && render()}
+            </AzureMapDataSourceProvider>
+            <AzureMapDataSourceProvider id="center AzureMapDataSourceProvider">
+              {renderCenter && renderCenter()}
             </AzureMapDataSourceProvider>
           </>
         </AzureMap>
