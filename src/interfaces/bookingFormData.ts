@@ -1,6 +1,8 @@
+import { Dayjs } from "dayjs";
+
 export interface BookingFormData {
   
   parkingSlotId: number;
-  time: number[],
+  time: Dayjs[],
   serviceIds?: number[];
 }

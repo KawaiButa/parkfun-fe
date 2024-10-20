@@ -18,7 +18,7 @@ import { useParkingSlot } from "@/hooks/useParkingSlot";
 import { BookingFormData } from "@/interfaces/bookingFormData";
 import { ParkingSlot } from "@/interfaces/parkingSlot";
 import { bookParkingLocation } from "@/utils/booking";
-import { getDuration, getNearestRoundTime, secondToDayTime, timeToSeconds } from "@/utils/utils";
+import { getDuration, getFee, getNearestRoundTime, timeToSeconds } from "@/utils/utils";
 
 import { bookingValidationSchema } from "./validationSchema";
 import { noImage } from "../../../public/images";
@@ -28,19 +28,21 @@ import PaymentModal from "../paymentModal/paymentModal";
 
 export interface BookingModalProps {
   parkingSlotList?: number[];
-  startAt?: number;
-  endAt?: number;
+  startAt?: Dayjs;
+  endAt?: Dayjs;
 }
 
 const BookingModal = (
   props: DialogProps<
-    BookingModalProps & { initialValue?: { parkingSlotId: number; time: number[]; serviceIds: number[] } }
+    BookingModalProps & { initialValue?: { parkingSlotId: number; time: Dayjs[]; serviceIds: number[] } }
   >
 ) => {
   const { payload } = props;
   const { startAt, endAt, initialValue } = payload;
   const [parkingSlotList, setParkingSlotList] = useState<ParkingSlot[] | null>(null);
   const { fetchOneParkingSlot } = useParkingSlot();
+  const [fee, setFee] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
   const [selectedParkingSlot, setSelectedParkingSlot] = useState<ParkingSlot | null>(null);
   const notifcations = useNotifications();
   const session = useSession();
@@ -54,7 +56,10 @@ const BookingModal = (
   } = useForm({
     defaultValues: {
       parkingSlotId: payload.parkingSlotList ? payload.parkingSlotList[0] : -1,
-      time: [timeToSeconds(getNearestRoundTime(dayjs())), timeToSeconds(getNearestRoundTime(dayjs())) + 3600],
+      time:
+        startAt && endAt
+          ? [startAt, endAt]
+          : [getNearestRoundTime(dayjs()), getNearestRoundTime(dayjs()).add(30, "minutes")],
       serviceIds: [],
     },
     resolver: yupResolver(bookingValidationSchema),
@@ -94,6 +99,7 @@ const BookingModal = (
       });
   }, [errors, notifcations]);
   const onSubmit = async (formData: BookingFormData) => {
+    if (formData.time[0].isBefore(dayjs())) return;
     if (!session) {
       const isLogin = await dialogs.confirm("You need to login to book a parking slot");
       localStorage.setItem("booking", JSON.stringify(formData));
@@ -101,7 +107,7 @@ const BookingModal = (
       return;
     }
     try {
-      const price = (selectedParkingSlot!.price * getDuration(time[0], time[1])) / 3600;
+      const price = (selectedParkingSlot!.price * getDuration(timeToSeconds(time[0]), timeToSeconds(time[1]))) / 3600;
       const res = await bookParkingLocation({ ...formData, amount: price });
       if (res) {
         dialogs.open(PaymentModal, res.clientSecret);
@@ -119,7 +125,16 @@ const BookingModal = (
         });
     }
   };
-
+  useEffect(() => {
+    if (selectedParkingSlot && selectedParkingSlot.price && selectedParkingSlot.price > 0) {
+      setLoading(true);
+      getFee(selectedParkingSlot.id)
+        .then((fee) => setFee(fee))
+        .finally(() => setLoading(false));
+    } else {
+      setFee(0);
+    }
+  }, [time, selectedParkingSlot]);
   return (
     <Dialog open={props.open} onClose={() => props.onClose()}>
       <DialogContent
@@ -288,10 +303,14 @@ const BookingModal = (
                     name="time"
                     render={({ field: { onChange, value } }) => (
                       <BookingTimePicker
-                        defaultStartTime={secondToDayTime(value[0])}
-                        defaultEndTime={secondToDayTime(value[1])}
-                        onStartChange={(e) => onChange([timeToSeconds(e ?? new Dayjs()), value[1]])}
-                        onEndChange={(e) => onChange([timeToSeconds(e ?? new Dayjs()), e])}
+                        defaultStartTime={value[0]}
+                        defaultEndTime={value[1]}
+                        onStartChange={(e) => {
+                          if (e) onChange([e ?? new Dayjs(), value[1]]);
+                        }}
+                        onEndChange={(e) => {
+                          if (e) onChange([value[0], e]);
+                        }}
                         slotProps={{
                           leftTimePicker: {
                             sx: {
@@ -310,6 +329,7 @@ const BookingModal = (
                           },
                           rightTimePicker: {
                             sx: {
+                              width: "200px",
                               "& fieldset": {
                                 borderColor: "secondary.contrastText",
                               },
@@ -324,17 +344,45 @@ const BookingModal = (
                   />
                 </Box>
               </Stack>
-              <Stack direction="row" alignItems="center" justifyContent="flex-end" my={2}>
-                <Typography variant="h4" mr={3}>
-                  Total fee:
-                </Typography>
+              <Stack direction="column" alignItems="flex-end" my={2} pr={2}>
                 {selectedParkingSlot && (
-                  <Typography variant="h4">
-                    {((selectedParkingSlot?.price * getDuration(time[0], time[1])) / 3600).toFixed(2)}
-                  </Typography>
+                  <>
+                    <Stack direction="row" justifyContent="space-between" width={"100%"}>
+                      <Typography variant="body1">Fee:</Typography>
+                      <Typography variant="body1"> ${fee}</Typography>
+                    </Stack>
+                    <Stack direction="row" justifyContent="space-between" width={"100%"}>
+                      <Typography variant="body1">Price:</Typography>
+                      <Typography variant="body1">
+                        $
+                        {(
+                          (selectedParkingSlot?.price * getDuration(timeToSeconds(time[0]), timeToSeconds(time[1]))) /
+                          3600
+                        ).toFixed(2)}{" "}
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" justifyContent="space-between" width={"100%"}>
+                      <Typography variant="h4">Total:</Typography>
+                      <Typography variant="h4">
+                        $
+                        {(
+                          (selectedParkingSlot?.price * getDuration(timeToSeconds(time[0]), timeToSeconds(time[1]))) /
+                            3600 +
+                          fee
+                        ).toFixed(2)}
+                      </Typography>
+                    </Stack>
+                  </>
                 )}
               </Stack>
-              <LoadingButton loading={isSubmitting} variant="contained" fullWidth type="submit">
+              <LoadingButton
+                loading={isSubmitting || loading}
+                variant="contained"
+                fullWidth
+                type="submit"
+                loadingIndicator={<CircularProgress/>}
+                disabled={loading}
+              >
                 Reserve
               </LoadingButton>
             </Box>

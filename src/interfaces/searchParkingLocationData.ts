@@ -1,3 +1,5 @@
+import { Dayjs } from "dayjs";
+
 export interface SearchParkingLocationData {
   position: number[];
 
@@ -5,7 +7,7 @@ export interface SearchParkingLocationData {
 
   price?: number[];
 
-  time: number[];
+  time: Dayjs[];
 
   radius?: number;
 

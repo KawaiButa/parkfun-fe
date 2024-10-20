@@ -37,21 +37,29 @@ const AzureMapComponent = <T,>(props: {
         <AzureMap options={option}>
           <link href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" rel="stylesheet" />
           <>
-            <AzureMapDataSourceProvider id="center AzureMapDataSourceProvider">
-              {renderCenter && renderCenter()}
+            <AzureMapDataSourceProvider id="direction AzureMapDataSourceProvider">
+              <AzureMapLayerProvider
+                id="direction AzureMapLayerProvider"
+                type={"LineLayer"}
+                options={{
+                  strokeColor: "#2272B9",
+                  strokeWidth: 5,
+                  lineJoin: "round",
+                  lineCap: "round",
+                }}
+              />
             </AzureMapDataSourceProvider>
             <AzureMapDataSourceProvider id="parkingLocation AzureMapDataSourceProvider">
               <AzureMapLayerProvider
                 options={{
                   iconOptions: iconOptions,
                 }}
-                
                 events={{
                   click: (e: MapMouseEvent) => {
                     if (e.shapes && e.shapes.length > 0) {
                       const feature = e.shapes[0] as unknown as { data: FeatureType };
                       if (onClick) {
-                        onClick(feature.data.properties);
+                        onClick(feature.data.properties.properties);
                       }
                     }
                   },
@@ -59,6 +67,9 @@ const AzureMapComponent = <T,>(props: {
                 type="SymbolLayer"
               />
               {render && render()}
+            </AzureMapDataSourceProvider>
+            <AzureMapDataSourceProvider id="center AzureMapDataSourceProvider">
+              {renderCenter && renderCenter()}
             </AzureMapDataSourceProvider>
           </>
         </AzureMap>

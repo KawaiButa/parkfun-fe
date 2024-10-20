@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 import { AxiosError } from "axios";
-import { ObjectIterateeCustom } from "lodash";
-import queryString from 'query-string';
+import { ObjectIterateeCustom, set } from "lodash";
+import queryString from "query-string";
 
 import { ParkingLocation } from "@/interfaces";
 import { ParkingLocationFormData } from "@/interfaces/parkingLocationForm";
@@ -13,14 +13,19 @@ import AxiosInstance from "@/utils/axios";
 import { filterAndSearch } from "@/utils/utils";
 
 import { useUploadImage } from "./useUploadImage";
-export interface SearchedParkingLocation extends ParkingLocation {
+export interface SearchedParkingLocation extends Omit<ParkingLocation, "images"> {
   minPrice: number;
+  images: string[];
+  partnerId: number;
+  distance: number;
+  parkingSlotIds: number[]
 }
 
 export const useParkingLocation = () => {
-  const limit = 20;
   const [page, setPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(true);
+  const [take, setTake] = useState(20);
+  const [count, setCount] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(true)
   const [parkingLocationList, setParkingLocationList] = useState<ParkingLocation[] | null>(null);
   const { uploadImage, getPublicUrl, replaceImage } = useUploadImage("parkingLocation");
   const fetchParkingLocation = async (props?: {
@@ -29,24 +34,21 @@ export const useParkingLocation = () => {
     filter: ObjectIterateeCustom<ParkingLocation, boolean>;
   }) => {
     try {
-      if (!hasNextPage) return;
-      const res = await AxiosInstance.get(
-        "/parking-location?" +
-          queryString.stringify({
-            limit,
-            page: page + 1,
-          })
-      );
+      const queryObject: { page: number; take: number; field?: string; keyword?: string } = { page, take };
+      if (props && props.searchParam) {
+        const { searchField, searchParam } = props;
+        set(queryObject, "field", searchField);
+        set(queryObject, "keyword", searchParam);
+      }
+      const res = await AxiosInstance.get("/parking-location?" + queryString.stringify(queryObject));
       if (res.status === 200) {
         let data = res.data.data;
         if (props) {
           data = filterAndSearch({ data, ...props });
         }
-        const { fetchedPage, fetchedHasNextPage } = res.data.meta;
-        if (fetchedPage > page && parkingLocationList) data = parkingLocationList?.concat(data);
+        const { itemCount } = res.data.meta;
         setParkingLocationList(data);
-        setPage(fetchedPage);
-        if (fetchedHasNextPage !== hasNextPage) setHasNextPage(!hasNextPage);
+        setCount(itemCount);
         return parkingLocationList?.concat(data);
       }
     } catch (error) {
@@ -115,6 +117,7 @@ export const useParkingLocation = () => {
   ) => {
     try {
       const { images, ...data } = formData;
+      if(!parkingLocation.images) return;
       const oldImageUrl = parkingLocation.images.map(({ url }) => url);
       const hostName = process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public/parkingLocation/";
       await Promise.all(
@@ -138,27 +141,27 @@ export const useParkingLocation = () => {
     }
   };
 
-  const searchParkingLocation = async (data: SearchParkingLocationData) => {
-    if (!hasNextPage) return null;
+  const searchParkingLocation = async (formData: SearchParkingLocationData) => {
     try {
-      const { time, position } = data;
+      const { time, position,services, ...data} = formData;
       if (position.length != 2) return;
       if (time.length != 2) return;
       const res = await AxiosInstance.get(
         "/parking-location?" +
           queryString.stringify({
             ...data,
+            services: services?.join("-"),
             lng: position[0],
             lat: position[1],
             startAt: time[0],
             endAt: time[1],
-            page: page + 1,
-            limit,
+            page,
+            take: 200,
           })
       );
       if (res.status === 200) {
         const { data, meta } = res.data;
-        setPage(meta.page);
+        setPage(meta.page + 1)
         setHasNextPage(meta.hasNextPage);
         return data as SearchedParkingLocation[];
       }
@@ -175,6 +178,12 @@ export const useParkingLocation = () => {
     createParkingLocation,
     fetchOneParkingLocation,
     fetchParkingLocation,
+    count,
+    page,
+    take,
+    hasNextPage,
+    setTake,
+    setPage,
     parkingLocationList,
     searchParkingLocation,
     deleteParkingLocation,
