@@ -170,7 +170,7 @@ function BookingForm(props: ContainerOwnProps) {
                   },
                 }}
                 onChange={(e) => {
-                  setParam(e.target.value);
+                  if (e) setParam(e.target.value);
                 }}
                 size="small"
               />

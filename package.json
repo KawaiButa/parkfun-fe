@@ -26,6 +26,7 @@
     "@mui/x-charts": "^7.18.0",
     "@mui/x-date-pickers": "^7.18.0",
     "@react-oauth/google": "^0.12.1",
+    "@sentry/nextjs": "^8",
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.8.0",
     "@supabase/supabase-js": "^2.45.4",
