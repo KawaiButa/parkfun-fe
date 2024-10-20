@@ -347,7 +347,7 @@ const MapPage = () => {
               loading={isSearchLocationLoading}
               options={[...locations, location]}
               getOptionLabel={(location) => {
-                if(!location) return "";
+                if(!location) return ""
                 if (location instanceof Array) return "Find parking location arount my location.";
                 return (location as FeaturesItemOutput).properties?.address?.formattedAddress ?? "";
               }}
