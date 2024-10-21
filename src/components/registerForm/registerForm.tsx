@@ -1,8 +1,12 @@
 "use client";
+import { useEffect } from "react";
+
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Container, ContainerOwnProps, styled } from "@mui/material";
+import { CircularProgress, Container, ContainerOwnProps, styled } from "@mui/material";
 import { useNotifications } from "@toolpad/core";
+import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import { FormField } from "@/interfaces/formField";
@@ -14,7 +18,6 @@ import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import { FormTextInput, FormTextInputProps } from "../formTextInput/formTextInput";
 const StyledFormTextField = styled((props: FormTextInputProps) => (
   <FormTextInput
-
     slotProps={{
       textField: {
         sx: {
@@ -57,8 +60,9 @@ const fieldDataWithValidation: Array<FormField | Array<FormField>> = [
 ];
 
 const RegisterForm = (props: ContainerOwnProps) => {
-  const notifications = useNotifications()
-  const { handleSubmit, control, formState: {isSubmitting} } = useForm<RegisterFormData>({
+  const notifications = useNotifications();
+  const router = useRouter();
+  const { handleSubmit, control, formState: {isSubmitting, errors} } = useForm<RegisterFormData>({
     mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: {
@@ -71,12 +75,26 @@ const RegisterForm = (props: ContainerOwnProps) => {
     resolver: yupResolver(registerValidationSchema),
   });
   const onSubmit = async (data: RegisterFormData) => {
-    const result = await registerNewUser(data);
-    if (result) {
-      notifications.show(`You have successfully logged in.`, {
-        severity: "success",
-        autoHideDuration: 2000,
-      });
+    try {
+      const result = await registerNewUser(data);
+      if (result) {
+        notifications.show(`You have signed in successfully.`, {
+          severity: "success",
+          autoHideDuration: 2000,
+        });
+        router.replace("/auth/login");
+      }
+    } catch (err) {
+      if (err instanceof AxiosError)
+        notifications.show(err.response?.data.message, {
+          severity: "error",
+          autoHideDuration: 2000,
+        });
+      else
+        notifications.show((err as Error).message, {
+          severity: "error",
+          autoHideDuration: 2000,
+        });
     }
   };
 
@@ -94,6 +112,15 @@ const RegisterForm = (props: ContainerOwnProps) => {
       return <StyledFormTextField key={key} name={key} label={label} control={control} type={type} />;
     });
   };
+  useEffect(() => {
+    if(Object.keys(errors).length > 0){
+      notifications.show(Object.values(errors)[0].message, {
+        severity: "error",
+        autoHideDuration: 2000,
+      });
+      return;
+    }
+  },[errors])
   return (
     <ContainerFlexColumn
       {...props}
@@ -109,7 +136,6 @@ const RegisterForm = (props: ContainerOwnProps) => {
     >
       {buildForm(fieldDataWithValidation)}
       <LoadingButton
-        loading={isSubmitting}
         type="submit"
         onClick={handleSubmit(onSubmit)}
         sx={{
@@ -117,7 +143,8 @@ const RegisterForm = (props: ContainerOwnProps) => {
           fontWeight: "500",
         }}
         variant="contained"
-        
+        loadingIndicator={<CircularProgress />}
+        loading={isSubmitting}
       >
         Start booking
       </LoadingButton>
