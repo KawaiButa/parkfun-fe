@@ -1,14 +1,14 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import styled from "@emotion/styled";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Alert, AlertColor, Button, Container, Stack, Typography } from "@mui/material";
+import { Button, Container, Stack, Typography } from "@mui/material";
+import { useNotifications } from "@toolpad/core";
 import { AxiosResponse } from "axios";
 import { useForm } from "react-hook-form";
 
-import { constants } from "@/constants";
 import { useProfile } from "@/context/profileContext";
 import { useUploadImage } from "@/hooks/useUploadImage";
 import { ProfileFormData } from "@/interfaces/profileFormData";
@@ -44,11 +44,11 @@ const fieldList = [
 ];
 const ProfileForm = () => {
   const { profile } = useProfile();
-  const [error, setError] = useState<{ type: AlertColor; message: string } | undefined>(undefined);
   const {
     handleSubmit,
     control,
-    formState: { isSubmitting },
+    reset,
+    formState: { isSubmitting, errors },
   } = useForm({
     defaultValues: { ...new ProfileFormData() },
     mode: "onChange",
@@ -57,26 +57,39 @@ const ProfileForm = () => {
   });
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedSrc, setSelectedSrc] = useState<File | null>(null);
-  const { uploadImage, replaceImage } = useUploadImage("avatar");
+  const { uploadImage, getPublicUrl } = useUploadImage("avatar");
+  const notifications = useNotifications();
+  useEffect(() => {
+    if (profile) reset((prev) => ({ ...prev, ...profile }));
+  }, [profile, reset]);
   const onSubmit = async (data: ProfileFormData) => {
+    if (!profile) return;
     let image = profile?.image.url;
     if (selectedSrc) {
-      if (!image) image = await uploadImage(selectedSrc);
-      else image = await replaceImage(selectedSrc, image.split(constants.SUPABASE_URL)[1]);
+      image = getPublicUrl(await uploadImage(selectedSrc));
     }
-    AxiosInstance.patch("/user", { ...data, image })
+    AxiosInstance.patch("/user/" + profile.id, { ...data, image })
       .then((res: AxiosResponse) => {
         window.localStorage.setItem("profile", JSON.stringify(res.data));
-        setError({ type: "success", message: "Successfully update your profile" });
+        notifications.show("Successfully update your profile", {
+          severity: "success",
+          autoHideDuration: 2000,
+        });
       })
       .catch((err) => {
-        setError({ type: "error", message: err.message });
+        notifications.show("Error updating your profile. " + err.message, {
+          severity: "error",
+          autoHideDuration: 2000,
+        });
       });
   };
-  function handleReset(): void {
-    control._reset();
-    setError(undefined);
-  }
+  useEffect(() => {
+    if (Object.keys(errors).length > 0)
+      notifications.show(Object.values(errors)[0].message, {
+        severity: "error",
+        autoHideDuration: 2000,
+      });
+  }, [errors]);
   return (
     <Stack
       component={"form"}
@@ -89,7 +102,7 @@ const ProfileForm = () => {
         backgroundColor: "secondary.contrastText",
       }}
     >
-      <Stack sx={{ width: "220px", height: "220px"}}>
+      <Stack sx={{ width: "220px", height: "220px" }}>
         <img
           src={selectedSrc ? URL.createObjectURL(selectedSrc) : (profile?.image.url ?? "")}
           style={{
@@ -115,7 +128,7 @@ const ProfileForm = () => {
           }}
           type="button"
           sx={{
-            mt: 2
+            mt: 2,
           }}
         >
           Change image
@@ -166,9 +179,9 @@ const ProfileForm = () => {
               key={key}
               name={key}
               control={control}
-              placeholder={key}
               size="small"
               type="text"
+              disabled={key === "email"}
               rule={rule}
             />
           </Container>
@@ -180,27 +193,16 @@ const ProfileForm = () => {
             flexDirection: "row-reverse",
           }}
         >
-          <LoadingButton loading={isSubmitting} variant="contained" type="submit">
+          <LoadingButton variant="contained" type="submit">
             Save
           </LoadingButton>
           {!isSubmitting && (
-            <Button variant="contained" color="info" onClick={() => handleReset()}>
+            <Button variant="contained" color="info" onClick={() => reset()}>
               Reset
             </Button>
           )}
         </Container>
       </ContainerFlexColumn>
-      {error && (
-        <Alert
-          variant="filled"
-          severity={error.type as AlertColor}
-          sx={{
-            marginTop: "10px",
-          }}
-        >
-          {error.message}
-        </Alert>
-      )}
     </Stack>
   );
 };

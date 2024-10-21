@@ -142,13 +142,41 @@ function BookingForm(props: ContainerOwnProps) {
           loading={isLoading}
           options={[...locations, location]}
           getOptionLabel={(location) => {
-            if(!location) return "";
+            if (!location) return "";
             if (location instanceof Array) return "Find parking location arount my location.";
             return (location as FeaturesItemOutput).properties?.address?.formattedAddress ?? "";
           }}
-        >
-          <Input placeholder="Search here" disableUnderline={true} />
-        </Container>
+          onChange={(e, value) => {
+            if (value) {
+              const point =
+                value instanceof Array ? [value[0], value[1]] : (value as FeaturesItemOutput).geometry.coordinates;
+              setValue("lng", point[0]);
+              setValue("lat", point[1]);
+            }
+          }}
+          renderInput={(param) => {
+            return (
+              <TextField
+                {...param}
+                placeholder="Search for your location"
+                sx={{
+                  fontSize: {
+                    xs: "15px",
+                    md: "20px",
+                    borderRadius: "5px",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "white",
+                    },
+                  },
+                }}
+                onChange={(e) => {
+                  if (e) setParam(e.target.value);
+                }}
+                size="small"
+              />
+            );
+          }}
+        />
         <StyledTypography
           sx={{
             display: {
