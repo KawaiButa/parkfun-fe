@@ -79,9 +79,7 @@ const NavigationBar = () => {
               anchorEl={anchorEl}
               color="secondary.contrastText"
               sx={{
-                "& .MuiPopover-paper": {
-                  padding: "5px 15px",
-                },
+                p: 0,
               }}
             />
           </>

@@ -1,9 +1,8 @@
 import { MouseEvent } from "react";
 
-import { Button, Popover, PopoverProps } from "@mui/material";
+import { Button, Popover, PopoverProps, Stack } from "@mui/material";
 import Link from "next/link";
 
-import ContainerFlexColumn from "@/components/containerFlexColumn/containerFlexColumn";
 
 interface ProfilePopoverProps extends PopoverProps {
   linkList: { label: string; href?: string; onClick?: (event: MouseEvent) => void }[];
@@ -22,13 +21,17 @@ const ProfilePopOver = (props: ProfilePopoverProps) => {
       }}
       {...popoverProps}
     >
-      <ContainerFlexColumn>
+      <Stack p={0}>
         {linkList.map(({ label, href, onClick }) => (
-          <Button variant="text" key={href} onClick={onClick} fullWidth>
+          <Button variant="text" key={href} onClick={onClick} fullWidth sx={{
+            px: 5,
+            py: 1
+
+          }}>
             <Link href={href ?? ""}>{label}</Link>
           </Button>
         ))}
-      </ContainerFlexColumn>
+      </Stack>
     </Popover>
   );
 };
