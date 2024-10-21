@@ -1,5 +1,6 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { Container, ContainerOwnProps, styled } from "@mui/material";
 import { useNotifications } from "@toolpad/core";
 import { useForm } from "react-hook-form";
@@ -11,7 +12,6 @@ import { registerNewUser } from "@/utils/authentication";
 import { registerValidationSchema } from "./validationSchema";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import { FormTextInput, FormTextInputProps } from "../formTextInput/formTextInput";
-import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 const StyledFormTextField = styled((props: FormTextInputProps) => (
   <FormTextInput
 
@@ -57,8 +57,8 @@ const fieldDataWithValidation: Array<FormField | Array<FormField>> = [
 ];
 
 const RegisterForm = (props: ContainerOwnProps) => {
-  const notifications = useNotifications();
-  const { handleSubmit, control } = useForm<RegisterFormData>({
+  const notifications = useNotifications()
+  const { handleSubmit, control, formState: {isSubmitting} } = useForm<RegisterFormData>({
     mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: {
@@ -108,16 +108,19 @@ const RegisterForm = (props: ContainerOwnProps) => {
       }}
     >
       {buildForm(fieldDataWithValidation)}
-      <PrimaryContainedButton
+      <LoadingButton
+        loading={isSubmitting}
         type="submit"
         onClick={handleSubmit(onSubmit)}
         sx={{
           fontSize: "20px",
           fontWeight: "500",
         }}
+        variant="contained"
+        
       >
         Start booking
-      </PrimaryContainedButton>
+      </LoadingButton>
     </ContainerFlexColumn>
   );
 };

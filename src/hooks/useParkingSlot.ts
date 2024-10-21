@@ -2,17 +2,20 @@ import { useState } from "react";
 
 import { AxiosError } from "axios";
 import { ObjectIterateeCustom } from "lodash";
+import queryString from "query-string";
 
 import { ParkingSlot } from "@/interfaces/parkingSlot";
 import { ParkingSlotFormData } from "@/interfaces/parkingSlotFormData";
 import AxiosInstance from "@/utils/axios";
-import { filterAndSearch } from "@/utils/utils";
 
 import { useUploadImage } from "./useUploadImage";
 
 export const useParkingSlot = () => {
   const { uploadImage, getPublicUrl, replaceImage } = useUploadImage("parkingSlot");
   const [parkingSlotList, setParkingSlotList] = useState<ParkingSlot[] | null>(null);
+  const [page, setPage] = useState(1);
+  const [take, setTake] = useState(20);
+  const [count, setCount] = useState(0);
   const createParkingSlot = async (formData: ParkingSlotFormData) => {
     try {
       const { images } = formData;
@@ -62,15 +65,19 @@ export const useParkingSlot = () => {
     filter: ObjectIterateeCustom<ParkingSlot, boolean>;
   }) => {
     try {
-      const res = await AxiosInstance.get("/parking-slot");
+      const res = await AxiosInstance.get(
+        "/parking-slot?" +
+          queryString.stringify({
+            page,
+            take,
+            ...(props?.searchParam && { keyword: props?.searchParam, field: props?.searchField }),
+          })
+      );
       if (res.status === 200) {
-        if (props) {
-          const filteredData = filterAndSearch({ data: res.data.data, ...props });
-          setParkingSlotList(filteredData);
-          return filteredData;
-        }
-        setParkingSlotList(res.data.data);
-        return res.data.data;
+        const { data, meta } = res.data;
+        setCount(meta.itemCount);
+        setParkingSlotList(data);
+        return data;
       }
       return null;
     } catch (err) {
@@ -103,6 +110,11 @@ export const useParkingSlot = () => {
     createParkingSlot,
     fetchParkingSlot,
     parkingSlotList,
+    count,
+    page,
+    take,
+    setPage,
+    setTake,
     fetchOneParkingSlot,
     deleteParkingSlot,
     updateParkingSlot,

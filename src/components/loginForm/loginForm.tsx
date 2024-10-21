@@ -2,34 +2,55 @@
 import { useContext, useState } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Alert, Container, ContainerOwnProps, Divider, styled, Typography } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { Alert, CircularProgress, Container, ContainerOwnProps, Divider, styled, Typography } from "@mui/material";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthenticationContext } from "@toolpad/core";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
+import { constants } from "@/constants";
 import { LoginFormData } from "@/interfaces/loginFormData";
 import { handleLoginWithGoogleSuccess, loginWithEmailAndPassword } from "@/utils/authentication";
 
 import { loginValidationSchema } from "./validationSchema";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import { FormTextInput, FormTextInputProps } from "../formTextInput/formTextInput";
-import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
-const StypedFormTextInput = styled((props: FormTextInputProps) => <FormTextInput          slotProps={{
-  textField: {
-    sx: {
-      "& fieldset": {
-        borderColor: "secondary.contrastText",
+const StypedFormTextInput = styled((props: FormTextInputProps) => (
+  <FormTextInput
+    slotProps={{
+      textField: {
+        sx: {
+          "& fieldset": {
+            borderColor: "secondary.contrastText",
+          },
+        },
+        slotProps: {
+          input: {
+            sx: {
+              '&:-webkit-autofill': {
+                '-webkit-box-shadow': '0 0 0 100px #000 inset',
+                '-webkit-text-fill-color': '#fff'
+              }
+            },
+          },
+          
+        },
       },
-    },
-  },
-}} {...props}/>)()
+    }}
+    {...props}
+  />
+))();
 const LoginForm = (props: ContainerOwnProps) => {
   const router = useRouter();
   const searchParam = useSearchParams();
   const authentication = useContext(AuthenticationContext);
   const [error, setError] = useState<string | undefined>(undefined);
-  const { handleSubmit, control } = useForm<LoginFormData>({
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+  } = useForm<LoginFormData>({
     mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: {
@@ -52,7 +73,7 @@ const LoginForm = (props: ContainerOwnProps) => {
     }
   };
   return (
-    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}>
+    <GoogleOAuthProvider clientId={constants.GOOGLE_CLIENT_ID}>
       <ContainerFlexColumn
         {...props}
         component="form"
@@ -81,15 +102,20 @@ const LoginForm = (props: ContainerOwnProps) => {
           }}
         />
         <StypedFormTextInput label="Password" name="password" control={control} type="password" />
-        <PrimaryContainedButton
+        <LoadingButton
           type="submit"
           sx={{
             fontSize: "20px",
             fontWeight: "600",
+            
           }}
+          loadingIndicator={<CircularProgress color="primary"/>}
+          variant="contained"
+          color="primary"
+          loading={isSubmitting}
         >
           Login
-        </PrimaryContainedButton>
+        </LoadingButton>
         <ContainerFlexColumn sx={{ gap: "10px" }} disableGutters>
           <Divider
             sx={{

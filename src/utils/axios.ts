@@ -59,7 +59,7 @@ AxiosInstance.interceptors.response.use(
 const redirectToLogin = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
-  window.location.href = "/auth/login";
+  redirect("aut/login");
 };
 
 export default AxiosInstance;

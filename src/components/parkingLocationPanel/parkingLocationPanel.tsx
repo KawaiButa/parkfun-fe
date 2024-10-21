@@ -2,25 +2,31 @@
 import { useEffect, useState } from "react";
 
 import { Close } from "@mui/icons-material";
-import { Stack, Typography, IconButton, Paper, Box, Button, CircularProgress } from "@mui/material";
+import { Stack, Typography, IconButton, Paper, Box, Button, CircularProgress, Divider } from "@mui/material";
 import Image from "next/image";
 import Carousel from "react-material-ui-carousel";
 
+import { SearchedParkingLocation } from "@/hooks/useParkingLocation";
 import { usePartner } from "@/hooks/usePartner";
 import { ParkingLocation } from "@/interfaces";
+import { DirectionMeta } from "@/interfaces/directionMeta";
 
 const ParkingLocationPanel = (props: {
-  parkingLocation: ParkingLocation;
-  onClose?: (value: ParkingLocation) => void;
-  onBook?: (value: ParkingLocation) => void;
+  parkingLocation: ParkingLocation | SearchedParkingLocation;
+  onClose?: () => void;
+  directionMeta: DirectionMeta | null;
+  onBook?: (value: ParkingLocation | SearchedParkingLocation) => void;
 }) => {
-  const { onClose, onBook } = props;
-  const [parkingLocation, setParkingLocation] = useState<ParkingLocation>(props.parkingLocation);
+  const { onClose, onBook, directionMeta } = props;
+  const [parkingLocation, setParkingLocation] = useState<ParkingLocation | SearchedParkingLocation>(
+    props.parkingLocation
+  );
   const { fetchOnePartner } = usePartner();
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
-    fetchOnePartner(props.parkingLocation.id)
+    const id = props.parkingLocation.partner?.id ?? (props.parkingLocation as SearchedParkingLocation).partnerId;
+    fetchOnePartner(id)
       .then((value) => {
         if (value) setParkingLocation({ ...parkingLocation, partner: value });
       })
@@ -30,7 +36,12 @@ const ParkingLocationPanel = (props: {
   }, [props]);
 
   const buildOwnerSection = () => {
-    if (loading) return <Stack width={"100%"}><CircularProgress /></Stack>;
+    if (loading)
+      return (
+        <Stack width={"100%"}>
+          <CircularProgress />
+        </Stack>
+      );
     if (!parkingLocation.partner || !parkingLocation.partner.user)
       return (
         <Paper>
@@ -84,13 +95,13 @@ const ParkingLocationPanel = (props: {
           sx={{
             width: "fit-content",
           }}
-          onClick={() => onClose && onClose(parkingLocation)}
+          onClick={() => onClose && onClose()}
         >
           <Close color="primary" />
         </IconButton>
       </Stack>
       {parkingLocation && (
-        <>
+        <Stack gap={1} overflow="scroll" mb={6}>
           <Carousel
             sx={{
               width: "100%",
@@ -99,21 +110,24 @@ const ParkingLocationPanel = (props: {
             }}
             height={"300px"}
           >
-            {parkingLocation.images.map((image) => (
-              <Image
-                key={image.id}
-                src={image.url}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderRadius: "5px",
-                }}
-                alt={`Image ${image.id}`}
-                width={500}
-                height={300}
-              />
-            ))}
+            {(parkingLocation.images ?? []).map((image) => {
+              const url = typeof image === "string" ? image : image.url;
+              return (
+                <Image
+                  key={url}
+                  src={url}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "5px",
+                  }}
+                  alt={`${url}`}
+                  width={500}
+                  height={300}
+                />
+              );
+            })}
           </Carousel>
           <Typography variant="h5" fontWeight={500}>
             {parkingLocation.name}
@@ -138,6 +152,44 @@ const ParkingLocationPanel = (props: {
               {parkingLocation.description}
             </Typography>
           </Paper>
+          <Paper>
+            <Stack direction="row" p={2} gap={2} justifyContent="space-around">
+              {directionMeta && (
+                <>
+                  <Box>
+                    <Typography variant="h6" fontWeight={500}>
+                      Distance:
+                    </Typography>
+                    <Typography>{(directionMeta.lengthInMeters / 1000).toFixed(2)} km</Typography>
+                  </Box>
+                  <Divider
+                    sx={{
+                      borderColor: "inherit",
+                      borderWidth: "1px",
+                    }}
+                  />
+                  <Box>
+                    <Typography variant="h6" fontWeight={500}>
+                      Departure time:
+                    </Typography>
+                    <Typography>{directionMeta.departureTime.format("hh:mm A")}</Typography>
+                  </Box>
+                  <Divider
+                    sx={{
+                      borderColor: "inherit",
+                      borderWidth: "1px",
+                    }}
+                  />
+                  <Box>
+                    <Typography variant="h6" fontWeight={500}>
+                      Arrive time:
+                    </Typography>
+                    <Typography>{directionMeta.arrivalTime.format("hh:mm A")}</Typography>
+                  </Box>
+                </>
+              )}
+            </Stack>
+          </Paper>
           {buildOwnerSection()}
           <Button
             variant="contained"
@@ -150,9 +202,8 @@ const ParkingLocationPanel = (props: {
           >
             Preview
           </Button>
-        </>
+        </Stack>
       )}
-      <Box height={100}/>
     </>
   );
 };

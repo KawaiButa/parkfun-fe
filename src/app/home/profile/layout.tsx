@@ -14,7 +14,6 @@ const layout = ({
         borderRadius: "10px",
         alignSelf: "center",
         alignContent: "center",
-        overflow: 'hidden',
       }}
       disableGutters
     >

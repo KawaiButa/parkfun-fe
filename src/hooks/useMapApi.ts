@@ -14,26 +14,27 @@ const client = MapsSearch(credential);
 export const useSearchMapAPI = () => {
   const [param, setParam] = useState("");
   const [locations, setLocation] = useState<FeaturesItemOutput[]>([]);
-  const debouncedValue = useDebounce(param, 500);
+  const [isLoading, setIsLoading] = useState(false);
+  const debouncedValue = useDebounce(param, 200);
   const search = (value: string) => {
     if(value === "") return
     client
       .path("/geocode")
       .get({ queryParameters: { query: value } })
       .then((res) => {
+        setIsLoading(false);
         if (isUnexpected(res)) {
           throw res.body.error;
         }
-
         if (res.body.features) {
           const result = res.body.features ?? [];
           setLocation(result);
         }
-        return [];
       });
   };
   useEffect(() => {
+    setIsLoading(true)
     search(debouncedValue);
   }, [debouncedValue]);
-  return { locations, setParam };
+  return { locations, isLoading, setParam};
 };

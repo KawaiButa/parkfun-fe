@@ -7,7 +7,7 @@ export const userTheme = createTheme({
       main: "#EBCB00",
       light: "#EBD226",
       dark: "#e4b400",
-      contrastText: "#000",
+      contrastText: "#272624",
     },
     secondary: {
       main: "#171616",

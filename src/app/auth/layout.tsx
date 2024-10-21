@@ -44,7 +44,9 @@ const AuthLayout = ({
             value={value}
             onChange={(event, newValue) => {
               setValue(newValue);
-              router.replace(`/auth/${newValue}`);
+              router.replace(
+                `/auth/${newValue}?${typeof window !== "undefined" ? (window.location.href.split("?")[1] ?? "") : ""}`
+              );
             }}
             textColor="secondary"
             indicatorColor="primary"

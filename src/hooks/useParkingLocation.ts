@@ -41,10 +41,10 @@ export const useParkingLocation = () => {
       }
       const res = await AxiosInstance.get("/parking-location?" + queryString.stringify(queryObject));
       if (res.status === 200) {
-
-        const { data, meta } = res.data;
+        const data = res.data.data;
+        const { itemCount } = res.data.meta;
         setParkingLocationList(data);
-        setCount(meta.itemCount);
+        setCount(itemCount);
         return parkingLocationList?.concat(data);
       }
     } catch (error) {

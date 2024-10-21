@@ -1,4 +1,3 @@
-import { AzureRoute } from "@/interfaces/azureRoute";
 
 import { Image } from "./image";
 import { ParkingSlot } from "./parkingSlot";
@@ -9,14 +8,13 @@ export interface ParkingLocation {
   id: number;
   name: string;
   address: string;
-  lat?: number | null;
-  lng?: number | null;
+  lat: number;
+  lng: number;
   access: string;
   partner?: Partner;
   paymentMethod: PaymentMethod,
   pricingOption: PricingOption;
   description: string;
-  images: Image[];
+  images?: Image[];
   parkingSlots: ParkingSlot[];
-  route?: AzureRoute,
 }

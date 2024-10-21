@@ -16,7 +16,6 @@ import { constants } from "@/constants";
 const AzureMapComponent = <T,>(props: {
   render: () => ReactElement;
   renderCenter?: () => ReactElement;
-  renderPopUp: (value: T) => ReactElement;
   iconOptions?: IconOptions;
   onClick?: (value: T) => void;
 }) => {

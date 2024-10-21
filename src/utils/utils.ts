@@ -1,26 +1,12 @@
+"use client"
 import { AxiosError } from "axios";
-import atlas from "azure-maps-control";
 import dayjs, { Dayjs } from "dayjs";
-import _, { ObjectIterateeCustom } from "lodash";
 
 import { constants } from "@/constants";
 
 import AxiosInstance from "./axios";
-import { DirectionMeta } from "@/interfaces/DirectionMeta";
 
 
-const filterAndSearch = <T>(props: {
-  data: T[];
-  searchParam: string;
-  searchField: string;
-  filter: ObjectIterateeCustom<T, boolean>;
-}) => {
-  const { data, searchParam, searchField, filter } = props;
-  const filteredData = _.filter(data, filter) as T[];
-  if (searchParam == "") return filteredData;
-  const searchedData = filteredData?.filter((obj) => ("" + _.get(obj, searchField)).includes(searchParam));
-  return searchedData;
-};
 const validateEmptyString = (value: string) => (value.length === 0 ? null : value);
 const timeToSeconds = (time: Dayjs) => {
   const hours = time.hour();
@@ -115,59 +101,13 @@ function calculateZoomLevel(input: GeoPoint | GeoPoint[], mapWidth: number, mapH
     return getZoomLevelForPoint(input.lat, input.lng, mapWidth, mapHeight);
   }
 }
-const getFeaturesAndMetaData = (
-  routes: Array<{
-    summary: {
-      lengthInMeters: number;
-      travelTimeInSeconds: number;
-      trafficDelayInSeconds: number;
-      trafficLengthInMeters: number;
-      departureTime: string;
-      arrivalTime: string;
-    };
-    legs: Array<{ points: Array<{ latitude: number; longitude: number }> }>;
-  }>
-):{featuresCollection: atlas.data.FeatureCollection, meta: DirectionMeta} => {
-  const bounds: Array<number[]> = [];
-  const features = routes.map((route, index) => {
-    const multiLineCoords = route.legs.map((leg) => {
-      return leg.points.map((coord) => {
-        const position = [coord.longitude, coord.latitude];
-        bounds.push(position);
-        return position;
-      });
-    });
-    const props = {
-      ...route,
-      resultIndex: index,
-    };
-    return new atlas.data.Feature(
-      {
-        type: "MultiLineString",
-          coordinates: multiLineCoords,
-        properties: props,
-      }
-    );
-  })
-  const {arrivalTime, departureTime} = routes[0].summary;
-  return {
-    featuresCollection: new atlas.data.FeatureCollection(features, atlas.data.BoundingBox.fromLatLngs(bounds as Array<number[]>)),
-    meta: {
-      ...routes[0].summary,
-      departureTime: dayjs(departureTime),
-      arrivalTime: dayjs(arrivalTime),
-    },
-  };
-};
 
 export {
   validateEmptyString,
   getDuration,
   timeToSeconds,
-  filterAndSearch,
   getNearestRoundTime,
   secondToDayTime,
   calculateZoomLevel,
-  getFeaturesAndMetaData,
   getFee
 };

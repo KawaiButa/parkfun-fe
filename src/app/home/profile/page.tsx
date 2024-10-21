@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { ArrowForwardIos } from "@mui/icons-material";
 import { Box, Button, Card, Container, Stack, Typography } from "@mui/material";
@@ -11,13 +11,12 @@ import { useBooking } from "@/hooks/useBooking";
 
 const Page = () => {
   const { bookingList, fetchBooking } = useBooking();
-  const [selectedBooking, setSelectedBooking] = useState<number | null>(null);
   useEffect(() => {
     fetchBooking();
   }, []);
   const router = useRouter();
   return (
-    <Stack direction="column" gap={2}>
+    <Stack direction="column" gap={2} color="secondary.main">
       <ProfileForm />
       <Container
         sx={{
@@ -29,15 +28,16 @@ const Page = () => {
         <Typography variant="h5" mb={2}>
           Booking history
         </Typography>
-        <Stack gap={1}>
+        <Stack gap={1} overflow="scroll">
           {bookingList?.map(({ id, status, createAt, startAt, endAt, amount }) => (
             <Box key={id}>
               <Card
                 sx={{ p: 2, cursor: "pointer" }}
                 component={"div"}
                 onClick={() => {
-                  if (id === selectedBooking) setSelectedBooking(null);
-                  else setSelectedBooking(id);
+                  if(status === "pending") {
+                    
+                  }
                 }}
               >
                 <Stack direction="row" justifyContent="space-between">
@@ -61,13 +61,12 @@ const Page = () => {
                     <Typography fontWeight="500">End at:</Typography> {dayjs(endAt).format("YY/MM/DD hh:mm")}
                   </Typography>
                 </Stack>
-                <Stack direction="row">
+                <Stack direction="row" justifyContent="flex-end">
                   <Typography fontWeight={500} mr={1}>
-                    Create at:{" "}
+                    Create at:
                   </Typography>
                   <Typography>{dayjs(createAt).format("YY/MM/DD hh:mm")}</Typography>
                 </Stack>
-                {selectedBooking === id && <Stack></Stack>}
               </Card>
             </Box>
           ))}
@@ -85,7 +84,7 @@ const getColorFromStatus = (
       return "primary";
     case "completed":
       return "success";
-    case "rejected":
+    case "cancelled":
       return "error";
     default:
       return "inherit";

@@ -68,13 +68,8 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
   const onSubmit = async (data: ParkingLocationFormData) => {
     try {
       if (initValue) {
-        const { paymentMethodId, pricingOptionId, access, description, images } = data;
         const res = await updateParkingLocation(initValue, {
-          paymentMethodId,
-          pricingOptionId,
-          access,
-          description,
-          images,
+          ...data,
         });
         if (res) {
           notification.show("Successfully updated parking location", {
@@ -106,7 +101,7 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
         paymentMethod: { id: paymentMethodId },
         ...remain
       } = initValue as ParkingLocation;
-      reset((prev) => ({ ...prev, ...remain, pricingOptionId, paymentMethodId, images: images.map(({ url }) => url) }));
+      reset((prev) => ({ ...prev, ...remain, pricingOptionId, paymentMethodId, images: (images ?? []).map(({ url }) => url) }));
     }
     fetchPricingOption();
     fetchPaymentMethod();

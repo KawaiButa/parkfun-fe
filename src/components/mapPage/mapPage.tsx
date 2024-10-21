@@ -1,6 +1,5 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @next/next/no-img-element */
 import { MouseEvent, useEffect, useReducer, useRef, useState } from "react";
 
 import { FeaturesItemOutput } from "@azure-rest/maps-search";
@@ -32,11 +31,13 @@ import BookingTimePicker from "@/components/bookingForm/bookingTimePicker/bookin
 import FilterForm from "@/components/filterForm/filterForm";
 import ParkingLocationPanel from "@/components/parkingLocationPanel/parkingLocationPanel";
 import { constants } from "@/constants";
+import { useLocation } from "@/context/locationContext";
 import { useSearchMapAPI } from "@/hooks/useMapApi";
 import { SearchedParkingLocation, useParkingLocation } from "@/hooks/useParkingLocation";
 import { useParkingService } from "@/hooks/useParkingService";
 import { useParkingSlotType } from "@/hooks/useParkingSlotType";
 import { ParkingLocation } from "@/interfaces";
+import { DirectionMeta } from "@/interfaces/directionMeta";
 import { ParkingService } from "@/interfaces/parkingService";
 import { ParkingSlotType } from "@/interfaces/parkingSlotType";
 import { SearchParkingLocationData } from "@/interfaces/searchParkingLocationData";
@@ -44,8 +45,6 @@ import { AzureAPI } from "@/utils/azureAPI";
 import { calculateZoomLevel, getNearestRoundTime } from "@/utils/utils";
 
 import BookingModal from "../bookingModal/bookingModal";
-import { useLocation } from "@/context/locationContext";
-import { DirectionMeta } from "@/interfaces/directionMeta";
 
 type MapParkingLocation = SearchedParkingLocation | ParkingLocation;
 const AzureMapComponentWithoutSSR = dynamic(() => import("@/components/azureMap/azureMapComponent"), {
@@ -348,6 +347,7 @@ const MapPage = () => {
               loading={isSearchLocationLoading}
               options={[...locations, location]}
               getOptionLabel={(location) => {
+                if(!location) return "";
                 if (location instanceof Array) return "Find parking location arount my location.";
                 return (location as FeaturesItemOutput).properties?.address?.formattedAddress ?? "";
               }}
@@ -582,7 +582,6 @@ const MapPage = () => {
           </Button>
         </Stack>
         <AzureMapComponentWithoutSSR
-          data={parkingLocationList}
           iconOptions={{
             image: "pin-blue",
           }}

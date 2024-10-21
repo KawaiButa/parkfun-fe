@@ -24,6 +24,7 @@ import { bookingValidationSchema } from "./validationSchema";
 import { noImage } from "../../../public/images";
 import BookingTimePicker from "../bookingForm/bookingTimePicker/bookingTimePicker";
 import FormCheckboxInput from "../formCheckboxInput/formCheckboxInput";
+import PaymentModal from "../paymentModal/paymentModal";
 
 export interface BookingModalProps {
   parkingSlotList?: number[];

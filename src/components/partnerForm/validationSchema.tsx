@@ -11,8 +11,7 @@ export const partnerValidationSchema: yup.ObjectSchema<PartnerFormData> = yup.ob
   description: yup.string().required(),
   typeId: yup.number().required("The type is required"),
   image: yup
-    .mixed<File | string>()
-    .required()
-    .test("isFile", "The provided data is not image", (avatar) => typeof avatar === "string" || avatar instanceof File),
-  password: yup.string().required().default(uuidv4().split("-").join()),
+    .mixed<File | string>().required()
+    .test("isFile", "The provided data is not image", (avatar) => (typeof avatar === "string" || avatar instanceof File)),
+  password: yup.string().required().default(uuidv4().split("-").join("")),
 });

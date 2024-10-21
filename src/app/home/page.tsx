@@ -1,3 +1,4 @@
+"use client";
 import { Container, Typography } from "@mui/material";
 
 import BookingForm from "@/components/bookingForm/bookingForm";

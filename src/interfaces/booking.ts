@@ -10,6 +10,7 @@ export interface Booking {
   status: string;
   amount: number;
   startAt: Date;
+  fee: number;
   endAt?: Date;
   createAt: Date;
   parkingSlot: ParkingSlot,

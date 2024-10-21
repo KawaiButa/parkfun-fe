@@ -12,6 +12,7 @@ import queryString from "query-string";
 import { useForm } from "react-hook-form";
 
 import { constants } from "@/constants";
+import { useLocation } from "@/context/locationContext";
 import { useSearchMapAPI } from "@/hooks/useMapApi";
 import { getNearestRoundTime } from "@/utils/utils";
 
@@ -25,8 +26,9 @@ const StyledTypography = ({ children, ...props }: TypographyProps) => (
   </Typography>
 );
 function BookingForm(props: ContainerOwnProps) {
-  const { locations, setParam } = useSearchMapAPI();
+  const { locations, isLoading, setParam } = useSearchMapAPI();
   const notifications = useNotifications();
+  const { location } = useLocation();
   const {
     handleSubmit,
     setValue,
@@ -59,7 +61,7 @@ function BookingForm(props: ContainerOwnProps) {
         ...props.sx,
         backgroundColor: "background.default",
         borderRadius: "10px",
-                padding: {
+        padding: {
           xs: "15px",
           md: "20px 20px",
         },
@@ -140,6 +142,7 @@ function BookingForm(props: ContainerOwnProps) {
           loading={isLoading}
           options={[...locations, location]}
           getOptionLabel={(location) => {
+            if(!location) return "";
             if (location instanceof Array) return "Find parking location arount my location.";
             return (location as FeaturesItemOutput).properties?.address?.formattedAddress ?? "";
           }}

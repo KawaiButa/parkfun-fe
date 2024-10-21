@@ -4,5 +4,5 @@ import { BookingFormData } from "@/interfaces/bookingFormData";
 export const bookingValidationSchema:yup.ObjectSchema<BookingFormData> = yup.object({
   parkingSlotId: yup.number().required(),
   serviceIds: yup.array(yup.number().required()),
-  time: yup.array(yup.number().required()).length(2).required(),
+  time: yup.array().length(2).required(),
 })

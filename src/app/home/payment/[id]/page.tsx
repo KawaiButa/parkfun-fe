@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 
 import { Error, Pending } from "@mui/icons-material";
@@ -17,8 +17,10 @@ import {
   Paper,
   Button,
   Stack,
+  Link,
 } from "@mui/material";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 
 import { usePaymentRecord } from "@/hooks/usePaymentRecord";
 import { PaymentRecord } from "@/interfaces/paymentRecord";
@@ -27,6 +29,7 @@ import { getDuration, timeToSeconds } from "@/utils/utils";
 const PaymentSummaryPage = ({ params }: { params: { id: number } }) => {
   const { id: bookingId } = params;
   const { fetchOnePaymentRecord } = usePaymentRecord();
+  const router = useRouter();
   const [paymentRecord, setPaymentRecord] = useState<PaymentRecord | null>(null);
   useEffect(() => {
     fetchOnePaymentRecord(bookingId).then((paymentRecord) => setPaymentRecord(paymentRecord));
@@ -138,22 +141,23 @@ const PaymentSummaryPage = ({ params }: { params: { id: number } }) => {
                 <TableBody>
                   <TableRow key={"base"}>
                     <TableCell>
-                      Base fee:
                       {paymentRecord.booking.parkingSlot.name}
                       <Typography variant="caption" display="block">
                         ${paymentRecord.booking.parkingSlot.price.toFixed(2)} / hrs
                       </Typography>
                     </TableCell>
                     <TableCell align="right">
-                      {getDuration(timeToSeconds(dayjs(paymentRecord.booking.startAt)), timeToSeconds(dayjs(paymentRecord.booking.endAt))) / 3600}
+                      {getDuration(
+                        timeToSeconds(dayjs(paymentRecord.booking.startAt)),
+                        timeToSeconds(dayjs(paymentRecord.booking.endAt))
+                      ) / 3600}
                     </TableCell>
-                    <TableCell align="right">${paymentRecord.booking.parkingSlot.price.toFixed(2)}</TableCell>
+                    <TableCell align="right">${paymentRecord.booking.amount.toFixed(2)}</TableCell>
                   </TableRow>
                   {paymentRecord.booking.services.map(({ name }) => (
                     <TableRow key={name}>
                       <TableCell component="th" scope="row">
                         {name}
-
                       </TableCell>
                       <TableCell align="right">{1}</TableCell>
                       <TableCell align="right">$ {(0).toFixed(2)}</TableCell>
@@ -172,12 +176,12 @@ const PaymentSummaryPage = ({ params }: { params: { id: number } }) => {
                     </TableCell>
                     <TableCell align="right">
                       <Stack>
-                        <Typography variant="caption">${(20).toFixed(2)}</Typography>
-                        <Typography>${(paymentRecord.amount).toFixed(2)}</Typography>
+                        <Typography variant="caption">${(paymentRecord.booking.fee).toFixed(2)}</Typography>
+                        <Typography>${(paymentRecord.booking.amount + paymentRecord.booking.fee).toFixed(2)}</Typography>
                       </Stack>
                     </TableCell>
                   </TableRow>
-                </TableBody>
+                </TableBody>  
               </Table>
             </TableContainer>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 2 }}>
@@ -188,9 +192,9 @@ const PaymentSummaryPage = ({ params }: { params: { id: number } }) => {
             </Box>
 
             <Typography variant="body2" align="center" sx={{ mb: 2 }}>
-              An automated receipt will be sent to your email.
+              An automated <Link component="a" target="blank" href={paymentRecord.receiptUrl} color="primary">receipt </Link>will be sent to your email.
             </Typography>
-
+ 
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
               <Typography variant="body2" fontWeight={500}>
                 Transaction Reference
@@ -202,10 +206,10 @@ const PaymentSummaryPage = ({ params }: { params: { id: number } }) => {
               <Typography variant="body2" fontWeight={500}>
                 Transaction Date
               </Typography>
-              <Typography variant="body2">{paymentRecord.createAt.toString()}</Typography>
+              <Typography variant="body2">{dayjs(paymentRecord.createAt).format("YYYY-MM-DD HH:mm")}</Typography>
             </Box>
 
-            <Button variant="contained" fullWidth>
+            <Button variant="contained" fullWidth onClick={() => router.push("/home/profile")}>
               Back to user
             </Button>
           </Box>
