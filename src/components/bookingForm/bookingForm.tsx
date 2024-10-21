@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 import { FeaturesItemOutput } from "@azure-rest/maps-search";
 import { yupResolver } from "@hookform/resolvers/yup";
+import LoadingButton from "@mui/lab/LoadingButton"
 import { Autocomplete, Container, ContainerOwnProps, TextField, Typography, TypographyProps } from "@mui/material";
 import { useNotifications } from "@toolpad/core";
 import dayjs, { Dayjs } from "dayjs";
@@ -19,7 +20,6 @@ import { getNearestRoundTime } from "@/utils/utils";
 import BookingTimePicker from "./bookingTimePicker/bookingTimePicker";
 import { bookingFormValidation } from "./validationSchema";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
-import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 const StyledTypography = ({ children, ...props }: TypographyProps) => (
   <Typography variant="h6" {...props}>
     {children}
@@ -225,14 +225,16 @@ function BookingForm(props: ContainerOwnProps) {
         >
           3. Continue to checkout and start parking!!!!
         </StyledTypography>
-        <PrimaryContainedButton
+        <LoadingButton
           sx={{
             fontWeight: "bold",
           }}
           type="submit"
+          variant="contained"
+          color="primary"
         >
           Book
-        </PrimaryContainedButton>
+        </LoadingButton>
       </ContainerFlexColumn>
     </Container>
   );
