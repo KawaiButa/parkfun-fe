@@ -27,7 +27,7 @@ import { useSearchParams } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import Carousel from "react-material-ui-carousel";
 
-import BookingTimePicker from "@/components/bookingForm/bookingTimePicker/bookingTimePicker";
+import BookingTimePicker from "@/components/bookingTimePicker/bookingTimePicker";
 import FilterForm from "@/components/filterForm/filterForm";
 import ParkingLocationPanel from "@/components/parkingLocationPanel/parkingLocationPanel";
 import { constants } from "@/constants";

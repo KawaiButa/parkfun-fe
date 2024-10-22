@@ -2,18 +2,17 @@ import { ChangeEvent, useRef } from "react";
 
 import { Box, BoxProps } from "@mui/material";
 export interface ImageUploadProps extends BoxProps {
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void,
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   src?: string;
 }
 export const ImageUpload = (props: ImageUploadProps) => {
-  const {src, onChange, ...remain} = props;
+  const { src, onChange, ...remain } = props;
   const inputRef = useRef<HTMLInputElement>(null);
   const onSelectFile = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) {
       return;
     }
-    if(onChange)
-      onChange(e);
+    if (onChange) onChange(e);
   };
 
   function handleClick(): void {
@@ -21,7 +20,16 @@ export const ImageUpload = (props: ImageUploadProps) => {
   }
 
   return (
-    <Box {...remain} onClick={() => handleClick()}>
+    <Box
+      {...remain}
+      onClick={() => handleClick()}
+      sx={{
+        "&:hover": {
+          cursor: "pointer",
+        },
+        border: "1px solid black"
+      }}
+    >
       <input type="file" onChange={onSelectFile} hidden ref={inputRef} />
       {src && (
         <img

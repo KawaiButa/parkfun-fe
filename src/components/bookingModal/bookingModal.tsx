@@ -23,7 +23,7 @@ import { getDuration, getFee, getNearestRoundTime, timeToSeconds } from "@/utils
 
 import { bookingValidationSchema } from "./validationSchema";
 import { noImage } from "../../../public/images";
-import BookingTimePicker from "../bookingForm/bookingTimePicker/bookingTimePicker";
+import BookingTimePicker from "../bookingTimePicker/bookingTimePicker";
 import FormCheckboxInput from "../formCheckboxInput/formCheckboxInput";
 import PaymentModal from "../paymentModal/paymentModal";
 

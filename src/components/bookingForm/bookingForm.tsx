@@ -16,8 +16,8 @@ import { useSearchMapAPI } from "@/hooks/useMapApi";
 import { useNotify } from "@/hooks/useNoti";
 import { getNearestRoundTime } from "@/utils/utils";
 
-import BookingTimePicker from "./bookingTimePicker/bookingTimePicker";
 import { bookingFormValidation } from "./validationSchema";
+import BookingTimePicker from "../bookingTimePicker/bookingTimePicker";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 const StyledTypography = ({ children, ...props }: TypographyProps) => (

@@ -21,7 +21,7 @@ import { timeToSeconds } from "@/utils/utils";
 import { parkingSlotSchema } from "./validationScheme";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
 import FormCheckboxInput from "../formCheckboxInput/formCheckboxInput";
-import { FormNumberInput } from "../formNumberInput.ts/formNumberInput";
+import { FormNumberInput } from "../formNumberInput/formNumberInput";
 import { FormRadioInput } from "../formRadioInput/formRadioInput";
 import { FormTextInput } from "../formTextInput/formTextInput";
 import { ImageUploadProps, ImageUpload } from "../imageUpload/ImageUpload";

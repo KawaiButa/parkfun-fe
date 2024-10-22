@@ -20,6 +20,7 @@ export interface FormTextInputProps<T, K>
   rule?: Omit<RegisterOptions, "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled">;
   options: Array<T>;
   multiple?: boolean;
+  fullWidth?: boolean;
   transformLabel?: (value: T, options?: T[]) => string;
   transformValue?: (value: T, options?: T[]) => K;
   transformHelperText?: (value: T, options?: T[]) => string;
@@ -28,7 +29,19 @@ export interface FormTextInputProps<T, K>
 }
 
 const FormRadioInput = <T, K>(props: FormTextInputProps<T, K>) => {
-  const { name, control, rule, label, direction, transformValue, transformLabel, options, radioProps, ...radioInputProps } = props;
+  const {
+    name,
+    control,
+    rule,
+    label,
+    direction,
+    fullWidth,
+    transformValue,
+    transformLabel,
+    options,
+    radioProps,
+    ...radioInputProps
+  } = props;
   return (
     <Controller
       name={name}
@@ -36,10 +49,14 @@ const FormRadioInput = <T, K>(props: FormTextInputProps<T, K>) => {
       rules={rule}
       render={({ field: { onChange, value: fieldValue }, fieldState: { error } }) => (
         <>
-          <FormControl>
+          <FormControl
+            sx={{
+              width: fullWidth ? "100%" : "fit-content",
+            }}
+          >
             <Typography fontWeight={500}>{label}</Typography>
-            <Stack direction={direction} sx={{padding: "0 10px"}}>
-              <RadioGroup row name={name} value={fieldValue}>
+            <Stack sx={{ padding: "0 10px" }} width={fullWidth ? "100%" : "fit-content"}>
+              <RadioGroup row={direction === "row"} name={name} value={fieldValue}>
                 {options.map((option) => {
                   const value = transformValue ? transformValue(option, options) : option;
                   const label = transformLabel ? transformLabel(option, options) : (option as string);
