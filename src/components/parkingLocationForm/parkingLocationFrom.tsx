@@ -4,11 +4,11 @@ import React, { useEffect } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Autocomplete, Box, BoxProps, Button, styled, Typography } from "@mui/material";
-import { useNotifications } from "@toolpad/core";
 import { useForm, Controller, useWatch } from "react-hook-form";
 
 import { FormRadioInput } from "@/components/formRadioInput/formRadioInput";
 import { useSearchMapAPI } from "@/hooks/useMapApi";
+import { useNotify } from "@/hooks/useNoti";
 import { useParkingLocation } from "@/hooks/useParkingLocation";
 import { usePaymentMethod } from "@/hooks/usePaymentMethod";
 import { usePricingOption } from "@/hooks/usePricingOption";
@@ -39,11 +39,11 @@ const StyledImageUpload = styled(({ sx, ...props }: ImageUploadProps) => (
 const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | null }) => {
   const { sx, initValue, ...remain } = props;
   const { createParkingLocation, updateParkingLocation } = useParkingLocation();
-  const notification = useNotifications();
   const { name, address } = initValue ?? {};
   const { pricingOptionList, fetchPricingOption } = usePricingOption();
   const { paymentMethodList, fetchPaymentMethod } = usePaymentMethod();
   const { locations, setParam } = useSearchMapAPI();
+  const {showError, showSuccess} = useNotify();
   const {
     control,
     setValue,
@@ -72,25 +72,16 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
           ...data,
         });
         if (res) {
-          notification.show("Successfully updated parking location", {
-            severity: "success",
-            autoHideDuration: 1000,
-          });
+          showSuccess("Successfully updated parking location");
         }
       }
       const res = await createParkingLocation(data);
       if (res) {
         reset();
-        notification.show("Successfully create parking location", {
-          severity: "success",
-          autoHideDuration: 1000,
-        });
+        showSuccess("Successfully create parking location");
       }
     } catch (err) {
-      notification.show((err as Error).message, {
-        severity: "error",
-        autoHideDuration: 1000,
-      });
+      showError((err as Error).message);
     }
   };
   useEffect(() => {
@@ -108,11 +99,8 @@ const ParkingLocationForm = (props: BoxProps & { initValue?: ParkingLocation | n
   }, [initValue, reset]);
   useEffect(() => {
     if (Object.keys(errors).length)
-      notification.show(Object.values(errors)[0].message, {
-        severity: "error",
-        autoHideDuration: 1000,
-      });
-  }, [errors, isSubmitting, notification]);
+      showError(Object.values(errors)[0].message ?? "");
+  }, [errors, isSubmitting]);
   useEffect(() => {
     setParam(locationInput);
   }, [locationInput, setParam]);

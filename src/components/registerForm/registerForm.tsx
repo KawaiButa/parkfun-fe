@@ -4,11 +4,11 @@ import { useEffect } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { CircularProgress, Container, ContainerOwnProps, styled } from "@mui/material";
-import { useNotifications } from "@toolpad/core";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
+import { useNotify } from "@/hooks/useNoti";
 import { FormField } from "@/interfaces/formField";
 import { RegisterFormData } from "@/interfaces/registerFormData";
 import { registerNewUser } from "@/utils/authentication";
@@ -60,7 +60,7 @@ const fieldDataWithValidation: Array<FormField | Array<FormField>> = [
 ];
 
 const RegisterForm = (props: ContainerOwnProps) => {
-  const notifications = useNotifications();
+  const {showError, showSuccess} = useNotify();
   const router = useRouter();
   const { handleSubmit, control, formState: {isSubmitting, errors} } = useForm<RegisterFormData>({
     mode: "onChange",
@@ -78,23 +78,14 @@ const RegisterForm = (props: ContainerOwnProps) => {
     try {
       const result = await registerNewUser(data);
       if (result) {
-        notifications.show(`You have signed in successfully.`, {
-          severity: "success",
-          autoHideDuration: 2000,
-        });
+        showSuccess(`You have signed in successfully.`);
         router.replace("/auth/login");
       }
     } catch (err) {
       if (err instanceof AxiosError)
-        notifications.show(err.response?.data.message, {
-          severity: "error",
-          autoHideDuration: 2000,
-        });
+        showError(err.response?.data.message);
       else
-        notifications.show((err as Error).message, {
-          severity: "error",
-          autoHideDuration: 2000,
-        });
+        showError((err as Error).message);
     }
   };
 
@@ -114,10 +105,7 @@ const RegisterForm = (props: ContainerOwnProps) => {
   };
   useEffect(() => {
     if(Object.keys(errors).length > 0){
-      notifications.show(Object.values(errors)[0].message, {
-        severity: "error",
-        autoHideDuration: 2000,
-      });
+      showError(Object.values(errors)[0].message ?? "");
       return;
     }
   },[errors])

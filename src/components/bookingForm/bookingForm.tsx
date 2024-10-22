@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { FeaturesItemOutput } from "@azure-rest/maps-search";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Autocomplete, Container, ContainerOwnProps, TextField, Typography, TypographyProps } from "@mui/material";
-import { useNotifications } from "@toolpad/core";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
 import queryString from "query-string";
@@ -14,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { constants } from "@/constants";
 import { useLocation } from "@/context/locationContext";
 import { useSearchMapAPI } from "@/hooks/useMapApi";
+import { useNotify } from "@/hooks/useNoti";
 import { getNearestRoundTime } from "@/utils/utils";
 
 import BookingTimePicker from "./bookingTimePicker/bookingTimePicker";
@@ -27,7 +27,7 @@ const StyledTypography = ({ children, ...props }: TypographyProps) => (
 );
 function BookingForm(props: ContainerOwnProps) {
   const { locations, isLoading, setParam } = useSearchMapAPI();
-  const notifications = useNotifications();
+  const {showError} = useNotify();
   const { location } = useLocation();
   const {
     handleSubmit,
@@ -48,10 +48,7 @@ function BookingForm(props: ContainerOwnProps) {
   };
   useEffect(() => {
     if (Object.values(errors).length)
-      notifications.show(Object.values(errors)[0].message, {
-        severity: "error",
-        autoHideDuration: 3000,
-      });
+      showError(Object.values(errors)[0].message ?? "");
   }, [errors]);
   return (
     <Container

@@ -5,11 +5,11 @@ import styled from "@emotion/styled";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Button, Container, Stack, Typography } from "@mui/material";
-import { useNotifications } from "@toolpad/core";
 import { AxiosResponse } from "axios";
 import { useForm } from "react-hook-form";
 
 import { useProfile } from "@/context/profileContext";
+import { useNotify } from "@/hooks/useNoti";
 import { useUploadImage } from "@/hooks/useUploadImage";
 import { ProfileFormData } from "@/interfaces/profileFormData";
 import AxiosInstance from "@/utils/axios";
@@ -56,9 +56,9 @@ const ProfileForm = () => {
     resolver: yupResolver(profileSchema),
   });
   const inputRef = useRef<HTMLInputElement>(null);
+  const {showError, showSuccess} = useNotify();
   const [selectedSrc, setSelectedSrc] = useState<File | null>(null);
   const { uploadImage, getPublicUrl } = useUploadImage("avatar");
-  const notifications = useNotifications();
   useEffect(() => {
     if (profile) reset((prev) => ({ ...prev, ...profile }));
   }, [profile, reset]);
@@ -71,24 +71,15 @@ const ProfileForm = () => {
     AxiosInstance.patch("/user/" + profile.id, { ...data, image })
       .then((res: AxiosResponse) => {
         window.localStorage.setItem("profile", JSON.stringify(res.data));
-        notifications.show("Successfully update your profile", {
-          severity: "success",
-          autoHideDuration: 2000,
-        });
+        showSuccess("Successfully update your profile");
       })
       .catch((err) => {
-        notifications.show("Error updating your profile. " + err.message, {
-          severity: "error",
-          autoHideDuration: 2000,
-        });
+        showError("Error updating your profile. " + err.message);
       });
   };
   useEffect(() => {
     if (Object.keys(errors).length > 0)
-      notifications.show(Object.values(errors)[0].message, {
-        severity: "error",
-        autoHideDuration: 2000,
-      });
+      showError(Object.values(errors)[0].message ?? "");
   }, [errors]);
   return (
     <Stack

@@ -3,12 +3,13 @@ import React, { useEffect, useState } from "react";
 
 import { Add, FilterList } from "@mui/icons-material";
 import { Box, Button, Container } from "@mui/material";
-import { PageContainer, PageContainerToolbar, useDialogs, useNotifications } from "@toolpad/core";
+import { PageContainer, PageContainerToolbar, useDialogs } from "@toolpad/core";
 import { useRouter } from "next/navigation";
 
 import DataTable from "@/components/dataTable/dataTable";
 import SearchBox from "@/components/searchBox/searchBox";
 import SelectInput from "@/components/selectInput/selectInput";
+import { useNotify } from "@/hooks/useNoti";
 import { useParkingLocation } from "@/hooks/useParkingLocation";
 import { ParkingSlot } from "@/interfaces/parkingSlot";
 import { TableColumn } from "@/interfaces/tableColumn";
@@ -45,7 +46,7 @@ const ParkLocPage = () => {
   const router = useRouter();
   const [searchField, setSearchField] = useState(0);
   const dialogs = useDialogs();
-  const notifications = useNotifications();
+  const {showError, showSuccess} = useNotify();
   useEffect(() => {
     const { id: key } = columns[searchField];
     fetchParkingLocation({ searchParam, searchField: key, filter });
@@ -58,17 +59,11 @@ const ParkLocPage = () => {
     if (isAccepted) {
       try {
         await deleteParkingLocation(id);
-        notifications.show(`Successfully deleted location ${selectedLocation}`, {
-          severity: "success",
-          autoHideDuration: 3000,
-        });
+        showSuccess(`Successfully deleted location ${selectedLocation}`);
         const { id: key } = columns[searchField];
         fetchParkingLocation({ searchParam, searchField: key, filter });
       } catch (err) {
-        notifications.show((err as Error).message, {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        showError((err as Error).message);
       }
     }
   };

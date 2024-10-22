@@ -18,7 +18,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useDialogs, useNotifications } from "@toolpad/core";
+import { useDialogs } from "@toolpad/core";
 import atlas, { source } from "azure-maps-control";
 import dayjs from "dayjs";
 import { isNumber } from "lodash";
@@ -33,6 +33,7 @@ import ParkingLocationPanel from "@/components/parkingLocationPanel/parkingLocat
 import { constants } from "@/constants";
 import { useLocation } from "@/context/locationContext";
 import { useSearchMapAPI } from "@/hooks/useMapApi";
+import { useNotify } from "@/hooks/useNoti";
 import { SearchedParkingLocation, useParkingLocation } from "@/hooks/useParkingLocation";
 import { useParkingService } from "@/hooks/useParkingService";
 import { useParkingSlotType } from "@/hooks/useParkingSlotType";
@@ -66,7 +67,7 @@ const MapPage = () => {
   const dialogs = useDialogs();
   const [isLoading, setIsLoading] = useState(false);
   const [sortBy, setSortBy] = useState("distance");
-  const notifications = useNotifications();
+  const { showError } = useNotify();
   const [directionMetaData, setDirectionMetaData] = useState<DirectionMeta | null>(null);
   const { location } = useLocation();
   const [showFullMap, setShowFullMap] = useState(false);
@@ -201,10 +202,7 @@ const MapPage = () => {
         setDirectionMetaData(meta);
       }
     } catch (err) {
-      notifications.show((err as Error).message, {
-        severity: "error",
-        autoHideDuration: 5000,
-      });
+      showError((err as Error).message);
     }
   };
   const buildParkingLocationList = () => {

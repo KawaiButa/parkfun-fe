@@ -5,7 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Close } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Box, CircularProgress, Dialog, DialogContent, IconButton, Stack, Typography } from "@mui/material";
-import { DialogProps, useDialogs, useNotifications } from "@toolpad/core";
+import { DialogProps, useDialogs } from "@toolpad/core";
 import { AxiosError } from "axios";
 import dayjs, { Dayjs } from "dayjs";
 import Image from "next/image";
@@ -14,6 +14,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import Carousel from "react-material-ui-carousel";
 
 import { useSession } from "@/context/authenticationContext";
+import { useNotify } from "@/hooks/useNoti";
 import { useParkingSlot } from "@/hooks/useParkingSlot";
 import { BookingFormData } from "@/interfaces/bookingFormData";
 import { ParkingSlot } from "@/interfaces/parkingSlot";
@@ -43,8 +44,8 @@ const BookingModal = (
   const { fetchOneParkingSlot } = useParkingSlot();
   const [fee, setFee] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const { showError } = useNotify();
   const [selectedParkingSlot, setSelectedParkingSlot] = useState<ParkingSlot | null>(null);
-  const notifcations = useNotifications();
   const session = useSession();
   const dialogs = useDialogs();
   const router = useRouter();
@@ -92,12 +93,8 @@ const BookingModal = (
     }
   }, [endAt, startAt]);
   useEffect(() => {
-    if (Object.keys(errors).length)
-      notifcations.show(Object.values(errors)[0].message, {
-        severity: "error",
-        autoHideDuration: 1000,
-      });
-  }, [errors, notifcations]);
+    if (Object.keys(errors).length) showError(Object.values(errors)[0].message ?? "");
+  }, [errors]);
   const onSubmit = async (formData: BookingFormData) => {
     if (formData.time[0].isBefore(dayjs())) return;
     if (!session) {
@@ -113,16 +110,8 @@ const BookingModal = (
         dialogs.open(PaymentModal, res.clientSecret);
       }
     } catch (err) {
-      if (err instanceof AxiosError)
-        notifcations.show(err.response?.data.message, {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
-      else
-        notifcations.show((err as Error).message, {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+      if (err instanceof AxiosError) showError(err.response?.data.message);
+      else showError((err as Error).message);
     }
   };
   useEffect(() => {
@@ -380,7 +369,7 @@ const BookingModal = (
                 variant="contained"
                 fullWidth
                 type="submit"
-                loadingIndicator={<CircularProgress/>}
+                loadingIndicator={<CircularProgress />}
                 disabled={loading}
               >
                 Reserve

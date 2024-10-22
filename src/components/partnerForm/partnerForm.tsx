@@ -5,10 +5,11 @@ import { useEffect } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Box, Button, Typography, FormControl, Autocomplete, Container, styled } from "@mui/material";
-import { useDialogs, useNotifications } from "@toolpad/core";
+import { useDialogs } from "@toolpad/core";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { useSearchMapAPI } from "@/hooks/useMapApi";
+import { useNotify } from "@/hooks/useNoti";
 import { usePartner } from "@/hooks/usePartner";
 import { usePartnerType } from "@/hooks/userPartnerType";
 import { Partner } from "@/interfaces/partner";
@@ -39,7 +40,7 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
   const { createPartner, udpatePartner } = usePartner();
   const { partnerTypeList, fetchPartnerType } = usePartnerType();
   const { locations, setParam } = useSearchMapAPI();
-  const notifications = useNotifications();
+  const {showError, showSuccess} = useNotify();
   const { initValue } = props;
   const dialogs = useDialogs();
   const {
@@ -93,10 +94,7 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
 
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
-      notifications.show(Object.values(errors)[0].message, {
-        severity: "error",
-        autoHideDuration: 2000,
-      });
+      showError(Object.values(errors)[0].message ?? "");
     }
   }, [errors]);
   useEffect(() => {
@@ -106,24 +104,15 @@ const PartnerForm = (props: { initValue?: Partner | null }) => {
     try {
       if (initValue) {
         await udpatePartner({ partner: initValue, formData });
-        notifications.show("Successfully update partner account", {
-          severity: "success",
-          autoHideDuration: 2000,
-        });
+        showSuccess("Successfully update partner account");
         return;
       }
       await createPartner(formData);
-      notifications.show("Successfully create partner account", {
-        severity: "success",
-        autoHideDuration: 2000,
-      });
+      showSuccess("Successfully create partner account");
       reset();
       await dialogs.alert(`Your password is ${formData.password}`);
     } catch (err) {
-      notifications.show((err as Error).message, {
-        severity: "error",
-        autoHideDuration: 2000,
-      });
+      showError((err as Error).message);
     }
   };
 

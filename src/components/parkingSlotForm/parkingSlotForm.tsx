@@ -6,10 +6,10 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { Typography, Box, Grid2, Button, styled, InputAdornment } from "@mui/material";
 import { LocalizationProvider, TimeField } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useNotifications } from "@toolpad/core";
 import { AxiosError } from "axios";
 import { Controller, useForm } from "react-hook-form";
 
+import { useNotify } from "@/hooks/useNoti";
 import { useParkingService } from "@/hooks/useParkingService";
 import { useParkingSlot } from "@/hooks/useParkingSlot";
 import { useParkingSlotType } from "@/hooks/useParkingSlotType";
@@ -50,8 +50,8 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
   const { parkingLocationList } = props;
   const { createParkingSlot } = useParkingSlot();
   const { parkingSlotTypeList, fetchParkingSlotType } = useParkingSlotType();
-  const notification = useNotifications();
   const { parkingServiceList, fetchParkingService } = useParkingService();
+  const {showError, showSuccess} = useNotify();
   const {
     control,
     handleSubmit,
@@ -76,23 +76,14 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
     try {
       const res = await createParkingSlot(formData);
       if (res) {
-        notification.show("Successfully create parking slot", {
-          severity: "success",
-          autoHideDuration: 3000,
-        });
+        showSuccess("Successfully create parking slot");
         reset();
       }
     } catch (err) {
       if (err instanceof AxiosError) {
-        notification.show(err.response?.data.message, {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        showError(err.response?.data.message);
       } else {
-        notification.show((err as Error).message, {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        showError((err as Error).message);
       }
     }
   };
@@ -110,10 +101,7 @@ const ParkingSlotForm = (props: { parkingLocationList: ParkingLocation[]; initVa
   }, [initValue]);
   useEffect(() => {
     if (Object.keys(errors).length !== 0) {
-      notification.show(Object.values(errors)[0].message, {
-        severity: "error",
-        autoHideDuration: 3000,
-      });
+      showError(Object.values(errors)[0].message ?? "");
     }
   }, [errors]);
 

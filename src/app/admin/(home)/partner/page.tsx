@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { Add, FilterList } from "@mui/icons-material";
 import { Box, Button, Container } from "@mui/material";
-import { PageContainer, PageContainerToolbar, useDialogs, useNotifications } from "@toolpad/core";
+import { PageContainer, PageContainerToolbar, useDialogs } from "@toolpad/core";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 
@@ -11,6 +11,7 @@ import DataTable from "@/components/dataTable/dataTable";
 import SearchBox from "@/components/searchBox/searchBox";
 import SelectInput from "@/components/selectInput/selectInput";
 import useDebounce from "@/hooks/useDebounce";
+import { useNotify } from "@/hooks/useNoti";
 import { usePartner } from "@/hooks/usePartner";
 import { TableColumn } from "@/interfaces/tableColumn";
 
@@ -45,7 +46,7 @@ const User = () => {
   const router = useRouter();
   const [searchField, setSearchField] = useState(0);
   const dialog = useDialogs();
-  const notifications = useNotifications();
+  const {showError, showSuccess} = useNotify()
   const [loading, setLoading] = useState(false);
   const [searchParam, setSearchParam] = useState("");
   const debouncedValue = useDebounce(searchParam, 0);
@@ -62,18 +63,12 @@ const User = () => {
       const isDelete = await dialog.confirm("Are you sure you want to delete");
       if (isDelete) {
         await deletePartner(id);
-        notifications.show(`Successfully deleted partner ${id}`, {
-          severity: "success",
-          autoHideDuration: 2000,
-        });
+        showSuccess("Successfully deleted partner");
         const { id: key } = columns[searchField];
         fetchPartners({ searchParam: debouncedValue, searchField: key, filter });
       }
     } catch (err) {
-      notifications.show(`Failed to delete partner with error ${(err as AxiosError).message}`, {
-        severity: "error",
-        autoHideDuration: 2000,
-      });
+      showError(`Failed to delete partner with error ${(err as AxiosError).message}`)
     }
   };
   return (
