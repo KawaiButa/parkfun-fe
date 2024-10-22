@@ -56,7 +56,7 @@ const AzureMapComponentWithoutSSR = dynamic(() => import("@/components/azureMap/
 const MapPage = () => {
   const reactMapRef = useRef<any | null>(null);
   const searchParam = useSearchParams();
-  const { searchParkingLocation, hasNextPage } = useParkingLocation();
+  const { searchParkingLocation } = useParkingLocation();
   const [parkingLocationList, setParkingLocation] = useState<SearchedParkingLocation[]>([]);
   const [selectedParkingLocation, setSelectedParkingLocation] = useState<MapParkingLocation | null>(null);
   const [openFilter, setOpenFilter] = useState(false);
@@ -502,7 +502,7 @@ const MapPage = () => {
             {!isLoading && (
               <Button
                 onClick={() => {
-                  if (!hasNextPage) setValue("radius", (radius ?? 5) + 5);
+                  if(radius && radius < 100) setValue("radius", (radius ?? 5) + 5);
                   handleSubmit(onSubmit)();
                 }}
               >
