@@ -24,6 +24,7 @@ import dayjs from "dayjs";
 import { isNumber } from "lodash";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import Carousel from "react-material-ui-carousel";
 
@@ -71,17 +72,18 @@ const MapPage = () => {
   const [directionMetaData, setDirectionMetaData] = useState<DirectionMeta | null>(null);
   const { location } = useLocation();
   const [showFullMap, setShowFullMap] = useState(false);
+  const t = useTranslations("mapPage");
   const filterFormData = [
-    { name: "width", type: "slider", label: "Width", max: "500" },
-    { name: "height", type: "slider", label: "Height", max: "500" },
-    { name: "length", type: "slider", label: "Length", max: "500" },
-    { name: "radius", type: "slider", label: "Radius" },
-    { name: "price", type: "slider", label: "Price" },
+    { name: "width", type: "slider", label: t("width"), max: "500" },
+    { name: "height", type: "slider", label: t("height"), max: "500" },
+    { name: "length", type: "slider", label: t("length"), max: "500" },
+    { name: "radius", type: "slider", label: t("radius") },
+    { name: "price", type: "slider", label: t("price") },
     {
       name: "services",
       type: "checkbox",
       options: parkingServiceList ?? [],
-      label: "Services",
+      label: t("services"),
       transformLabel: (value: ParkingService) => value.name,
       transformValue: (value: ParkingService) => value.id,
     },
@@ -89,7 +91,7 @@ const MapPage = () => {
       name: "type",
       type: "radio",
       options: parkingSlotTypeList ?? [],
-      label: "Parking type",
+      label: t("parkingType"),
       transformLabel: (value: ParkingSlotType) => value.name,
       transformValue: (value: ParkingSlotType) => value.id,
     },
@@ -167,15 +169,10 @@ const MapPage = () => {
   }, []);
   useEffect(() => {
     if (isMapReady) {
-      let point = [0, 0];
-      if (searchParam.get("lat") && searchParam.get("lng")) {
-        point = [+searchParam.get("lng")!, +searchParam.get("lat")!];
-      } else {
-        navigator.geolocation.getCurrentPosition((position) => {
-          point = [position.coords.longitude, position.coords.latitude];
-        });
-      }
-      setValue("position", point);
+      if (searchParam.get("lat") && searchParam.get("lng"))
+        setValue("position", [+searchParam.get("lng")!, +searchParam.get("lat")!]);
+      else setValue("position", location ?? [0, 0]);
+
       fetchParkingSlotType();
       fetchParkingService();
       handleSubmit(onSubmit)();
@@ -224,7 +221,7 @@ const MapPage = () => {
           }}
           justifyContent="center"
         >
-          <Typography textAlign="center">There is no availabal parking slot near you</Typography>
+          <Typography textAlign="center">{t("noAvailableSlot")}</Typography>
         </Stack>
       );
     const sortedArray = parkingLocationList.sort(
@@ -321,13 +318,16 @@ const MapPage = () => {
           sx={{
             position: "absolute",
             top: 10,
-            left: selectedParkingLocation || showFullMap ? "-50%" : 10,
             width: {
               xs: "100%",
               md: "500px",
             },
+            left: {
+              xs: selectedParkingLocation || showFullMap ? "-100%" : 0,
+              md: selectedParkingLocation || showFullMap ? "-50%" : 10,
+            },
             borderRadius: 2,
-            maxHeight: "100%",
+            maxHeight: "85vh",
             backgroundColor: "background.default",
             color: "secondary.contrastText",
             zIndex: 1,
@@ -345,7 +345,7 @@ const MapPage = () => {
               loading={isSearchLocationLoading}
               options={[...locations, location]}
               getOptionLabel={(location) => {
-                if(!location) return ""
+                if (!location) return "";
                 if (location instanceof Array) return "Find parking location arount my location.";
                 return (location as FeaturesItemOutput).properties?.address?.formattedAddress ?? "";
               }}
@@ -366,7 +366,7 @@ const MapPage = () => {
                 return (
                   <TextField
                     {...param}
-                    placeholder="Search for your location"
+                    placeholder={t("searchPlaceHolder")}
                     sx={{
                       fontSize: {
                         xs: "15px",
@@ -421,15 +421,13 @@ const MapPage = () => {
                   md: "block",
                 },
               }}
-            >
-              {`Showing ${parkingLocationList.length} from total ${100} near you`}
-            </Typography>
+            ></Typography>
             <FormControl>
               <Stack direction="row" sx={{ padding: "0 10px" }}>
                 <RadioGroup row value={sortBy}>
                   {[
-                    { label: "Distance", key: "distance" },
-                    { label: "Price", key: "minPrice" },
+                    { label: t("distance"), key: "distance" },
+                    { label: t("price"), key: "minPrice" },
                   ].map(({ label, key }) => {
                     return (
                       <FormControlLabel
@@ -437,6 +435,11 @@ const MapPage = () => {
                         value={key}
                         control={<Radio />}
                         label={label}
+                        sx={{
+                          "& span": {
+                            fontSize: 14,
+                          },
+                        }}
                         onChange={() => setSortBy(key)}
                       />
                     );
@@ -492,6 +495,7 @@ const MapPage = () => {
             sx={{
               width: "100%",
               overflow: "auto",
+              mt: 2,
             }}
           >
             {Object.values(errors).length ? Object.values(errors)[0].message : buildParkingLocationList()}
@@ -502,7 +506,7 @@ const MapPage = () => {
                   handleSubmit(onSubmit)();
                 }}
               >
-                Load more
+                {t("loadMore")}
               </Button>
             )}
           </Stack>
@@ -551,14 +555,18 @@ const MapPage = () => {
             zIndex: 2,
             width: {
               xs: "100%",
-              md: "490px",
+              md: "500px",
             },
             height: "80%",
             overflow: "scroll",
             transition: "bottom 0.3s ease-in-out",
+            left: {
+              xs: 0,
+              md: 10,
+            },
             bottom: openFilter ? "0px" : "-100%",
             gap: "10px",
-            borderRadius: "5px",
+            borderRadius: 3,
             backgroundColor: "background.paper",
             justifyContent: "flex-start",
             padding: "20px 10px",
@@ -566,17 +574,17 @@ const MapPage = () => {
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography variant="h3" fontWeight={600} color="primary">
-              Filter by:
+              {t("filterBy")}:
             </Typography>
             <IconButton>
               <Close onClick={() => setOpenFilter(false)} color="primary" />
             </IconButton>
           </Stack>
-          <Box sx={{ padding: "0 10px" }}>
+          <Box sx={{ padding: "0 10px" }} overflow="scroll">
             <FilterForm control={control} data={filterFormData}></FilterForm>
           </Box>
           <Button fullWidth variant="contained" color="primary" type="submit">
-            Filter
+            {t("Filter")}
           </Button>
         </Stack>
         <AzureMapComponentWithoutSSR
@@ -636,7 +644,7 @@ const MapPage = () => {
             }
           }}
         >
-          Center
+          {t("center")}
         </Button>
       </Box>
     </>

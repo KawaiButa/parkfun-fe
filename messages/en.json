@@ -1,0 +1,84 @@
+{
+  "home": {
+    "introduction": "Discover the future of parking with our innovative app. Skip the endless circling and secure your perfect parking spot in advance. With real-time availability, competitive rates, and a seamless booking process, we've simplified parking for busy city life. Join thousands of users who park smarter, not harder.",
+    "location": "Location",
+    "slogan": "Connect with a variety of services through our app: book parking spots, manage reservations, and more..."
+  },
+  "bookingForm": {
+    "label": "Simplify your parking experience",
+    "step1": "Choose your location.",
+    "step2": "Select the time and duration",
+    "step3": "Continue to checkout and start parking!!!!",
+    "locationPlaceholder": "Search for your location",
+    "search": "Search",
+    "searchCurrentLocation": "Find parking location arount my location."
+  },
+  "navigationBar": {
+    "login": "LOGIN",
+    "signUp": "SIGN UP",
+    "profile": "PROFILE",
+    "logout": "LOG OUT"
+  },
+  "mapPage": {
+    "searchPlaceHolder": "Search for your location",
+    "distance": "Distance",
+    "price": "Price",
+    "noAvailableSlot": "There is no available slot near your location",
+    "center": "center",
+    "loadMore": "Load more",
+    "filterBy": "Filter by",
+    "width": "Width",
+    "height": "Height",
+    "length": "Length",
+    "radius": "Radius",
+    "services": "Services",
+    "parkingType": "Parking type",
+    "filter": "filter",
+    "unresolvedBooking": "You have an unresolved booking. Do you want to continue?"
+  },
+  "parkingLocationPanel": {
+    "detail": "Parking detail",
+    "aboutUs": "About us",
+    "distance": "Distance",
+    "departureTime": "Departure time",
+    "arrivalTime": "Arrival time",
+    "owner": "Owner",
+    "description": "Description",
+    "location": "Location",
+    "contact": "Contact",
+    "preview": "Preview",
+    "email": "Email",
+    "phoneNumber": "Phone Number",
+    "errorWhenFetchOwnerLocation": "Error when fetch data of this location's owner"
+  },
+  "bookingModal": {
+    "booking": "Booking",
+    "access": "Access",
+    "options": "Options",
+    "services": "Services",
+    "time": "Time",
+    "fee": "Fee",
+    "price": "Price",
+    "total": "Total",
+    "reverse": "Reverse"
+  },
+  "profileForm": {
+    "name": "Name",
+    "email": "Email",
+    "address": "Address",
+    "phoneNumber": "Phone Number",
+    "changeImage": "Change Image",
+    "reset": "RESET",
+    "save": "SAVE"
+  },
+  "profile": {
+    "bookingHistory": "Booking history",
+    "pending": "Pending",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "viewDetails": "View Details",
+    "startAt": "Start At",
+    "endAt": "End At",
+    "createAt": "Create At"
+  }
+}

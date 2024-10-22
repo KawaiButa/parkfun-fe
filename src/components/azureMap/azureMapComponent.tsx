@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement } from "react";
 
 import { IconOptions, MapMouseEvent } from "azure-maps-control";
 import {
@@ -8,7 +8,6 @@ import {
   AzureMapDataSourceProvider,
   AzureMapLayerProvider,
   FeatureType,
-  useAzureMaps,
 } from "react-azure-maps";
 
 import { constants } from "@/constants";
@@ -20,22 +19,6 @@ const AzureMapComponent = <T,>(props: {
   onClick?: (value: T) => void;
 }) => {
   const { render, onClick, renderCenter, iconOptions } = props;
-  const { mapRef, isMapReady } = useAzureMaps();
-  const [center, setCenter] = useState<number[]>([0, 0]);
-  useEffect(() => {
-    if (mapRef) {
-      mapRef.events.add("ready", () => {
-        navigator.geolocation.getCurrentPosition((position) => {
-          setCenter([position.coords.longitude, position.coords.latitude]);
-        });
-      });
-    }
-  }, [mapRef, isMapReady]);
-  useEffect(() => {
-    if (mapRef) {
-      mapRef.setCamera({ center, zoom: 16 });
-    }
-  }, [center]);
   const option = {
     authOptions: {
       authType: AuthenticationType.subscriptionKey,

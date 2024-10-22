@@ -4,9 +4,12 @@ import { useEffect } from "react";
 
 import { FeaturesItemOutput } from "@azure-rest/maps-search";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Autocomplete, Container, ContainerOwnProps, TextField, Typography, TypographyProps } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { Autocomplete, Box, Container, ContainerOwnProps, TextField, Typography, TypographyProps } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import queryString from "query-string";
 import { useForm } from "react-hook-form";
 
@@ -17,9 +20,9 @@ import { useNotify } from "@/hooks/useNoti";
 import { getNearestRoundTime } from "@/utils/utils";
 
 import { bookingFormValidation } from "./validationSchema";
+import { map } from "../../../public/images";
 import BookingTimePicker from "../bookingTimePicker/bookingTimePicker";
 import ContainerFlexColumn from "../containerFlexColumn/containerFlexColumn";
-import PrimaryContainedButton from "../primaryContainedButton/primaryContainedButton";
 const StyledTypography = ({ children, ...props }: TypographyProps) => (
   <Typography variant="h6" {...props}>
     {children}
@@ -27,8 +30,9 @@ const StyledTypography = ({ children, ...props }: TypographyProps) => (
 );
 function BookingForm(props: ContainerOwnProps) {
   const { locations, isLoading, setParam } = useSearchMapAPI();
-  const {showError} = useNotify();
+  const { showError } = useNotify();
   const { location } = useLocation();
+  const t = useTranslations("bookingForm");
   const {
     handleSubmit,
     setValue,
@@ -47,8 +51,7 @@ function BookingForm(props: ContainerOwnProps) {
     );
   };
   useEffect(() => {
-    if (Object.values(errors).length)
-      showError(Object.values(errors)[0].message ?? "");
+    if (Object.values(errors).length) showError(Object.values(errors)[0].message ?? "");
   }, [errors]);
   return (
     <Container
@@ -81,13 +84,25 @@ function BookingForm(props: ContainerOwnProps) {
             xs: "100%",
             md: "50%",
           },
-          borderRadius: "10px",
           overflow: "hidden",
           position: "relative",
-          backgroundColor: "var(--secondary-color)",
           minWidth: "200px",
+          display: "flex",
+          backgroundColor: "white",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "10px",
         }}
-      />
+      >
+        <Box
+          sx={{
+            backgroundColor: "white",
+            p: 2,
+          }}
+        >
+          <Image src={map.src} width={200} height={200} alt="map" />
+        </Box>
+      </Container>
       <ContainerFlexColumn
         sx={{
           gap: "10px",
@@ -122,7 +137,7 @@ function BookingForm(props: ContainerOwnProps) {
               },
             }}
           >
-            Simplify your parking experience
+            {t("label")}
           </StyledTypography>
         </Container>
         <StyledTypography
@@ -133,14 +148,14 @@ function BookingForm(props: ContainerOwnProps) {
             },
           }}
         >
-          1. Choose your location
+          1. {t("step1")}
         </StyledTypography>
         <Autocomplete
           loading={isLoading}
           options={[...locations, location]}
           getOptionLabel={(location) => {
             if (!location) return "";
-            if (location instanceof Array) return "Find parking location arount my location.";
+            if (location instanceof Array) return t("searchCurrentLocation");
             return (location as FeaturesItemOutput).properties?.address?.formattedAddress ?? "";
           }}
           onChange={(e, value) => {
@@ -182,36 +197,48 @@ function BookingForm(props: ContainerOwnProps) {
             },
           }}
         >
-          2. Select the time and duration
+          2. {t("step2")}
         </StyledTypography>
-        <BookingTimePicker
-          onStartChange={(e: Dayjs | null) => {
-            if (e) setValue("startAt", e.toDate());
+        <Box
+          sx={{
+            alignSelf: "center",
           }}
-          onEndChange={(e: Dayjs | null) => {
-            if (e) setValue("endAt", e.toDate());
-          }}
-          slotProps={{
-            leftTimePicker: {
-              sx: {
-                "& svg": {
-                  color: "secondary.contrastText",
+        >
+          <BookingTimePicker
+            onStartChange={(e: Dayjs | null) => {
+              if (e) setValue("startAt", e.toDate());
+            }}
+            onEndChange={(e: Dayjs | null) => {
+              if (e) setValue("endAt", e.toDate());
+            }}
+            slotProps={{
+              leftTimePicker: {
+                sx: {
+                  "& svg": {
+                    color: "secondary.contrastText",
+                  },
+                  "& input.MuiInputBase-input.MuiOutlinedInput-input": {
+                    p: "0.7rem",
+                  },
                 },
               },
-            },
-            rightTimePicker: {
-              sx: {
-                width: "200px",
-                "& fieldset": {
-                  borderColor: "secondary.contrastText",
-                },
-                "& svg": {
-                  color: "secondary.contrastText",
+              rightTimePicker: {
+                sx: {
+                  width: "200px",
+                  "& fieldset": {
+                    borderColor: "secondary.contrastText",
+                  },
+                  "& svg": {
+                    color: "secondary.contrastText",
+                  },
+                  "& input": {
+                    p: "0.7rem",
+                  },
                 },
               },
-            },
-          }}
-        />
+            }}
+          />
+        </Box>
         <StyledTypography
           sx={{
             display: {
@@ -220,16 +247,18 @@ function BookingForm(props: ContainerOwnProps) {
             },
           }}
         >
-          3. Continue to checkout and start parking!!!!
+          3. {t("step3")}
         </StyledTypography>
-        <PrimaryContainedButton
+        <LoadingButton
+          variant="contained"
+          color="primary"
           sx={{
             fontWeight: "bold",
           }}
           type="submit"
         >
-          Book
-        </PrimaryContainedButton>
+          {t("search")}
+        </LoadingButton>
       </ContainerFlexColumn>
     </Container>
   );

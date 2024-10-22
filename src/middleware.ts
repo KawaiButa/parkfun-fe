@@ -1,35 +1,35 @@
 import { decodeJwt, JWTPayload } from "jose";
 import { NextRequest, NextResponse } from "next/server";
+import createMiddleware from 'next-intl/middleware';
 
+import { routing } from './i18n/routing';
 export const config = {
-  matcher: ["/admin((?!/login).*)", "/partner((?!/login).*)", "/logout", "/", "/home/:path*"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",]
 };
-
+const localeMiddleware =  createMiddleware(routing);
 export function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname === "/") {
-    return NextResponse.redirect(new URL("/home", request.url));
-  }
+  const pathname = removeLocale(request.nextUrl.pathname, routing.locales.map((e) => e.toString()));
+  // Redirect home
+  if (["/", "/admin", "/partner"].includes(pathname)) request.nextUrl.pathname = redirectToDashboard(pathname.slice(1));
+  // Role redirect
   const accessToken = request.cookies.get("accessToken");
-  if (!accessToken && request.nextUrl.pathname.startsWith("/home")) return NextResponse.next();
-  if (!accessToken) return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
-  const data = decodeJwt(accessToken.value) as JWTPayload;
-  if (request.nextUrl.pathname.startsWith("/logout")) {
-    const logOutRoute = data.role == "user" ? "/home" : `/${data.role}/login`;
-    const response = NextResponse.redirect(new URL(logOutRoute, request.nextUrl.href));
-    response.cookies.delete("accessToken");
-    return response;
-  }
-  if (data.role === "user" && request.nextUrl.pathname.startsWith("/home")) return NextResponse.next();
-  if (!data || !data.id) return NextResponse.redirect(new URL(redirectToLogin(request.nextUrl.pathname), request.url));
-  const isMatchRole = request.nextUrl.pathname.startsWith(`/${data.role}`);
-  if (isMatchRole) {
-    if ([`/${data.role}`, "/"].includes(request.nextUrl.pathname)) {
-      const redirectRoute = data.role == "user" ? "/home" : `/${data.role}/dashboard`;
-      return NextResponse.redirect(new URL(redirectRoute, request.url));
+  if (!accessToken && ["admin", "partner"].some((a) => pathname.includes(a)) && !pathname.includes("login"))
+    request.nextUrl.pathname = redirectToLogin(pathname);
+  if (accessToken) {
+    const data = decodeJwt(accessToken!.value) as JWTPayload;
+    //Invalid token
+    if (!data || !data.id) request.nextUrl.pathname = redirectToLogin(pathname);
+    if (data && pathname.startsWith("/logout")) {
+      const response = NextResponse.redirect(new URL(`/${data.role}/login`, request.nextUrl.origin));
+      response.cookies.delete("accessToken");
+      return response;
     }
-    return NextResponse.next();
-  } 
-  return NextResponse.redirect(new URL(redirectToDashboard(data.role as string), request.url)); 
+    //Valid token but the route and the role are not matched
+    if (["admin", "/partner", "/"].some((a) => pathname.includes(a)) && !pathname.includes(`/${data.role}`))
+      request.nextUrl.pathname = redirectToDashboard(data.role as string);
+  }
+  // Locale
+  return localeMiddleware(request)
 }
 const redirectToLogin = (url: string) => {
   if (url.includes("/admin")) return "/admin/login";
@@ -41,3 +41,7 @@ const redirectToDashboard = (role: string) => {
   if (role === "partner") return "/partner/dashboard";
   return "/home";
 };
+
+function removeLocale(pathname: string, locales: string[]): string {
+  return locales.reduce((acc, locale) => acc.replace(`/${locale}`, ""), pathname);
+}

@@ -46,7 +46,7 @@ export const userTheme = createTheme({
     },
     divider: "rgba(0, 0, 0, 0.12)",
     background: {
-      default: "#000000",
+      default: "#181C14",
       paper: "#272624",
     },
   },

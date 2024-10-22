@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Button, Container, Stack, Typography } from "@mui/material";
 import { AxiosResponse } from "axios";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import { useProfile } from "@/context/profileContext";
@@ -27,22 +28,8 @@ const StyledFormTextInput = styled((props: FormTextInputProps) => <FormTextInput
     color: "var(--secondary-color) !important",
   },
 }));
-const fieldList = [
-  {
-    key: "name",
-    rule: {
-      required: "Please enter your name",
-      minLength: {
-        value: 2,
-        message: "Name must be at least 2 characters long",
-      },
-    },
-  },
-  { key: "email", rule: {}, disabled: true },
-  { key: "address" },
-  { key: "phoneNumber" },
-];
 const ProfileForm = () => {
+  const t = useTranslations("profileForm");
   const { profile } = useProfile();
   const {
     handleSubmit,
@@ -55,8 +42,24 @@ const ProfileForm = () => {
     reValidateMode: "onChange",
     resolver: yupResolver(profileSchema),
   });
+  const fieldList = [
+    {
+      key: "name",
+      rule: {
+        required: "Please enter your name",
+        minLength: {
+          value: 2,
+          message: "Name must be at least 2 characters long",
+        },
+      },
+      label: t("name"),
+    },
+    { key: "email", label: t("email"), rule: {}, disabled: true },
+    { key: "address", label: t("address") },
+    { key: "phoneNumber", label: t("phoneNumber") },
+  ];
   const inputRef = useRef<HTMLInputElement>(null);
-  const {showError, showSuccess} = useNotify();
+  const { showError, showSuccess } = useNotify();
   const [selectedSrc, setSelectedSrc] = useState<File | null>(null);
   const { uploadImage, getPublicUrl } = useUploadImage("avatar");
   useEffect(() => {
@@ -78,8 +81,7 @@ const ProfileForm = () => {
       });
   };
   useEffect(() => {
-    if (Object.keys(errors).length > 0)
-      showError(Object.values(errors)[0].message ?? "");
+    if (Object.keys(errors).length > 0) showError(Object.values(errors)[0].message ?? "");
   }, [errors]);
   return (
     <Stack
@@ -122,7 +124,7 @@ const ProfileForm = () => {
             mt: 2,
           }}
         >
-          Change image
+          {t("changeImage")}
         </PrimaryContainedButton>
       </Stack>
       <ContainerFlexColumn
@@ -132,7 +134,7 @@ const ProfileForm = () => {
         }}
         disableGutters
       >
-        {fieldList.map(({ key, rule }) => (
+        {fieldList.map(({ key, rule, label}) => (
           <Container
             sx={{
               display: "flex",
@@ -164,7 +166,7 @@ const ProfileForm = () => {
                 },
               }}
             >
-              {`${key}: `}
+              {`${label}: `}
             </Typography>
             <StyledFormTextInput
               key={key}
@@ -185,11 +187,11 @@ const ProfileForm = () => {
           }}
         >
           <LoadingButton variant="contained" type="submit">
-            Save
+            {t("save")}
           </LoadingButton>
           {!isSubmitting && (
             <Button variant="contained" color="info" onClick={() => reset()}>
-              Reset
+              {t("reset")}
             </Button>
           )}
         </Container>

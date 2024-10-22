@@ -1,6 +1,6 @@
 :root {
   --primary-color: #e6d60f;
-  --secondary-color: #171616;
+  --secondary-color: #181C14;
   --secondary-text-color: #ffff;
   --form-background-color: #ffffffa6;
   --unknown-field-color: #9b9b99;
@@ -17,12 +17,12 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
 input:-webkit-autofill:active{
-   -webkit-box-shadow: 0 0 0 30px #000 inset !important;
+   -webkit-box-shadow: 0 0 0 30px #181C14 inset !important;
    -webkit-text-fill-color: #ffffff !important;
 }
 
 body {
-  background-image: url("../../public/images/background.jpg");
+  background-image: url("../../../public/images/background.jpg");
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
   -webkit-font-smoothing: antialiased;

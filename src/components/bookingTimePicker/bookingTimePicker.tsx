@@ -53,11 +53,14 @@ const BookingTimePicker = (props: BookingTImePickerPros) => {
           sx={{
             fontWeight: "600",
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "white"
+              borderColor: "white",
             },
             "& svg": {
-              color: "secondary.contrastText"
-            }
+              color: "secondary.contrastText",
+            },
+            "& input": {
+              p: "0.7rem",
+            },
           }}
           format="YYYY-MM-DD HH:mm"
           onChange={(value) => {
@@ -66,13 +69,13 @@ const BookingTimePicker = (props: BookingTImePickerPros) => {
               if (onStartChange) onStartChange(value);
             }
           }}
-          />
+        />
         <ArrowRightAlt color="primary" />
         <TimePicker
           label={
             endDate.hour() >= startDate.hour()
-            ? startDate.format("YYYY-MM-DD")
-            : startDate.add(1, "day").format("YYYY-MM-DD")
+              ? startDate.format("YYYY-MM-DD")
+              : startDate.add(1, "day").format("YYYY-MM-DD")
           }
           ampm={false}
           value={endDate}

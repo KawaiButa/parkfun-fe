@@ -9,8 +9,10 @@ const bookParkingLocation = async (formData: BookingFormData & { amount: number 
   const { parkingSlotId, time, ...data } = formData;
   const startAt = time[0];
   const endAt = time[1];
-  const modifiedEndAt = startAt.clone().set("hour", endAt.hour()).set("minute", endAt.minute());
-  if (endAt.hour() < startAt.hour()) modifiedEndAt.add(1, "day");
+  let modifiedEndAt = endAt.isBefore(startAt)
+    ? startAt.clone().set("hour", endAt.hour()).set("minute", endAt.minute())
+    : endAt;
+  if (endAt.hour() < startAt.hour()) modifiedEndAt = modifiedEndAt.set("day", modifiedEndAt.day() + 1);
   try {
     const result = await AxiosInstance.post("/payment", { ...data, parkingSlotId, startAt, endAt: modifiedEndAt });
     if (result.status === 201) return result.data;

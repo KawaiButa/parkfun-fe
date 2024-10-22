@@ -1,0 +1,84 @@
+{
+  "home": {
+    "introduction": "Khám phá tương lai của bãi đỗ xe với ứng dụng đột phá của chúng tôi. Không còn phải lòng vòng tìm chỗ đậu xe, giờ đây bạn có thể đặt trước vị trí đỗ xe lý tưởng. Với khả năng hiển thị realtime, giá cả cạnh tranh và quy trình đặt chỗ đơn giản, chúng tôi đã tối ưu hóa việc đỗ xe trong nhịp sống đô thị. Hãy tham gia cùng hàng nghìn người dùng thông minh khác.",
+    "location": "Vị trí",
+    "slogan": "Kết nối với nhiều dịch vụ trên ứng dụng của chúng tôi: đặt cho giu xe, quản lý đặt lịch, và nhiều hơn nữa..."
+  },
+  "bookingForm": {
+    "label": "Đơn giản hóa trải nghiệm đỗ xe của bạn",
+    "step1": "Chọn vị trí của bạn",
+    "step2": "Chọn thời gian và khoảng thời gian đỗ xe",
+    "step3": "Tiến hành thanh toán và bắt đầu đỗ xe!!!!",
+    "locationPlaceholder": "Tìm kiếm vị trí của bạn",
+    "search": "Tìm kiếm",
+    "searchCurrentLocation": "Tìm vị trí đỗ xe xung quanh vị trí của tôi."
+  },
+  "navigationBar": {
+    "login": "ĐĂNG NHẬP",
+    "signUp": "ĐĂNG KÝ",
+    "profile": "HỒ SƠ",
+    "logout": "ĐĂNG XUẤT"
+  },
+  "mapPage": {
+    "searchPlaceHolder": "Tìm kiếm vị trí của bạn",
+    "distance": "Khoảng cách",
+    "price": "Giá tiền",
+    "noAvailableSlot": "Không có chỗ trống gần vị trí của bạn",
+    "center": "Về  giữa",
+    "loadMore": "Tải thêm",
+    "filterBy": "Lọc theo",
+    "width": "Chiều rộng",
+    "height": "Chiều cao",
+    "length": "Chiều dài",
+    "radius": "Bán kính",
+    "services": "Dịch vụ",
+    "parkingType": "Loại bãi đỗ xe",
+    "filter": "Lọc",
+    "unresolvedBooking": "Bạn đang có một đặt chưa xử lý. Bạn có muốn tiếp tục?"
+  },
+  "parkingLocationPanel": {
+    "detail": "Chi tiết",
+    "aboutUs": "Về chúng tôi",
+    "distance": "Khoảng cách",
+    "departureTime": "Giờ đi",
+    "arrivalTime": "Giờ đến",
+    "owner": "Chủ bãi",
+    "description": "Mô tả",
+    "location": "Vị trí",
+    "contact": "Liên hệ",
+    "preview": "Xem trước",
+    "email": "Email",
+    "phoneNumber": "Số điện thoại",
+    "errorWhenFetchOwnerLocation": "Lỗi khi tải thông tin chủ bãi đỗ xe"
+  },
+  "bookingModal": {
+    "booking": "Đặt chỗ",
+    "access": "Truy cập",
+    "options": "Tùy chọn",
+    "services": "Dịch vụ",
+    "time": "Thời gian",
+    "fee": "Phí",
+    "price": "Giá tiền",
+    "total": "Tổng cộng",
+    "reverse": "Đặt chỗ"
+  },
+  "profileForm": {
+    "name": "Họ tên",
+    "email": "Email",
+    "address": "Địa chỉ",
+    "phoneNumber": "Số điện thoại",
+    "changeImage": "Thay đổi ảnh",
+    "reset": "ĐẶT LẠI",
+    "save": "LƯU"
+  },
+  "profile": {
+    "bookingHistory": "Lịch sử đặt chỗ",
+    "pending": "Đang chờ",
+    "complete": "Hoàn thành",
+    "cancelled": "Đã hủy",
+    "viewDetails": "Xem chi tiết",
+    "startAt": "Bắt đầu lúc",
+    "endAt": "Kết thúc lúc",
+    "createAt": "Ngày tạo"
+  }
+}

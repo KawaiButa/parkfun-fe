@@ -24,7 +24,6 @@ export const useParkingLocation = () => {
   const [page, setPage] = useState(1);
   const [take, setTake] = useState(20);
   const [count, setCount] = useState(0);
-  const [hasNextPage, setHasNextPage] = useState(true)
   const [parkingLocationList, setParkingLocationList] = useState<ParkingLocation[] | null>(null);
   const { uploadImage, getPublicUrl, replaceImage } = useUploadImage("parkingLocation");
   const fetchParkingLocation = async (props?: {
@@ -139,7 +138,7 @@ export const useParkingLocation = () => {
 
   const searchParkingLocation = async (formData: SearchParkingLocationData) => {
     try {
-      const { time, position,services, ...data} = formData;
+      const { time, position,services, price, ...data} = formData;
       if (position.length != 2) return;
       if (time.length != 2) return;
       const res = await AxiosInstance.get(
@@ -151,14 +150,14 @@ export const useParkingLocation = () => {
             lat: position[1],
             startAt: time[0],
             endAt: time[1],
-            page,
+            priceStartAt: price ? price[0] : 0,
+            priceEndAt: price? price[1] : 100,
+            page: 1,
             take: 200,
           })
       );
       if (res.status === 200) {
-        const { data, meta } = res.data;
-        setPage(meta.page + 1)
-        setHasNextPage(meta.hasNextPage);
+        const { data } = res.data;
         return data as SearchedParkingLocation[];
       }
       return null;
@@ -177,7 +176,6 @@ export const useParkingLocation = () => {
     count,
     page,
     take,
-    hasNextPage,
     setTake,
     setPage,
     parkingLocationList,

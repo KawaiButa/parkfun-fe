@@ -85,6 +85,8 @@ const User = () => {
       sx={{
         backgroundColor: "background.default",
         borderRadius: "10px",
+        p: 2,
+        mt: 5
       }}
     >
       <Container

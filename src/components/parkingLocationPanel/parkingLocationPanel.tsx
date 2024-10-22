@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Close } from "@mui/icons-material";
 import { Stack, Typography, IconButton, Paper, Box, Button, CircularProgress, Divider } from "@mui/material";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import Carousel from "react-material-ui-carousel";
 
 import { SearchedParkingLocation } from "@/hooks/useParkingLocation";
@@ -17,6 +18,7 @@ const ParkingLocationPanel = (props: {
   directionMeta: DirectionMeta | null;
   onBook?: (value: ParkingLocation | SearchedParkingLocation) => void;
 }) => {
+  const t = useTranslations("parkingLocationPanel")
   const { onClose, onBook, directionMeta } = props;
   const [parkingLocation, setParkingLocation] = useState<ParkingLocation | SearchedParkingLocation>(
     props.parkingLocation
@@ -45,7 +47,7 @@ const ParkingLocationPanel = (props: {
     if (!parkingLocation.partner || !parkingLocation.partner.user)
       return (
         <Paper>
-          <Typography>{"Error when fetch data of this location's owner"}</Typography>
+          <Typography>{t("errorWhenFetchOwnerLocation")}</Typography>
         </Paper>
       );
     return (
@@ -56,30 +58,30 @@ const ParkingLocationPanel = (props: {
       >
         <Typography variant="body2">
           <Typography variant="h6" fontWeight={500}>
-            Owner:
+            {t("owner")}:
           </Typography>
-          <Typography ml={1}>{parkingLocation.partner?.user.name}</Typography>
+          <Typography ml={1} variant="body2">{parkingLocation.partner?.user.name}</Typography>
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body1">
           <Typography variant="h6" fontWeight={500}>
-            Description:
+            {t("description")}:
           </Typography>
-          <Typography ml={1}>{parkingLocation.partner?.description}</Typography>
+          <Typography ml={1} variant="body2">{parkingLocation.partner?.description}</Typography>
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body1">
           <Typography variant="h6" fontWeight={500}>
-            Location:
+            {t("location")}:
           </Typography>
-          <Typography ml={1}>{parkingLocation.partner?.location}</Typography>
+          <Typography ml={1} variant="body2">{parkingLocation.partner?.location}</Typography>
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body1">
           <Typography variant="h6" fontWeight={500}>
-            Contact:
-          </Typography>
-          <Box ml={1}>
-            {`Email: ${parkingLocation.partner?.user.email} `}
+            {t("contact")}:
+          </Typography >
+          <Box ml={1} >
+            {`${t("email")}: ${parkingLocation.partner?.user.email} `}
             <br />
-            {`Phone number: ${parkingLocation.partner?.user.phoneNumber}`}
+            {`${t("phoneNumber")}: ${parkingLocation.partner?.user.phoneNumber}`}
           </Box>
         </Typography>
       </Paper>
@@ -89,7 +91,7 @@ const ParkingLocationPanel = (props: {
     <>
       <Stack direction="row" justifyContent="space-between" alignItems="center" position="relative">
         <Typography variant="h3" fontWeight={600} color="primary">
-          Parking details:
+          {t("detail")}:
         </Typography>
         <IconButton
           sx={{
@@ -146,46 +148,70 @@ const ParkingLocationPanel = (props: {
             }}
           >
             <Typography variant="body1" fontWeight={500}>
-              About us:
+              {t("aboutUs")}:
             </Typography>
-            <Typography variant="caption" ml={1}>
+            <Typography variant="body2" ml={1}>
               {parkingLocation.description}
             </Typography>
           </Paper>
           <Paper>
-            <Stack direction="row" p={2} gap={2} justifyContent="space-around">
+            <Stack sx={{
+              flexDirection: {
+                xs: "column",
+                md: "row",
+              },
+              textAlign: {
+                xd: "center",
+                md: "left"
+              }
+            }} p={2} gap={2} justifyContent="space-around">
               {directionMeta && (
                 <>
-                  <Box>
+                  <Stack sx={{
+                    flexDirection: {
+                      xs: "row",
+                      md: "column",
+                    }
+                  }}>
                     <Typography variant="h6" fontWeight={500}>
-                      Distance:
+                      {t("distance")}:
                     </Typography>
                     <Typography>{(directionMeta.lengthInMeters / 1000).toFixed(2)} km</Typography>
-                  </Box>
+                  </Stack>
                   <Divider
                     sx={{
                       borderColor: "inherit",
                       borderWidth: "1px",
                     }}
                   />
-                  <Box>
+                  <Stack sx={{
+                    flexDirection: {
+                      xs: "row",
+                      md: "column",
+                    }
+                  }}>
                     <Typography variant="h6" fontWeight={500}>
-                      Departure time:
+                      {t("departureTime")}:
                     </Typography>
                     <Typography>{directionMeta.departureTime.format("hh:mm A")}</Typography>
-                  </Box>
+                  </Stack>
                   <Divider
                     sx={{
                       borderColor: "inherit",
                       borderWidth: "1px",
                     }}
                   />
-                  <Box>
+                  <Stack sx={{
+                    flexDirection: {
+                      xs: "row",
+                      md: "column",
+                    }
+                  }}>
                     <Typography variant="h6" fontWeight={500}>
-                      Arrive time:
+                      {t("arrivalTime")}:
                     </Typography>
                     <Typography>{directionMeta.arrivalTime.format("hh:mm A")}</Typography>
-                  </Box>
+                  </Stack>
                 </>
               )}
             </Stack>
@@ -200,7 +226,7 @@ const ParkingLocationPanel = (props: {
             }}
             onClick={() => onBook && onBook(parkingLocation)}
           >
-            Preview
+            {t("preview")}
           </Button>
         </Stack>
       )}

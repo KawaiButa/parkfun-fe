@@ -18,10 +18,6 @@ export interface SearchParkingLocationData {
   height?: number;
   
   length?: number;
-  
-  lat: number;
-
-  lng: number;
 
   priceStartAt?: number;
 

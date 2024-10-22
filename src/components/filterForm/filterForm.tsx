@@ -48,9 +48,9 @@ const FilterForm = (props: FilterFormProps) => {
         if (type === "checkbox" && options)
           return <FormCheckboxInput key={name} control={control} name={name} {...remain} options={options} />;
         if (type === "radio" && options)
-          return <FormRadioInput key={name} name={name} control={control} options={options} {...remain} />;
+          return <FormRadioInput key={name} name={name} control={control} options={options} {...remain} direction="row"/>;
         if(type === "slider")
-          return <FormSliderInput key={name} control={control} name={name} {...remain} />
+          return <FormSliderInput key={name} control={control} name={name} {...remain}  />
         return null;
       })}
     </Stack>

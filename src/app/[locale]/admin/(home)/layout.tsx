@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { MouseEvent, useContext } from "react";
 
 import { AuthenticationContext, DashboardLayout } from "@toolpad/core";
@@ -10,7 +10,7 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   const router = useRouter();
-  const authentication = useContext(AuthenticationContext)
+  const authentication = useContext(AuthenticationContext);
   return (
     <DashboardLayout
       slotProps={{
@@ -27,7 +27,7 @@ const Layout = ({
               onClick: () => {
                 authentication?.signOut();
                 router.push("/logout");
-              }
+              },
             },
           },
         },

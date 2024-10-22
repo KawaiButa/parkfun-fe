@@ -1,19 +1,22 @@
 "use client";
 import { MouseEvent, useContext, useState } from "react";
 
-import Menu from "@mui/icons-material/Menu";
-import { AppBar, Toolbar, IconButton, Typography, Box } from "@mui/material";
+import { AppBar, Toolbar, Typography, Box, Stack } from "@mui/material";
 import { AuthenticationContext } from "@toolpad/core";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 
+import { constants } from "@/constants";
 import { useSession } from "@/context/authenticationContext";
+import { Link, usePathname } from "@/i18n/routing";
 
 import SecondaryContainedButton from "../secondaryContainedButton/secondaryContainedButton";
 import ProfilePopOver from "./profilePopOver/profilePopOver";
 
 const NavigationBar = () => {
+  const t = useTranslations("navigationBar");
   const authentication = useContext(AuthenticationContext);
   const session = useSession();
+  const pathName = usePathname();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: MouseEvent) => {
@@ -30,20 +33,6 @@ const NavigationBar = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{
-            mr: {
-              xs: 0,
-              md: 2,
-            },
-          }}
-        >
-          <Menu />
-        </IconButton>
         <Typography
           variant="h3"
           color="secondary"
@@ -51,13 +40,31 @@ const NavigationBar = () => {
             flexGrow: 1,
             fontWeight: 700,
             fontSize: {
-              xs: "30px",
-              md: "40px",
+              xs: "1rem",
+              md: "2rem",
             },
           }}
         >
-          <Link href="/">PARKFUN</Link>
+          <Link href="/">{constants.PROJECT_NAME}</Link>
         </Typography>
+        <Stack
+          direction="row"
+          gap={1}
+          mr={1}
+          sx={{
+            display: {
+              xs: "none",
+              md: "flex",
+            },
+          }}
+        >
+          <Link href={pathName} locale="vi">
+            vi
+          </Link>
+          <Link href={pathName} locale="en">
+            en
+          </Link>
+        </Stack>
         {session ? (
           <>
             <SecondaryContainedButton
@@ -71,8 +78,8 @@ const NavigationBar = () => {
             </SecondaryContainedButton>
             <ProfilePopOver
               linkList={[
-                { label: "Profile", href: "/home/profile" },
-                { label: "Log out", onClick: handleLogout },
+                { label: t("profile"), href: "/home/profile" },
+                { label: t("logout"), onClick: handleLogout },
               ]}
               open={open}
               onClose={handleClose}
@@ -90,14 +97,14 @@ const NavigationBar = () => {
                 fontWeight: "500",
               }}
             >
-              <Link href="/auth/login">Login</Link>
+              <Link href="/auth/login">{t("login")}</Link>
             </SecondaryContainedButton>
             <SecondaryContainedButton
               sx={{
                 fontWeight: "500",
               }}
             >
-              <Link href="/auth/signup">Sign up</Link>
+              <Link href="/auth/signup">{t("signUp")}</Link>
             </SecondaryContainedButton>
           </Box>
         )}

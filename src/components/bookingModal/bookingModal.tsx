@@ -10,6 +10,7 @@ import { AxiosError } from "axios";
 import dayjs, { Dayjs } from "dayjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import Carousel from "react-material-ui-carousel";
 
@@ -49,6 +50,7 @@ const BookingModal = (
   const session = useSession();
   const dialogs = useDialogs();
   const router = useRouter();
+  const t = useTranslations();
   const {
     control,
     reset,
@@ -96,7 +98,10 @@ const BookingModal = (
     if (Object.keys(errors).length) showError(Object.values(errors)[0].message ?? "");
   }, [errors]);
   const onSubmit = async (formData: BookingFormData) => {
-    if (formData.time[0].isBefore(dayjs())) return;
+    if (formData.time[0].isBefore(dayjs())) {
+      showError("Your selected start time is over.");
+      return;
+    }
     if (!session) {
       const isLogin = await dialogs.confirm("You need to login to book a parking slot");
       localStorage.setItem("booking", JSON.stringify(formData));
@@ -170,7 +175,7 @@ const BookingModal = (
                 }}
               >
                 <Typography variant="h4" color="primary">
-                  Booking - {selectedParkingSlot?.parkingLocation.name}
+                  {t("booking")} - {selectedParkingSlot?.parkingLocation.name}
                 </Typography>
                 <IconButton>
                   <Close
@@ -186,7 +191,7 @@ const BookingModal = (
                 gap={initialValue ? 0 : "10px"}
                 sx={{
                   borderRadius: "5px",
-                  padding: "10px",
+                 padding: "10px",
                   backgroundColor: "background.default",
                 }}
               >
@@ -270,14 +275,14 @@ const BookingModal = (
                 {selectedParkingSlot?.name}
               </Typography>
               <Stack m={2}>
-                <Typography variant="h6">Access:</Typography>
+                <Typography variant="h6">{t("access")}:</Typography>
                 <Typography>{selectedParkingSlot?.parkingLocation.access}</Typography>
               </Stack>
               <Typography variant="h4" mt={2}>
-                Options
+                {t("options")}
               </Typography>
               <Stack m={2}>
-                <Typography variant="h6">Services:</Typography>
+                <Typography variant="h6">{t("services")}:</Typography>
                 <FormCheckboxInput
                   control={control}
                   name="serviceIds"
@@ -285,7 +290,7 @@ const BookingModal = (
                   transformLabel={({ name }) => name}
                   transformValue={({ id }) => id}
                 />
-                <Typography variant="h6">Time:</Typography>
+                <Typography variant="h6">{t("time")}:</Typography>
                 <Box mt={2}>
                   <Controller
                     control={control}
@@ -295,7 +300,9 @@ const BookingModal = (
                         defaultStartTime={value[0]}
                         defaultEndTime={value[1]}
                         onStartChange={(e) => {
-                          if (e) onChange([e ?? new Dayjs(), value[1]]);
+                          if (e) {
+                            onChange([e, value[1]]);
+                          }
                         }}
                         onEndChange={(e) => {
                           if (e) onChange([value[0], e]);
@@ -338,7 +345,7 @@ const BookingModal = (
                   <>
                     <Stack direction="row" justifyContent="space-between" width={"100%"}>
                       <Typography variant="body1">Fee:</Typography>
-                      <Typography variant="body1"> ${fee}</Typography>
+                      <Typography variant="body1"> ${fee.toFixed(2)}</Typography>
                     </Stack>
                     <Stack direction="row" justifyContent="space-between" width={"100%"}>
                       <Typography variant="body1">Price:</Typography>
@@ -372,7 +379,7 @@ const BookingModal = (
                 loadingIndicator={<CircularProgress />}
                 disabled={loading}
               >
-                Reserve
+                {t("reserve")}
               </LoadingButton>
             </Box>
           ) : (
