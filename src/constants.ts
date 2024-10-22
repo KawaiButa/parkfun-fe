@@ -8,5 +8,6 @@ export const constants = {
   STRIPE_KEY: process.env.NEXT_PUBLIC_STRIPE_KEY ?? "",
   BASE_URL: process.env.NEXT_PUBLIC_BASE_URL ?? "",
   DEFAULT_ZOOM_LEVEL: 12,
-  SENTRY_DNS: process.env.SENTRY_DNS ?? ""
+  SENTRY_DNS: process.env.SENTRY_DNS ?? "",
+  NODE_ENV: process.env.NODE_ENV ?? "",
 };
