@@ -4,8 +4,10 @@
 
 import * as Sentry from "@sentry/nextjs";
 
+import { constants } from "@/constants";
+
 Sentry.init({
-  dsn: "https://22b07205bc0a5686f8d9254fdc75ca1d@o4508142110834688.ingest.de.sentry.io/4508155217772624",
+  dsn: constants.SENTRY_DNS,
 
   // Add optional integrations for additional features
   integrations: [Sentry.replayIntegration()],
