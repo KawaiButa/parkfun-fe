@@ -688,7 +688,7 @@ const ParkingLocationCard = (props: {
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover", // or cover, scale-down, etc.
+              objectFit: "cover",
               borderRadius: "5px",
             }}
             alt={`${image}`}

@@ -22,7 +22,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 function axiosToNextResponse(axiosResponse: AxiosResponse | AxiosError): NextResponse {
   if (axiosResponse instanceof AxiosError) {
-    // Handle AxiosError
     const errorResponse = axiosResponse.response;
     if (errorResponse) {
       return new NextResponse(JSON.stringify(errorResponse.data), {
@@ -32,13 +31,11 @@ function axiosToNextResponse(axiosResponse: AxiosResponse | AxiosError): NextRes
         ),
       });
     } else {
-      // Network error or something went wrong with the request
       return new NextResponse(JSON.stringify({ message: axiosResponse.message }), {
         status: 500,
       });
     }
   } else {
-    // Handle successful AxiosResponse
     return new NextResponse(JSON.stringify(axiosResponse.data), {
       status: axiosResponse.status,
       headers: Object.fromEntries(Object.entries(axiosResponse.headers).map(([key, value]) => [key, value.toString()])),

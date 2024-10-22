@@ -61,10 +61,9 @@ function getZoomLevelForPoint(lat: number, lng: number, mapWidth: number, mapHei
   const zoomX = Math.log2(((mapWidth / TILE_SIZE) * 360) / (lng + 180));
   const zoomY = Math.log2(((mapHeight / TILE_SIZE) * 2 * Math.PI) / (mercatorY + Math.PI));
 
-  return Math.floor(Math.min(zoomX, zoomY, 23)); // 23 is the maximum zoom level in Azure Maps
+  return Math.floor(Math.min(zoomX, zoomY, 23)); 
 }
 
-// Function to calculate zoom level for an array of points
 function getZoomLevelForPoints(points: GeoPoint[], mapWidth: number, mapHeight: number): number {
   if (points.length === 0) {
     return 0;
