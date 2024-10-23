@@ -60,7 +60,7 @@
     "fee": "Fee",
     "price": "Price",
     "total": "Total",
-    "reverse": "Reverse"
+    "reserve": "Reverse"
   },
   "profileForm": {
     "name": "Name",
@@ -80,5 +80,20 @@
     "startAt": "Start At",
     "endAt": "End At",
     "createAt": "Create At"
+  },
+  "loginForm": {
+    "title": "Email",
+    "password": "Password",
+    "login": "Login"
+  },
+  "signupForm": {
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "phoneNumber": "Phone Number",
+    "book": "Start booking"
+  },
+  "auth": {
+    "login": "LOGIN",
+    "signUp": "SIGN UP"
   }
 }

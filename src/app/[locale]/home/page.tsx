@@ -274,7 +274,7 @@ export default function Home() {
                 C0013, Sarina Apt, 62 Hoang The Thien, An Loi Dong, Thu Duc city, HCMC, Vietnam
               </Typography>
               <Box sx={{ mb: 3 }}>
-                <Box component="img" src="/golden-owl-logo.png" alt="Golden Owl" sx={{ height: "64px", mb: 2 }} />
+                <Box component="img" src="gosLogo.svg" alt="Golden Owl" sx={{ height: "64px", mb: 2 }} />
                 <Typography variant="h6" sx={{ mb: 1 }}>
                   Golden Owl Solutions
                 </Typography>
@@ -292,7 +292,7 @@ export default function Home() {
               </Typography>
               <Box sx={{ width: "100%", height: "192px" }}>
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.1258470790287!2d106.75518661533417!3d10.800984892310438!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317526156c31adcd%3A0x8e2e3c7bc0140b25!2sSarina%20Apartment!5e0!3m2!1sen!2s!4v1625647382645!5m2!1sen!2s"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.9028267614!2d106.7249203!3d10.7740064!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175279d5bd691d5%3A0x74994344dd00f5ae!2sGolden%20Owl%20Solutions!5e0!3m2!1sen!2s!4v1698030000000!5m2!1sen!2s"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}

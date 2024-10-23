@@ -60,7 +60,7 @@
     "fee": "Phí",
     "price": "Giá tiền",
     "total": "Tổng cộng",
-    "reverse": "Đặt chỗ"
+    "reserve": "Đặt chỗ"
   },
   "profileForm": {
     "name": "Họ tên",
@@ -80,5 +80,20 @@
     "startAt": "Bắt đầu lúc",
     "endAt": "Kết thúc lúc",
     "createAt": "Ngày tạo"
+  },
+  "loginForm": {
+    "title": "Email",
+    "password": "Mật khẩu",
+    "login": "Đăng nhập"
+  },
+  "signupForm": {
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "phoneNumber": "Số điện thoại",
+    "book": "Bắt đầu đặt lịch"
+  },
+  "auth": {
+    "login": "ĐĂNG NHẬP",
+    "signUp": "ĐĂNG KÝ"
   }
 }

@@ -21,7 +21,7 @@ const NAVIGATION: Navigation = [
     icon: <Dashboard />,
   },
   {
-    segment: "en/admin/partners",
+    segment: "admin/partners",
     title: "Partners",
     icon: <Person />,
   },

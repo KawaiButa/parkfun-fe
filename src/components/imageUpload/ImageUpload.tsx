@@ -21,14 +21,14 @@ export const ImageUpload = (props: ImageUploadProps) => {
 
   return (
     <Box
-      {...remain}
-      onClick={() => handleClick()}
-      sx={{
-        "&:hover": {
-          cursor: "pointer",
-        },
-        border: "1px solid black"
-      }}
+    onClick={() => handleClick()}
+    sx={{
+      "&:hover": {
+        cursor: "pointer",
+      },
+      border: "1px solid black"
+    }}
+    {...remain}
     >
       <input type="file" onChange={onSelectFile} hidden ref={inputRef} />
       {src && (

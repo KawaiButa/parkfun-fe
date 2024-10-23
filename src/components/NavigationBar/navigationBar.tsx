@@ -1,13 +1,13 @@
 "use client";
 import { MouseEvent, useContext, useState } from "react";
 
-import { AppBar, Toolbar, Typography, Box, Stack } from "@mui/material";
+import { AppBar, Toolbar, Typography, Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { AuthenticationContext } from "@toolpad/core";
 import { useTranslations } from "next-intl";
 
 import { constants } from "@/constants";
 import { useSession } from "@/context/authenticationContext";
-import { Link, usePathname } from "@/i18n/routing";
+import { Link, usePathname, useRouter } from "@/i18n/routing";
 
 import SecondaryContainedButton from "../secondaryContainedButton/secondaryContainedButton";
 import ProfilePopOver from "./profilePopOver/profilePopOver";
@@ -16,6 +16,7 @@ const NavigationBar = () => {
   const t = useTranslations("navigationBar");
   const authentication = useContext(AuthenticationContext);
   const session = useSession();
+  const router = useRouter();
   const pathName = usePathname();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -47,24 +48,30 @@ const NavigationBar = () => {
         >
           <Link href="/">{constants.PROJECT_NAME}</Link>
         </Typography>
-        <Stack
-          direction="row"
-          gap={1}
-          mr={1}
+        <FormControl
+          size="small"
           sx={{
-            display: {
-              xs: "none",
-              md: "flex",
-            },
+            width: "100px",
+            mr: 2,
           }}
+          color="secondary"
         >
-          <Link href={pathName} locale="vi">
-            vi
-          </Link>
-          <Link href={pathName} locale="en">
-            en
-          </Link>
-        </Stack>
+          <InputLabel color="secondary">Lang</InputLabel>
+          <Select
+            label="Lang"
+            onChange={(e) => {
+              router.replace({ pathname: pathName}, { locale: e.target.value as string });
+            }}
+          >
+            <MenuItem value="vi" color="secondary">
+              Vi
+            </MenuItem>
+            <MenuItem value="en" color="secondary">
+              En
+            </MenuItem>
+          </Select>
+        </FormControl>
+
         {session ? (
           <>
             <SecondaryContainedButton

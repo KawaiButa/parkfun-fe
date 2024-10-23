@@ -76,7 +76,7 @@ const User = () => {
       slots={{
         toolbar: () => (
           <PageContainerToolbar>
-            <Button startIcon={<Add />} variant="contained" onClick={() => router.push("partner/add")}>
+            <Button startIcon={<Add />} variant="contained" onClick={() => router.push("partners/add")}>
               Create
             </Button>
           </PageContainerToolbar>

@@ -50,7 +50,7 @@ const BookingModal = (
   const session = useSession();
   const dialogs = useDialogs();
   const router = useRouter();
-  const t = useTranslations();
+  const t = useTranslations("bookingModal");
   const {
     control,
     reset,
@@ -59,14 +59,12 @@ const BookingModal = (
   } = useForm({
     defaultValues: {
       parkingSlotId: payload.parkingSlotList ? payload.parkingSlotList[0] : -1,
-      time:
-        startAt && endAt
-          ? [startAt, endAt]
-          : [getNearestRoundTime(dayjs()), getNearestRoundTime(dayjs()).add(30, "minutes")],
+      time:[getNearestRoundTime(dayjs()), getNearestRoundTime(dayjs()).add(30, "minutes")],
       serviceIds: [],
     },
     resolver: yupResolver(bookingValidationSchema),
   });
+
   const time = useWatch({ control, name: "time" });
   useEffect(() => {
     if (!initialValue && !payload.parkingSlotList) {
@@ -91,7 +89,7 @@ const BookingModal = (
       });
     }
     if (startAt && endAt) {
-      reset((prev) => ({ ...prev, startAt, endAt }));
+      reset((prev) => ({ ...prev, time: [startAt, endAt] }));
     }
   }, [endAt, startAt]);
   useEffect(() => {
@@ -191,7 +189,7 @@ const BookingModal = (
                 gap={initialValue ? 0 : "10px"}
                 sx={{
                   borderRadius: "5px",
-                 padding: "10px",
+                  padding: "10px",
                   backgroundColor: "background.default",
                 }}
               >

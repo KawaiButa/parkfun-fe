@@ -74,7 +74,9 @@ const AuthLayout = ({
             }}
           />
         </Tabs>
+        <div className="auth">
         {children}
+        </div>
       </ContainerFlexColumn>
     </NotificationsProvider>
   );

@@ -43,5 +43,7 @@ const redirectToDashboard = (role: string) => {
 };
 
 function removeLocale(pathname: string, locales: string[]): string {
-  return locales.reduce((acc, locale) => acc.replace(`/${locale}`, ""), pathname);
+  const result = locales.reduce((acc, locale) => acc.replace(`/${locale}`, ""), pathname);
+  if(result === "") return "/"
+  return result;
 }
