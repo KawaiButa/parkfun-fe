@@ -49,7 +49,7 @@ const PaymentSummaryPage = ({ params }: { params: { id: number } }) => {
             <CheckCircleIcon sx={{ fontSize: 120, mb: 2 }} color="primary" />
           </Box>
         );
-      case "pending":
+      case "holding":
         return (
           <Box
             sx={{
@@ -62,7 +62,7 @@ const PaymentSummaryPage = ({ params }: { params: { id: number } }) => {
             <Pending sx={{ fontSize: 120, mb: 2 }} color="primary" />
           </Box>
         );
-      case "failed":
+      case "cancelled":
         return (
           <Box
             sx={{
@@ -77,6 +77,42 @@ const PaymentSummaryPage = ({ params }: { params: { id: number } }) => {
         );
       default:
         return null;
+    }
+  };
+  const getPaymentDescription = (status: string) => {
+    switch (status) {
+      case "completed":
+        return (
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 2 }}>
+            <CheckCircleIcon sx={{ color: "success.main", mr: 1 }} />
+            <Typography variant="h6" sx={{ color: "success.main" }}>
+              Payment completed!
+            </Typography>
+          </Box>
+        );
+      case "holding":
+        return (
+          <>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 2 }}>
+              <Pending sx={{ color: "info.main", mr: 1 }} />
+              <Typography variant="h6" sx={{ color: "info.main" }}>
+                Payment holded!
+              </Typography>
+            </Box>
+            <Typography variant="body2" textAlign="center">
+              {"Your money will be refunded to you if the location's owner reject your booking."}
+            </Typography>
+          </>
+        );
+      case "cancelled":
+        return (
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 2 }}>
+            <Error sx={{ color: "error.main", mr: 1 }} />
+            <Typography variant="h6" sx={{ color: "error.main" }}>
+              Payment failed!
+            </Typography>
+          </Box>
+        );
     }
   };
   if (!paymentRecord) return <></>;
@@ -115,7 +151,7 @@ const PaymentSummaryPage = ({ params }: { params: { id: number } }) => {
             }}
           >
             <Typography variant="h4" color="primary" textAlign="center">
-              ${paymentRecord.amount.toFixed(2)}
+              ${(paymentRecord.amount).toFixed(2)}
             </Typography>
             <Stack direction="row" justifyContent="space-between">
               <Typography variant="body1" fontWeight={500}>
@@ -176,25 +212,26 @@ const PaymentSummaryPage = ({ params }: { params: { id: number } }) => {
                     </TableCell>
                     <TableCell align="right">
                       <Stack>
-                        <Typography variant="caption">${(paymentRecord.booking.fee).toFixed(2)}</Typography>
-                        <Typography>${(paymentRecord.booking.amount + paymentRecord.booking.fee).toFixed(2)}</Typography>
+                        <Typography variant="caption">${paymentRecord.booking.fee.toFixed(2)}</Typography>
+                        <Typography>
+                          ${(paymentRecord.booking.amount + paymentRecord.booking.fee).toFixed(2)}
+                        </Typography>
                       </Stack>
                     </TableCell>
                   </TableRow>
-                </TableBody>  
+                </TableBody>
               </Table>
             </TableContainer>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 2 }}>
-              <CheckCircleIcon sx={{ color: "success.main", mr: 1 }} />
-              <Typography variant="h6" sx={{ color: "success.main" }}>
-                Payment completed!
-              </Typography>
-            </Box>
+            {getPaymentDescription(paymentRecord.status)}
 
             <Typography variant="body2" align="center" sx={{ mb: 2 }}>
-              An automated <Link component="a" target="blank" href={paymentRecord.receiptUrl} color="primary">receipt </Link>will be sent to your email.
+              An automated{" "}
+              <Link component="a" target="blank" href={paymentRecord.receiptUrl} color="primary">
+                receipt{" "}
+              </Link>
+              will be sent to your email.
             </Typography>
- 
+
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
               <Typography variant="body2" fontWeight={500}>
                 Transaction Reference

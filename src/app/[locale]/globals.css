@@ -13,13 +13,13 @@ body {
   overflow-x: hidden;
   color: white;
 }
-/* input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active{
+.auth input:-webkit-autofill,
+.auth input:-webkit-autofill:hover, 
+.auth input:-webkit-autofill:focus, 
+.auth input:-webkit-autofill:active{
    -webkit-box-shadow: 0 0 0 30px #181C14 inset !important;
    -webkit-text-fill-color: #ffffff !important;
-} */
+}
 
 body {
   background-image: url("../../../public/images/background.jpg");

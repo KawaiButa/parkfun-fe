@@ -9,4 +9,5 @@ export interface PaymentRecord {
   createAt: Date;
   deleteAt?: Date;
   receiptUrl: string;
+  status: string;
 }

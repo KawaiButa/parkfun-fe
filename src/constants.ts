@@ -10,4 +10,5 @@ export const constants = {
   DEFAULT_ZOOM_LEVEL: 12,
   SENTRY_DNS: process.env.SENTRY_DNS ?? "",
   NODE_ENV: process.env.NODE_ENV ?? "",
+  ACCESS_TOKEN_EXPIRES: 3600000,
 };

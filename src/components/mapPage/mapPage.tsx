@@ -74,11 +74,11 @@ const MapPage = () => {
   const [showFullMap, setShowFullMap] = useState(false);
   const t = useTranslations("mapPage");
   const filterFormData = [
-    { name: "width", type: "slider", label: t("width"), max: "500" },
-    { name: "height", type: "slider", label: t("height"), max: "500" },
-    { name: "length", type: "slider", label: t("length"), max: "500" },
-    { name: "radius", type: "slider", label: t("radius") },
-    { name: "price", type: "slider", label: t("price") },
+    { name: "width", type: "slider", label: t("width") + " (cm)", max: "500" },
+    { name: "height", type: "slider", label: t("height")+ " (cm)", max: "500" },
+    { name: "length", type: "slider", label: t("length")+ " (cm)", max: "500" },
+    { name: "radius", type: "slider", label: t("radius")+ " (km)" },
+    { name: "price", type: "slider", label: t("price")+ " ($)" },
     {
       name: "services",
       type: "checkbox",

@@ -6,6 +6,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { Alert, CircularProgress, Container, ContainerOwnProps, Divider, styled, Typography } from "@mui/material";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthenticationContext } from "@toolpad/core";
+import { AxiosError } from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
@@ -58,7 +59,8 @@ const LoginForm = (props: ContainerOwnProps) => {
         else router.replace("/");
       }
     } catch (err) {
-      if (err instanceof Error) setError(err.message);
+      if (err instanceof AxiosError) setError(err.response?.data.message);
+      else setError((err as Error).message);
     }
   };
   return (
@@ -96,9 +98,8 @@ const LoginForm = (props: ContainerOwnProps) => {
           sx={{
             fontSize: "20px",
             fontWeight: "600",
-            
           }}
-          loadingIndicator={<CircularProgress color="primary"/>}
+          loadingIndicator={<CircularProgress color="primary" />}
           variant="contained"
           color="primary"
           loading={isSubmitting}

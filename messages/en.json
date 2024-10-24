@@ -79,7 +79,10 @@
     "viewDetails": "View Details",
     "startAt": "Start At",
     "endAt": "End At",
-    "createAt": "Create At"
+    "createAt": "Create At",
+    "accepted": "Accepted",
+    "holding": "Holding",
+    "booking": "Booking"
   },
   "loginForm": {
     "title": "Email",

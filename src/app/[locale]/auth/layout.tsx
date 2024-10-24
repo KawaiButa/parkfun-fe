@@ -30,7 +30,7 @@ const AuthLayout = ({
           maxWidth="sm"
           sx={{
             marginTop: "30px",
-            backgroundColor: "var(--secondary-color)",
+            backgroundColor: "background.default",
             padding: "30px",
             borderRadius: "10px",
             gap: "20px",
@@ -74,7 +74,7 @@ const AuthLayout = ({
               }}
             />
           </Tabs>
-          {children}
+          <div className="auth">{children}</div>
         </ContainerFlexColumn>
       </NotificationsProvider>
     </Suspense>

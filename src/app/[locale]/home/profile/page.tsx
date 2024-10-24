@@ -3,22 +3,37 @@ import { useEffect } from "react";
 
 import { ArrowForwardIos } from "@mui/icons-material";
 import { Box, Button, Card, Container, Stack, Typography } from "@mui/material";
+import { useDialogs } from "@toolpad/core";
+import { AxiosError } from "axios";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc"
+import utc from "dayjs/plugin/utc";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import ProfileForm from "@/components/profileForm/profileForm";
 import { useBooking } from "@/hooks/useBooking";
+import AxiosInstance from "@/utils/axios";
 
-dayjs.extend(utc)
+dayjs.extend(utc);
 const Page = () => {
   const t = useTranslations("profile");
   const { bookingList, fetchBooking } = useBooking();
+  const dialogs = useDialogs();
   useEffect(() => {
     fetchBooking();
   }, []);
   const router = useRouter();
+  function completeBooking(bookingId: number): void {
+    AxiosInstance.get(`/booking/${bookingId}/complete`)
+      .then(() => {
+        dialogs.alert("YOu have successfully completed the booking.");
+      })
+      .catch((err) => {
+        if (err instanceof AxiosError) dialogs.alert(err.response?.data.message);
+        else dialogs.alert("Error accepting booking: " + err.message);
+      });
+  }
+
   return (
     <Stack direction="column" gap={2} color="secondary.main">
       <ProfileForm />
@@ -44,16 +59,35 @@ const Page = () => {
                 }}
               >
                 <Stack direction="row" justifyContent="space-between">
-                  <Typography variant="h6">
-                    ID: {id} - ${amount.toFixed(2)}
-                  </Typography>
-                  <Button
-                    variant={status === "cancelled" ? "outlined" : "contained"}
-                    color={`${getColorFromStatus(status)}`}
-                    onClick={() => router.push("/home/payment/" + id)}
-                  >
-                    {t(status)}
-                  </Button>
+                  <Stack direction="row" justifyContent="center">
+                    <Typography variant="h6">
+                      ID: {id} - ${amount.toFixed(2)}
+                    </Typography>
+                    {status === "booking" && (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          borderRadius: 2,
+                          ml: 2,
+                          fontSize: 12,
+                        }}
+                        onClick={() => completeBooking(id)}
+                      >
+                        Complete
+                      </Button>
+                    )}
+                  </Stack>
+                  <Box>
+                    <Button
+                      variant="outlined"
+                      color={`${getColorFromStatus(status)}`}
+                      onClick={() => router.push("/home/payment/" + id)}
+                      size="small"
+                    >
+                      {t(status)}
+                    </Button>
+                  </Box>
                 </Stack>
                 <Stack direction="row" justifyContent="space-between" alignItems="flex-end">
                   <Stack direction="row" alignItems="center">
@@ -92,6 +126,10 @@ const getColorFromStatus = (
       return "success";
     case "cancelled":
       return "error";
+    case "holding":
+      return "warning";
+    case "booking":
+      return "success";
     default:
       return "inherit";
   }

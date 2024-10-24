@@ -53,6 +53,9 @@ const NavigationBar = () => {
           sx={{
             width: "100px",
             mr: 2,
+            "& label": {
+              color: "black"
+            }
           }}
           color="secondary"
         >
@@ -60,13 +63,16 @@ const NavigationBar = () => {
           <Select
             label="Lang"
             onChange={(e) => {
-              router.replace({ pathname: pathName}, { locale: e.target.value as string });
+              router.replace({ pathname: pathName }, { locale: e.target.value as string });
+            }}
+            sx={{
+              color: "black"
             }}
           >
-            <MenuItem value="vi" color="secondary">
+            <MenuItem value="vi">
               Vi
             </MenuItem>
-            <MenuItem value="en" color="secondary">
+            <MenuItem value="en">
               En
             </MenuItem>
           </Select>

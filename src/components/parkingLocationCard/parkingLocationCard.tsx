@@ -70,9 +70,9 @@ const ParkingLocationCard = (props: ParkingLocationCardProps) => {
           width: "30px",
           height: "30px",
           cursor: "pointer",
-          zIndex: "12",
+          zIndex: 12,
           "&:hover": {
-            opacity: "1",
+            opacity: 1,
           },
         }}
       >

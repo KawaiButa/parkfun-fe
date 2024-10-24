@@ -3,9 +3,10 @@ import React, { useContext } from "react";
 
 import { Container } from "@mui/material";
 import { AuthProvider, SignInPage, AuthenticationContext } from "@toolpad/core";
-import { useRouter } from "next/navigation";
+import queryString from "query-string";
 
 import { useNotify } from "@/hooks/useNoti";
+import { useRouter } from "@/i18n/routing";
 import { loginWithEmailAndPassword } from "@/utils/authentication";
 
 const providers: AuthProvider[] = [{ id: "credentials", name: "Email and Password" }];
@@ -22,7 +23,9 @@ const AdminLogin = () => {
       .then(() => {
         if (authentication) {
           authentication.signIn();
-          router.push("/partner");
+          const {redirect} = queryString.parse(window.location.search)
+          if(redirect) router.push(redirect as string)
+          else router.push("/partner");
         }
       })
       .catch((err) => {

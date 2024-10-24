@@ -74,12 +74,15 @@
   "profile": {
     "bookingHistory": "Lịch sử đặt chỗ",
     "pending": "Đang chờ",
-    "complete": "Hoàn thành",
+    "completed": "Đã hoàn thành",
     "cancelled": "Đã hủy",
     "viewDetails": "Xem chi tiết",
     "startAt": "Bắt đầu lúc",
     "endAt": "Kết thúc lúc",
-    "createAt": "Ngày tạo"
+    "createAt": "Tạo lúc",
+    "accepted": "Đã chấp nhận",
+    "holding": "Đang giữ chỗ",
+    "booking": "Đặt chỗ"
   },
   "loginForm": {
     "title": "Email",
